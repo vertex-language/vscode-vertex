@@ -31,7 +31,7 @@ This produces a `.vsix` file in the project directory. Install it with:
 - from the terminal:
 
   ```bash
-  code --install-extension vscode-vertex-1.0.0.vsix
+  code --install-extension vscode-vertex-1.0.1.vsix
   ```
 
 ### From the Marketplace

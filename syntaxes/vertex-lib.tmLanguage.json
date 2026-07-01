@@ -7,6 +7,7 @@
   "patterns": [
     { "include": "#line-comment" },
     { "include": "#string" },
+    { "include": "#library-directive" },
     { "include": "#keyword-block" },
     { "include": "#provider-kind" },
     { "include": "#field-key" },
@@ -31,6 +32,15 @@
       ]
     },
 
+    "library-directive": {
+      "comment": "Top-level `library ImportPath` line (§3, §4) — bare, unquoted, unlike the quoted-string Fields. Mirrors vs.mod's module-path handling: colors the directive keyword and the path separately.",
+      "match": "^(\\s*)(library)(\\s+)([a-zA-Z0-9_.\\-]+(?:/[a-zA-Z0-9_.\\-]+)*)",
+      "captures": {
+        "2": { "name": "keyword.control.directive.vtxlib" },
+        "4": { "name": "variable.other.modulepath.vtxlib" }
+      }
+    },
+
     "keyword-block": {
       "comment": "provider/target block keywords, and the release qualifier.",
       "name": "keyword.control.vtxlib",
@@ -44,7 +54,7 @@
     },
 
     "field-key": {
-      "comment": "key = value lines: name, version, description, link, package, url, format, hash, lib, vcpkg_triplet.",
+      "comment": "key = value lines: version, description, link, package, url, format, hash, lib, vcpkg_triplet, and any unrecognized ident Field (§6).",
       "match": "^\\s*([a-zA-Z_][a-zA-Z0-9_]*)(\\s*)(=)",
       "captures": {
         "1": { "name": "variable.other.field.vtxlib" },
