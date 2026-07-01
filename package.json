@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "vscode-vertex",
+  "displayName": "Vertex Language Support",
+  "description": "Syntax highlighting for the Vertex programming language: .vs source files, vs.mod module manifests, and vs.lib native-library manifests",
+  "version": "1.0.0",
+  "publisher": "vertex-language",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vertex-language/vscode-vertex"
+  },
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": ["Programming Languages"],
+  "contributes": {
+    "languages": [
+      {
+        "id": "vertex",
+        "aliases": ["Vertex", "vertex"],
+        "extensions": [".vs"],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "vertex-mod",
+        "aliases": ["Vertex Module", "vs.mod"],
+        "filenames": ["vs.mod"],
+        "configuration": "./language-configuration-mod.json"
+      },
+      {
+        "id": "vertex-lib",
+        "aliases": ["Vertex Library Manifest", "vs.lib"],
+        "filenames": ["vs.lib"],
+        "configuration": "./language-configuration-lib.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "vertex",
+        "scopeName": "source.vtx",
+        "path": "./syntaxes/vertex.tmLanguage.json"
+      },
+      {
+        "language": "vertex-mod",
+        "scopeName": "source.vtxmod",
+        "path": "./syntaxes/vertex-mod.tmLanguage.json"
+      },
+      {
+        "language": "vertex-lib",
+        "scopeName": "source.vtxlib",
+        "path": "./syntaxes/vertex-lib.tmLanguage.json"
+      }
+    ]
+  }
+}

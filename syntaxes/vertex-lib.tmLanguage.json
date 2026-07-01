@@ -1,0 +1,62 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Vertex Library Manifest",
+  "scopeName": "source.vtxlib",
+  "fileTypes": [],
+
+  "patterns": [
+    { "include": "#line-comment" },
+    { "include": "#string" },
+    { "include": "#keyword-block" },
+    { "include": "#provider-kind" },
+    { "include": "#field-key" },
+    { "include": "#punctuation" }
+  ],
+
+  "repository": {
+
+    "line-comment": {
+      "name": "comment.line.double-slash.vtxlib",
+      "match": "//.*$"
+    },
+
+    "string": {
+      "name": "string.quoted.double.vtxlib",
+      "begin": "\"",
+      "end": "\"",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtxlib" } },
+      "endCaptures":   { "0": { "name": "punctuation.definition.string.end.vtxlib"   } },
+      "patterns": [
+        { "name": "constant.character.escape.vtxlib", "match": "\\\\[\"\\\\ntr]" }
+      ]
+    },
+
+    "keyword-block": {
+      "comment": "provider/target block keywords, and the release qualifier.",
+      "name": "keyword.control.vtxlib",
+      "match": "\\b(provider|target|release)\\b"
+    },
+
+    "provider-kind": {
+      "comment": "Recognized provider kinds (§5). An unrecognized ident kind still parses per the spec but gets no distinct scope here.",
+      "name": "support.type.provider-kind.vtxlib",
+      "match": "(?<=\\bprovider\\s)\\s*\\b(apt|dnf|pacman|brew|vcpkg|fetch)\\b"
+    },
+
+    "field-key": {
+      "comment": "key = value lines: name, version, description, link, package, url, format, hash, lib, vcpkg_triplet.",
+      "match": "^\\s*([a-zA-Z_][a-zA-Z0-9_]*)(\\s*)(=)",
+      "captures": {
+        "1": { "name": "variable.other.field.vtxlib" },
+        "3": { "name": "keyword.operator.assignment.vtxlib" }
+      }
+    },
+
+    "punctuation": {
+      "patterns": [
+        { "name": "punctuation.section.braces.begin.vtxlib", "match": "\\{" },
+        { "name": "punctuation.section.braces.end.vtxlib",   "match": "\\}" }
+      ]
+    }
+  }
+}

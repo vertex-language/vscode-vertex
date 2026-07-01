@@ -1,0 +1,78 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Vertex Module",
+  "scopeName": "source.vtxmod",
+  "fileTypes": [],
+
+  "patterns": [
+    { "include": "#line-comment" },
+    { "include": "#string-quoted" },
+    { "include": "#string-raw" },
+    { "include": "#directive-keyword" },
+    { "include": "#arrow" },
+    { "include": "#version" },
+    { "include": "#module-path" },
+    { "include": "#punctuation" }
+  ],
+
+  "repository": {
+
+    "line-comment": {
+      "name": "comment.line.double-slash.vtxmod",
+      "match": "//.*$"
+    },
+
+    "string-quoted": {
+      "name": "string.quoted.double.vtxmod",
+      "begin": "\"",
+      "end": "\"",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtxmod" } },
+      "endCaptures":   { "0": { "name": "punctuation.definition.string.end.vtxmod"   } },
+      "patterns": [
+        { "name": "constant.character.escape.vtxmod", "match": "\\\\." }
+      ]
+    },
+
+    "string-raw": {
+      "comment": "Backtick raw string — no escapes recognized by the lexer (lexRaw reads verbatim to the closing backtick).",
+      "name": "string.quoted.other.backtick.vtxmod",
+      "begin": "`",
+      "end": "`",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtxmod" } },
+      "endCaptures":   { "0": { "name": "punctuation.definition.string.end.vtxmod"   } }
+    },
+
+    "directive-keyword": {
+      "comment": "Top-level directive keywords — bare-line and factored-block forms alike (module, vertex, toolchain, tool, ignore, dependencies, exclude, replace, retract).",
+      "name": "keyword.control.directive.vtxmod",
+      "match": "^\\s*\\b(module|vertex|toolchain|tool|ignore|dependencies|exclude|replace|retract)\\b"
+    },
+
+    "arrow": {
+      "name": "keyword.operator.arrow.vtxmod",
+      "match": "=>"
+    },
+
+    "version": {
+      "comment": "Covers both canonical semver (v1.2.3, with optional -pre/+build) and the bare vertex-directive form (1.21, 1.21rc1).",
+      "name": "constant.numeric.version.vtxmod",
+      "match": "\\bv?[0-9]+(?:\\.[0-9]+){0,2}(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?(?:[a-z]+[0-9]+)?\\b"
+    },
+
+    "module-path": {
+      "comment": "A bare token containing a slash — module.Path shape (domain.tld/segment/segment) or a local file-path replace target (./dir, /abs/dir).",
+      "name": "variable.other.modulepath.vtxmod",
+      "match": "(?<![\\w.\\-/])(?:\\.{1,2}/|/)?[a-zA-Z0-9_.\\-]+(?:/[a-zA-Z0-9_.\\-]+)+\\b"
+    },
+
+    "punctuation": {
+      "patterns": [
+        { "name": "punctuation.section.parens.begin.vtxmod",   "match": "\\(" },
+        { "name": "punctuation.section.parens.end.vtxmod",     "match": "\\)" },
+        { "name": "punctuation.section.brackets.begin.vtxmod", "match": "\\[" },
+        { "name": "punctuation.section.brackets.end.vtxmod",   "match": "\\]" },
+        { "name": "punctuation.separator.comma.vtxmod",        "match": "," }
+      ]
+    }
+  }
+}

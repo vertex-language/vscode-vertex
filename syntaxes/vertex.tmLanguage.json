@@ -1,0 +1,222 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Vertex",
+  "scopeName": "source.vtx",
+  "fileTypes": ["vs"],
+
+  "patterns": [
+    { "include": "#block-comment" },
+    { "include": "#line-comment" },
+    { "include": "#multiline-string" },
+    { "include": "#string" },
+    { "include": "#char" },
+    { "include": "#numeric-float-hex" },
+    { "include": "#numeric-float-dec" },
+    { "include": "#numeric-int-hex" },
+    { "include": "#numeric-int-oct" },
+    { "include": "#numeric-int-bin" },
+    { "include": "#numeric-int-dec" },
+    { "include": "#constant" },
+    { "include": "#function-with-receiver" },
+    { "include": "#function-named" },
+    { "include": "#type-named" },
+    { "include": "#keyword-control" },
+    { "include": "#keyword-declaration" },
+    { "include": "#keyword-modifier" },
+    { "include": "#builtin-type" },
+    { "include": "#enum-shorthand" },
+    { "include": "#operator" },
+    { "include": "#punctuation" }
+  ],
+
+  "repository": {
+
+    "line-comment": {
+      "name": "comment.line.double-slash.vtx",
+      "match": "//.*$"
+    },
+
+    "block-comment": {
+      "name": "comment.block.vtx",
+      "begin": "/\\*",
+      "end": "\\*/",
+      "beginCaptures": { "0": { "name": "punctuation.definition.comment.begin.vtx" } },
+      "endCaptures":   { "0": { "name": "punctuation.definition.comment.end.vtx"   } }
+    },
+
+    "string": {
+      "name": "string.quoted.double.vtx",
+      "begin": "\"",
+      "end": "\"",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtx" } },
+      "endCaptures":   { "0": { "name": "punctuation.definition.string.end.vtx"   } },
+      "patterns": [{ "include": "#escape-sequence" }]
+    },
+
+    "char": {
+      "name": "string.quoted.single.vtx",
+      "match": "'(?:[^'\\\\\\r\\n]|\\\\(?:[\"\\\\/bfnrt'`]|u[0-9a-fA-F]{4}|x[0-9a-fA-F]{2}))'"
+    },
+
+    "multiline-string": {
+      "name": "string.quoted.other.backtick.vtx",
+      "begin": "`",
+      "end": "`",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtx" } },
+      "endCaptures":   { "0": { "name": "punctuation.definition.string.end.vtx"   } }
+    },
+
+    "escape-sequence": {
+      "name": "constant.character.escape.vtx",
+      "match": "\\\\(?:[\"\\\\/bfnrt'`]|u[0-9a-fA-F]{4}|x[0-9a-fA-F]{2})"
+    },
+
+    "numeric-float-hex": {
+      "comment": "Hex float — mandatory binary exponent [pP]. Must precede numeric-int-hex.",
+      "name": "constant.numeric.float.hexadecimal.vtx",
+      "match": "\\b0[xX](?:[0-9a-fA-F][0-9a-fA-F_]*(?:\\.[0-9a-fA-F][0-9a-fA-F_]*)?|\\.[0-9a-fA-F][0-9a-fA-F_]*)[pP][+-]?[0-9]+\\b"
+    },
+
+    "numeric-float-dec": {
+      "comment": "Three decimal float forms from the lexer: D.D, D[eE], .D",
+      "name": "constant.numeric.float.decimal.vtx",
+      "match": "\\b[0-9][0-9_]*\\.[0-9][0-9_]*(?:[eE][+-]?[0-9]+)?\\b|\\b[0-9][0-9_]*[eE][+-]?[0-9]+\\b|(?<![.a-zA-Z0-9_])\\.[0-9][0-9_]*(?:[eE][+-]?[0-9]+)?\\b"
+    },
+
+    "numeric-int-hex": {
+      "name": "constant.numeric.integer.hexadecimal.vtx",
+      "match": "\\b0[xX][0-9a-fA-F][0-9a-fA-F_]*\\b"
+    },
+
+    "numeric-int-oct": {
+      "name": "constant.numeric.integer.octal.vtx",
+      "match": "\\b0[oO][0-7][0-7_]*\\b"
+    },
+
+    "numeric-int-bin": {
+      "name": "constant.numeric.integer.binary.vtx",
+      "match": "\\b0[bB][01][01_]*\\b"
+    },
+
+    "numeric-int-dec": {
+      "name": "constant.numeric.integer.decimal.vtx",
+      "match": "\\b[0-9][0-9_]*\\b"
+    },
+
+    "constant": {
+      "patterns": [
+        { "name": "constant.language.boolean.true.vtx",  "match": "\\btrue\\b"  },
+        { "name": "constant.language.boolean.false.vtx", "match": "\\bfalse\\b" },
+        { "name": "constant.language.nil.vtx",           "match": "\\bnil\\b"   }
+      ]
+    },
+
+    "function-with-receiver": {
+      "comment": "func (recv: Type) funcName — colors receiver block and function name separately",
+      "match": "\\b(func)\\s+(\\([^)]*\\))\\s*([a-zA-Z_][a-zA-Z0-9_]*)",
+      "captures": {
+        "1": { "name": "keyword.declaration.function.vtx"  },
+        "2": { "name": "variable.parameter.receiver.vtx"   },
+        "3": { "name": "entity.name.function.vtx"          }
+      }
+    },
+
+    "function-named": {
+      "comment": "func funcName — no receiver. Matches func followed by space + ident (not bare `func(` types).",
+      "match": "\\b(func)\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+      "captures": {
+        "1": { "name": "keyword.declaration.function.vtx" },
+        "2": { "name": "entity.name.function.vtx"         }
+      }
+    },
+
+    "type-named": {
+      "patterns": [
+        {
+          "comment": "struct / class / enum TypeName",
+          "match": "\\b(struct|class|enum)\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.type.vtx" },
+            "2": { "name": "entity.name.type.vtx"         }
+          }
+        },
+        {
+          "comment": "type Alias = ...",
+          "match": "\\b(type)\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.type.vtx" },
+            "2": { "name": "entity.name.type.vtx"         }
+          }
+        }
+      ]
+    },
+
+    "keyword-control": {
+      "name": "keyword.control.vtx",
+      "match": "\\b(if|else|switch|case|default|fallthrough|break|continue|for|in|while|select|return|defer)\\b"
+    },
+
+    "keyword-declaration": {
+      "comment": "Declaration-opener and binding keywords. func/struct/class/enum/type are also matched in function-named / type-named above to pick up the following identifier; the keyword token itself still receives this scope there via capture 1.",
+      "name": "keyword.declaration.vtx",
+      "match": "\\b(package|build|import|func|struct|class|enum|type|let|var|const|auto)\\b"
+    },
+
+    "keyword-modifier": {
+      "comment": "Soft-keyword modifiers and execution sigils. `as` is here (not in declarations) — it appears inside cast expressions.",
+      "name": "keyword.other.vtx",
+      "match": "\\b(as|map|chan|state|async|thread|gpu|test|weak)\\b"
+    },
+
+    "builtin-type": {
+      "comment": "Primitive type names. NOT keywords in the lexer — plain identifiers resolved by the type checker — but given a distinct scope for highlighting.",
+      "name": "support.type.primitive.vtx",
+      "match": "\\b(int|int8|int16|int32|int64|uint|uint8|uint16|uint32|uint64|float32|float64|bool|char|string|void)\\b"
+    },
+
+    "enum-shorthand": {
+      "comment": "Enum shorthand .VariantName used as a primary expression or in switch case labels. Consumes the leading dot so the punctuation rule does not re-color it.",
+      "name": "variable.other.enummember.vtx",
+      "match": "(?<![a-zA-Z0-9_])\\.([a-zA-Z_][a-zA-Z0-9_]*)"
+    },
+
+    "operator": {
+      "comment": "Ordered longest-match first within each ambiguous group.",
+      "patterns": [
+        { "name": "keyword.operator.identity.vtx",              "match": "===|!==" },
+        { "name": "keyword.operator.comparison.vtx",            "match": "==|!=" },
+        { "name": "keyword.operator.shift.vtx",                 "match": "<<|>>" },
+        { "name": "keyword.operator.comparison.vtx",            "match": "<=|>=" },
+        { "name": "keyword.operator.comparison.vtx",            "match": "(?<![<>=!])(?:[<>])(?![>=])" },
+        { "name": "keyword.operator.range.vtx",                 "match": "\\.\\.\\.|\\.\\.<" },
+        { "name": "keyword.operator.overflow.vtx",              "match": "&\\+|&-|&\\*" },
+        { "name": "keyword.operator.logical.vtx",               "match": "&&|\\|\\|" },
+        { "name": "keyword.operator.coalesce.vtx",              "match": "\\?\\?" },
+        { "name": "keyword.operator.propagate.vtx",             "match": "\\?" },
+        { "name": "keyword.operator.arrow.vtx",                 "match": "->" },
+        { "name": "keyword.operator.assignment.compound.vtx",   "match": "\\+=|-=|\\*=|/=|%=" },
+        { "name": "keyword.operator.assignment.vtx",            "match": "(?<![=!<>+\\-*/%])=(?!=)" },
+        { "name": "keyword.operator.bitwise.vtx",               "match": "~|\\^" },
+        { "name": "keyword.operator.bitwise.vtx",               "match": "(?<!&)&(?![+\\-*&])" },
+        { "name": "keyword.operator.bitwise.vtx",               "match": "(?<!\\|)\\|(?!\\|)" },
+        { "name": "keyword.operator.logical.not.vtx",           "match": "!(?!=)" },
+        { "name": "keyword.operator.arithmetic.vtx",            "match": "\\+|-|\\*|/|%" }
+      ]
+    },
+
+    "punctuation": {
+      "patterns": [
+        { "name": "punctuation.accessor.dot.vtx",          "match": "\\." },
+        { "name": "punctuation.separator.comma.vtx",       "match": "," },
+        { "name": "punctuation.separator.colon.vtx",       "match": ":" },
+        { "name": "punctuation.terminator.semicolon.vtx",  "match": ";" },
+        { "name": "punctuation.section.parens.begin.vtx",  "match": "\\(" },
+        { "name": "punctuation.section.parens.end.vtx",    "match": "\\)" },
+        { "name": "punctuation.section.brackets.begin.vtx","match": "\\[" },
+        { "name": "punctuation.section.brackets.end.vtx",  "match": "\\]" },
+        { "name": "punctuation.section.braces.begin.vtx",  "match": "\\{" },
+        { "name": "punctuation.section.braces.end.vtx",    "match": "\\}" }
+      ]
+    }
+  }
+}
