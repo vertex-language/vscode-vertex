@@ -3,7 +3,7 @@
   "name": "vscode-vertex",
   "displayName": "Vertex Language Support",
   "description": "Syntax highlighting for the Vertex programming language: .vs source files, vs.mod module manifests, and vs.lib native-library manifests",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "publisher": "vertex-language",
   "repository": {
     "type": "git",
@@ -49,6 +49,14 @@
         "language": "vertex-lib",
         "scopeName": "source.vtxlib",
         "path": "./syntaxes/vertex-lib.tmLanguage.json"
+      },
+      {
+        "scopeName": "markdown.vertex.codeblock",
+        "path": "./syntaxes/vertex-markdown-injection.tmLanguage.json",
+        "injectTo": ["text.html.markdown"],
+        "embeddedLanguages": {
+          "meta.embedded.block.vertex": "vertex"
+        }
       }
     ]
   }
