@@ -5,333 +5,180 @@
   "fileTypes": ["vtx"],
   "patterns": [
     { "include": "#comments" },
-    { "include": "#package-import" },
-    { "include": "#function-declaration" },
-    { "include": "#type-declaration" },
     { "include": "#strings" },
+    { "include": "#characters" },
     { "include": "#numbers" },
+    { "include": "#function-definition" },
+    { "include": "#builtin-namespaces" },
+    { "include": "#keywords-control" },
+    { "include": "#execution-sigils" },
+    { "include": "#storage-modifiers" },
+    { "include": "#keywords-declaration" },
     { "include": "#constants" },
-    { "include": "#sigils" },
-    { "include": "#keywords" },
-    { "include": "#storage" },
-    { "include": "#builtin-types" },
-    { "include": "#test-support" },
-    { "include": "#enum-dot" },
+    { "include": "#builtin-functions" },
+    { "include": "#types" },
     { "include": "#function-call" },
-    { "include": "#user-types" },
+    { "include": "#type-names" },
+    { "include": "#intrinsics" },
+    { "include": "#enum-member" },
     { "include": "#operators" },
     { "include": "#punctuation" }
   ],
   "repository": {
     "comments": {
       "patterns": [
-        {
-          "name": "comment.line.double-slash.vtx",
-          "begin": "//",
-          "end": "$"
-        },
-        {
-          "name": "comment.block.vtx",
-          "begin": "/\\*",
-          "end": "\\*/"
-        }
+        { "name": "comment.line.double-slash.vtx", "match": "//.*" }
       ]
     },
-
-    "package-import": {
-      "patterns": [
-        {
-          "match": "\\b(package|build)\\s+([A-Za-z_][A-Za-z0-9_]*)",
-          "captures": {
-            "1": { "name": "keyword.control.directive.vtx" },
-            "2": { "name": "entity.name.namespace.vtx" }
-          }
-        },
-        {
-          "name": "keyword.control.import.vtx",
-          "match": "\\bimport\\b"
-        }
-      ]
-    },
-
-    "function-declaration": {
-      "patterns": [
-        {
-          "comment": "func with optional receiver, then the function name",
-          "match": "\\b(func)\\b(?:\\s*\\(\\s*[A-Za-z_][A-Za-z0-9_]*\\s*:\\s*(?:mut|own)?\\s*[A-Za-z_][A-Za-z0-9_.<>, ]*\\))?\\s*([A-Za-z_][A-Za-z0-9_]*)?",
-          "captures": {
-            "1": { "name": "storage.type.function.vtx" },
-            "2": { "name": "entity.name.function.vtx" }
-          }
-        }
-      ]
-    },
-
-    "type-declaration": {
-      "patterns": [
-        {
-          "match": "\\b(struct|class|enum)\\s+([A-Za-z_][A-Za-z0-9_]*)",
-          "captures": {
-            "1": { "name": "storage.type.vtx" },
-            "2": { "name": "entity.name.type.vtx" }
-          }
-        },
-        {
-          "match": "\\b(type)\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*(=)?",
-          "captures": {
-            "1": { "name": "storage.type.vtx" },
-            "2": { "name": "entity.name.type.alias.vtx" },
-            "3": { "name": "keyword.operator.assignment.vtx" }
-          }
-        }
-      ]
-    },
-
     "strings": {
       "patterns": [
         {
           "name": "string.quoted.double.vtx",
           "begin": "\"",
           "end": "\"",
-          "patterns": [{ "include": "#string-escapes" }]
+          "patterns": [
+            { "name": "constant.character.escape.vtx", "match": "\\\\." }
+          ]
         },
         {
-          "name": "string.quoted.raw.vtx",
+          "name": "string.quoted.raw.multiline.vtx",
           "begin": "`",
           "end": "`"
-        },
-        {
-          "name": "string.quoted.single.vtx",
-          "begin": "'",
-          "end": "'",
-          "patterns": [{ "include": "#string-escapes" }]
         }
       ]
     },
-
-    "string-escapes": {
+    "characters": {
       "patterns": [
-        {
-          "name": "constant.character.escape.vtx",
-          "match": "\\\\(?:[btnfr\"'\\\\0]|x[0-9a-fA-F]{2})"
-        },
-        {
-          "name": "invalid.illegal.unknown-escape.vtx",
-          "match": "\\\\."
-        }
+        { "name": "constant.character.vtx", "match": "'(\\\\.|[^'\\\\])'" }
       ]
     },
-
     "numbers": {
       "patterns": [
+        { "name": "constant.numeric.float.hexadecimal.vtx", "match": "\\b0[xX](?:[0-9a-fA-F_]+(?:\\.[0-9a-fA-F_]*)?|\\.[0-9a-fA-F_]+)[pP][-+]?[0-9_]+" },
+        { "name": "constant.numeric.integer.hexadecimal.vtx", "match": "\\b0[xX][0-9a-fA-F_]+" },
+        { "name": "constant.numeric.integer.binary.vtx", "match": "\\b0[bB][01_]+" },
+        { "name": "constant.numeric.integer.octal.vtx", "match": "\\b0[oO][0-7_]+" },
+        { "name": "constant.numeric.float.decimal.vtx", "match": "\\b[0-9][0-9_]*(?:\\.[0-9_]+(?:[eE][-+]?[0-9_]+)?|[eE][-+]?[0-9_]+)" },
+        { "name": "constant.numeric.integer.decimal.vtx", "match": "\\b[0-9][0-9_]*" }
+      ]
+    },
+    "function-definition": {
+      "patterns": [
         {
-          "name": "constant.numeric.float.hex.vtx",
-          "match": "\\b0[xX][0-9a-fA-F][0-9a-fA-F_]*(?:\\.[0-9a-fA-F][0-9a-fA-F_]*)?[pP][+-]?[0-9][0-9_]*\\b"
+          "match": "\\b(func)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.function.vtx" },
+            "2": { "name": "entity.name.function.vtx" }
+          }
         },
+        { "name": "keyword.declaration.function.vtx", "match": "\\bfunc\\b" },
         {
-          "name": "constant.numeric.binary.vtx",
-          "match": "\\b0[bB][01][01_]*\\b"
-        },
-        {
-          "name": "constant.numeric.octal.vtx",
-          "match": "\\b0[oO][0-7][0-7_]*\\b"
-        },
-        {
-          "name": "constant.numeric.hex.vtx",
-          "match": "\\b0[xX][0-9a-fA-F][0-9a-fA-F_]*\\b"
-        },
-        {
-          "name": "constant.numeric.float.vtx",
-          "match": "\\b(?:[0-9][0-9_]*\\.[0-9][0-9_]*(?:[eE][+-]?[0-9][0-9_]*)?|[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*)\\b"
-        },
-        {
-          "name": "constant.numeric.integer.vtx",
-          "match": "\\b[0-9][0-9_]*\\b"
+          "match": "(?<=\\))\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "entity.name.function.vtx" }
+          }
         }
       ]
     },
-
+    "builtin-namespaces": {
+      "patterns": [
+        {
+          "match": "\\b(memory|runtime|tpu)(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "support.class.builtin.vtx" },
+            "2": { "name": "punctuation.accessor.vtx" },
+            "3": { "name": "support.function.builtin.vtx" }
+          }
+        }
+      ]
+    },
+    "keywords-control": {
+      "patterns": [
+        { "name": "keyword.control.vtx", "match": "\\b(if|else|switch|case|default|for|in|while|break|continue|return|fallthrough|defer|select)\\b" }
+      ]
+    },
+    "execution-sigils": {
+      "patterns": [
+        { "name": "keyword.other.execution.vtx", "match": "\\b(thread|async|gpu|tpu)\\b" }
+      ]
+    },
+    "storage-modifiers": {
+      "patterns": [
+        { "name": "storage.type.vtx", "match": "\\b(let|var)\\b" },
+        { "name": "storage.modifier.vtx", "match": "\\b(mut|shared|unique|weak|abstract)\\b" }
+      ]
+    },
+    "keywords-declaration": {
+      "patterns": [
+        { "name": "keyword.declaration.vtx", "match": "\\b(struct|class|enum|type|import|package|build|init|test)\\b" }
+      ]
+    },
     "constants": {
       "patterns": [
-        {
-          "name": "constant.language.vtx",
-          "match": "\\b(true|false|nil)\\b"
-        }
+        { "name": "constant.language.boolean.vtx", "match": "\\b(true|false)\\b" },
+        { "name": "constant.language.null.vtx", "match": "\\bnil\\b" }
       ]
     },
-
-    "sigils": {
-      "comment": "Execution / hardware sigils that prefix a call expression",
+    "builtin-functions": {
       "patterns": [
-        {
-          "name": "keyword.other.sigil.vtx",
-          "match": "\\b(thread|async|gpu|tpu)\\b"
-        }
+        { "name": "support.function.builtin.vtx", "match": "\\b(print|panic|drop|reinterpret|sizeof|alignof|new|Expected)\\b" }
       ]
     },
-
-    "keywords": {
+    "types": {
       "patterns": [
-        {
-          "name": "keyword.control.vtx",
-          "match": "\\b(if|else|switch|case|default|fallthrough|for|in|while|break|continue|return|defer|select)\\b"
-        },
-        {
-          "name": "keyword.operator.expression.as.vtx",
-          "match": "\\bas\\b"
-        }
+        { "name": "storage.type.builtin.vtx", "match": "\\b(int8|int16|int32|int64|uint8|uint16|uint32|uint64|int|uint|float32|float64|bool|string|char|void|tensor|typed_ptr|chan|map|bf16|fp8e4m3|fp8e5m2|int4)\\b" }
       ]
     },
-
-    "storage": {
-      "patterns": [
-        {
-          "name": "storage.type.vtx",
-          "match": "\\b(let|var|func|struct|class|enum|type|chan|unique)\\b"
-        },
-        {
-          "name": "storage.modifier.vtx",
-          "match": "\\b(mut|own|unowned)\\b"
-        }
-      ]
-    },
-
-    "builtin-types": {
-      "patterns": [
-        {
-          "name": "support.type.primitive.vtx",
-          "match": "\\b(int|int8|int16|int32|int64|uint|uint8|uint16|uint32|uint64|float32|float64|bool|string|char|void)\\b"
-        },
-        {
-          "comment": "TPU tensor element types (body-only)",
-          "name": "support.type.tensor-element.vtx",
-          "match": "\\b(bf16|fp8e4m3|fp8e5m2|int4)\\b"
-        },
-        {
-          "comment": "Generic / container type constructors",
-          "name": "support.type.builtin.vtx",
-          "match": "\\b(shared|weak|map|range|tensor)\\b(?=\\s*<)"
-        }
-      ]
-    },
-
-    "test-support": {
-      "patterns": [
-        {
-          "name": "keyword.other.test.vtx",
-          "match": "\\btest\\b"
-        },
-        {
-          "match": "\\b(Expected)\\s*(\\()",
-          "captures": {
-            "1": { "name": "support.function.test.vtx" },
-            "2": { "name": "punctuation.section.parens.begin.vtx" }
-          }
-        }
-      ]
-    },
-
-    "enum-dot": {
-      "comment": "Leading-dot enum variants: .North, .Circle(...), .Ok(42)",
-      "patterns": [
-        {
-          "match": "(?<![A-Za-z0-9_)\\]])\\.([A-Z][A-Za-z0-9_]*)",
-          "captures": {
-            "1": { "name": "constant.other.enum.vtx" }
-          }
-        }
-      ]
-    },
-
     "function-call": {
       "patterns": [
         {
-          "comment": "identifier or namespace.member immediately before a call/generic-call",
-          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=<[^<>]*>\\s*\\(|\\()",
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
           "captures": {
             "1": { "name": "entity.name.function.call.vtx" }
           }
         }
       ]
     },
-
-    "user-types": {
-      "comment": "Capitalized identifiers read as struct/class/enum type references",
+    "type-names": {
+      "patterns": [
+        { "name": "entity.name.type.vtx", "match": "\\b[A-Z][A-Za-z0-9_]*\\b" }
+      ]
+    },
+    "intrinsics": {
       "patterns": [
         {
-          "name": "entity.name.type.vtx",
-          "match": "\\b[A-Z][A-Za-z0-9_]*\\b"
+          "match": "(\\.)(transfer|upgrade)\\b",
+          "captures": {
+            "1": { "name": "punctuation.accessor.vtx" },
+            "2": { "name": "support.function.intrinsic.vtx" }
+          }
         }
       ]
     },
-
+    "enum-member": {
+      "patterns": [
+        {
+          "match": "(?<![\\w)\\]])(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "punctuation.accessor.vtx" },
+            "2": { "name": "variable.other.enummember.vtx" }
+          }
+        }
+      ]
+    },
     "operators": {
       "patterns": [
-        {
-          "name": "keyword.operator.identity.vtx",
-          "match": "===|!=="
-        },
-        {
-          "name": "keyword.operator.arrow.vtx",
-          "match": "->"
-        },
-        {
-          "name": "keyword.operator.range.vtx",
-          "match": "\\.\\.\\.|\\.\\."
-        },
-        {
-          "name": "keyword.operator.comparison.vtx",
-          "match": "==|!=|<=|>="
-        },
-        {
-          "name": "keyword.operator.logical.vtx",
-          "match": "&&|\\|\\||!"
-        },
-        {
-          "name": "keyword.operator.bitwise.wrapping.vtx",
-          "match": "&\\+|&-|&\\*"
-        },
-        {
-          "name": "keyword.operator.bitshift.vtx",
-          "match": "<<|>>"
-        },
-        {
-          "name": "keyword.operator.coalesce.vtx",
-          "match": "\\?\\?"
-        },
-        {
-          "name": "keyword.operator.optional.vtx",
-          "match": "\\?"
-        },
-        {
-          "name": "keyword.operator.assignment.compound.vtx",
-          "match": "\\+=|-=|\\*=|/=|%="
-        },
-        {
-          "name": "keyword.operator.assignment.vtx",
-          "match": "="
-        },
-        {
-          "name": "keyword.operator.arithmetic.vtx",
-          "match": "\\+|-|\\*|/|%"
-        },
-        {
-          "name": "keyword.operator.bitwise.vtx",
-          "match": "&|\\||\\^|~"
-        },
-        {
-          "name": "keyword.operator.comparison.angle.vtx",
-          "match": "<|>"
-        }
+        { "name": "keyword.operator.vtx", "match": "===|!==|&&|\\|\\||<<|>>|<=|>=|==|!=|->|\\.\\.|&\\+|&-|&\\*|\\+=|-=|\\*=|/=|%=|[-+*/%&|\\^~!<>=]" }
       ]
     },
-
     "punctuation": {
       "patterns": [
-        { "name": "punctuation.terminator.statement.vtx", "match": ";" },
+        { "name": "punctuation.section.block.vtx", "match": "[{}]" },
+        { "name": "punctuation.section.parens.vtx", "match": "[()]" },
+        { "name": "punctuation.section.brackets.vtx", "match": "[\\[\\]]" },
         { "name": "punctuation.separator.comma.vtx", "match": "," },
         { "name": "punctuation.separator.colon.vtx", "match": ":" },
-        { "name": "punctuation.accessor.dot.vtx", "match": "\\." }
+        { "name": "punctuation.accessor.vtx", "match": "\\." }
       ]
     }
   }
