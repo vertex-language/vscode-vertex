@@ -3,182 +3,388 @@
   "name": "Vertex",
   "scopeName": "source.vtx",
   "fileTypes": ["vtx"],
+
   "patterns": [
     { "include": "#comments" },
     { "include": "#strings" },
-    { "include": "#characters" },
-    { "include": "#numbers" },
-    { "include": "#function-definition" },
-    { "include": "#builtin-namespaces" },
-    { "include": "#keywords-control" },
-    { "include": "#execution-sigils" },
-    { "include": "#storage-modifiers" },
-    { "include": "#keywords-declaration" },
+    { "include": "#declarations" },
+    { "include": "#keywords" },
     { "include": "#constants" },
-    { "include": "#builtin-functions" },
+    { "include": "#builtins" },
+    { "include": "#functions" },
     { "include": "#types" },
-    { "include": "#function-call" },
-    { "include": "#type-names" },
-    { "include": "#intrinsics" },
-    { "include": "#enum-member" },
+    { "include": "#numbers" },
+    { "include": "#labels" },
     { "include": "#operators" },
     { "include": "#punctuation" }
   ],
+
   "repository": {
+
     "comments": {
       "patterns": [
-        { "name": "comment.line.double-slash.vtx", "match": "//.*" }
+        {
+          "name": "comment.line.double-slash.vertex",
+          "begin": "//",
+          "end": "$",
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.vertex" } }
+        },
+        {
+          "name": "comment.block.vertex",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.begin.vertex" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.comment.end.vertex" } }
+        }
       ]
     },
+
     "strings": {
       "patterns": [
         {
-          "name": "string.quoted.double.vtx",
+          "name": "string.quoted.double.vertex",
           "begin": "\"",
           "end": "\"",
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vertex" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.vertex" } },
           "patterns": [
-            { "name": "constant.character.escape.vtx", "match": "\\\\." }
+            { "include": "#escapes" },
+            { "name": "invalid.illegal.newline.vertex", "match": "\\\\$" }
           ]
         },
         {
-          "name": "string.quoted.raw.multiline.vtx",
+          "name": "string.quoted.other.raw.vertex",
           "begin": "`",
-          "end": "`"
+          "end": "`",
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vertex" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.vertex" } }
+        },
+        {
+          "name": "string.quoted.single.vertex",
+          "begin": "'",
+          "end": "'",
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vertex" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.vertex" } },
+          "patterns": [
+            { "include": "#escapes" },
+            { "name": "invalid.illegal.char.vertex", "match": "[^'\\\\]{2,}" }
+          ]
         }
       ]
     },
-    "characters": {
-      "patterns": [
-        { "name": "constant.character.vtx", "match": "'(\\\\.|[^'\\\\])'" }
-      ]
-    },
-    "numbers": {
-      "patterns": [
-        { "name": "constant.numeric.float.hexadecimal.vtx", "match": "\\b0[xX](?:[0-9a-fA-F_]+(?:\\.[0-9a-fA-F_]*)?|\\.[0-9a-fA-F_]+)[pP][-+]?[0-9_]+" },
-        { "name": "constant.numeric.integer.hexadecimal.vtx", "match": "\\b0[xX][0-9a-fA-F_]+" },
-        { "name": "constant.numeric.integer.binary.vtx", "match": "\\b0[bB][01_]+" },
-        { "name": "constant.numeric.integer.octal.vtx", "match": "\\b0[oO][0-7_]+" },
-        { "name": "constant.numeric.float.decimal.vtx", "match": "\\b[0-9][0-9_]*(?:\\.[0-9_]+(?:[eE][-+]?[0-9_]+)?|[eE][-+]?[0-9_]+)" },
-        { "name": "constant.numeric.integer.decimal.vtx", "match": "\\b[0-9][0-9_]*" }
-      ]
-    },
-    "function-definition": {
+
+    "escapes": {
       "patterns": [
         {
-          "match": "\\b(func)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "name": "constant.character.escape.vertex",
+          "match": "\\\\(?:[abfnrtv\\\\'\"0]|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4})"
+        },
+        {
+          "name": "invalid.illegal.unknown-escape.vertex",
+          "match": "\\\\."
+        }
+      ]
+    },
+
+    "declarations": {
+      "patterns": [
+        {
+          "comment": "package / build / import — file-level, quiet-ish but distinct",
+          "match": "^\\s*\\b(package|build)\\b\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
-            "1": { "name": "keyword.declaration.function.vtx" },
-            "2": { "name": "entity.name.function.vtx" }
+            "1": { "name": "keyword.control.import.vertex" },
+            "2": { "name": "entity.name.namespace.vertex" }
           }
         },
-        { "name": "keyword.declaration.function.vtx", "match": "\\bfunc\\b" },
         {
-          "match": "(?<=\\))\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "match": "\\b(import)\\b",
+          "captures": { "1": { "name": "keyword.control.import.vertex" } }
+        },
+        {
+          "comment": "class Foo : lib — the abstract-interface link edge",
+          "match": "\\b(class)\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*(:)\\s*([A-Za-z_][A-Za-z0-9_.]*)",
           "captures": {
-            "1": { "name": "entity.name.function.vtx" }
+            "1": { "name": "storage.type.class.vertex" },
+            "2": { "name": "entity.name.type.class.vertex" },
+            "3": { "name": "punctuation.separator.inheritance.vertex" },
+            "4": { "name": "entity.name.namespace.library.vertex" }
+          }
+        },
+        {
+          "comment": "struct / class / enum / constraint / type declarations",
+          "match": "\\b(struct|class|enum|constraint|type)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "storage.type.declaration.vertex" },
+            "2": { "name": "entity.name.type.vertex" }
+          }
+        },
+        {
+          "comment": "func decl, optional `init` prefix and optional receiver",
+          "match": "\\b(init\\s+)?(func)\\b(?:\\s*\\(\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(:)\\s*(?:(mut|var|shared|unique|weak)\\s+)?([^)]*)\\))?(?:\\s+([A-Za-z_][A-Za-z0-9_]*))?",
+          "captures": {
+            "1": { "name": "storage.modifier.init.vertex" },
+            "2": { "name": "storage.type.function.vertex" },
+            "3": { "name": "variable.parameter.receiver.vertex" },
+            "4": { "name": "punctuation.separator.vertex" },
+            "5": { "name": "storage.modifier.ownership.vertex" },
+            "6": { "patterns": [{ "include": "#types" }, { "include": "#punctuation" }] },
+            "7": { "name": "entity.name.function.vertex" }
+          }
+        },
+        {
+          "comment": "test clause — compiler-testing surface",
+          "match": "\\b(test)\\b(?:\\s*(->)\\s*(Expected)\\b)?",
+          "captures": {
+            "1": { "name": "keyword.other.test.vertex" },
+            "2": { "name": "keyword.operator.arrow.vertex" },
+            "3": { "name": "support.function.test.vertex" }
           }
         }
       ]
     },
-    "builtin-namespaces": {
+
+    "keywords": {
       "patterns": [
         {
-          "match": "\\b(memory|runtime|tpu)(\\.)([A-Za-z_][A-Za-z0-9_]*)",
-          "captures": {
-            "1": { "name": "support.class.builtin.vtx" },
-            "2": { "name": "punctuation.accessor.vtx" },
-            "3": { "name": "support.function.builtin.vtx" }
-          }
+          "comment": "LOUD — control flow",
+          "name": "keyword.control.vertex",
+          "match": "\\b(if|else|switch|case|default|fallthrough|break|continue|for|in|while|return|select|defer)\\b"
+        },
+        {
+          "comment": "LOUD — execution sigils. These are not qualifiers, they change where code runs.",
+          "name": "keyword.control.sigil.vertex",
+          "match": "\\b(thread|async|gpu|tpu)\\b"
+        },
+        {
+          "comment": "STRUCTURAL — bindings and ownership conventions",
+          "name": "storage.modifier.vertex",
+          "match": "\\b(let|var|mut|abstract|init)\\b"
+        },
+        {
+          "comment": "STRUCTURAL — heap doors / handle wrappers",
+          "name": "storage.modifier.ownership.vertex",
+          "match": "\\b(shared|unique|weak)\\b"
+        },
+        {
+          "comment": "STRUCTURAL — declaration keywords not caught by #declarations",
+          "name": "storage.type.vertex",
+          "match": "\\b(func|struct|class|enum|constraint|type)\\b"
+        },
+        {
+          "comment": "STRUCTURAL — built-in type constructors",
+          "name": "storage.type.builtin.vertex",
+          "match": "\\b(chan|map|tensor|typed_ptr)\\b"
+        },
+        {
+          "name": "keyword.operator.cast.vertex",
+          "match": "\\b(as)\\b"
         }
       ]
     },
-    "keywords-control": {
-      "patterns": [
-        { "name": "keyword.control.vtx", "match": "\\b(if|else|switch|case|default|for|in|while|break|continue|return|fallthrough|defer|select)\\b" }
-      ]
-    },
-    "execution-sigils": {
-      "patterns": [
-        { "name": "keyword.other.execution.vtx", "match": "\\b(thread|async|gpu|tpu)\\b" }
-      ]
-    },
-    "storage-modifiers": {
-      "patterns": [
-        { "name": "storage.type.vtx", "match": "\\b(let|var)\\b" },
-        { "name": "storage.modifier.vtx", "match": "\\b(mut|shared|unique|weak|abstract)\\b" }
-      ]
-    },
-    "keywords-declaration": {
-      "patterns": [
-        { "name": "keyword.declaration.vtx", "match": "\\b(struct|class|enum|type|import|package|build|init|test)\\b" }
-      ]
-    },
+
     "constants": {
       "patterns": [
-        { "name": "constant.language.boolean.vtx", "match": "\\b(true|false)\\b" },
-        { "name": "constant.language.null.vtx", "match": "\\bnil\\b" }
+        {
+          "name": "constant.language.boolean.vertex",
+          "match": "\\b(true|false)\\b"
+        },
+        {
+          "comment": "nil is load-bearing and rare — map erase and typed_ptr only. Let it read as a language constant, not a keyword.",
+          "name": "constant.language.nil.vertex",
+          "match": "\\bnil\\b"
+        },
+        {
+          "name": "variable.language.blank.vertex",
+          "match": "\\b_\\b"
+        }
       ]
     },
-    "builtin-functions": {
+
+    "builtins": {
       "patterns": [
-        { "name": "support.function.builtin.vtx", "match": "\\b(print|panic|drop|reinterpret|sizeof|alignof|new|Expected)\\b" }
+        {
+          "comment": "tpu.* namespace — Dot, Select, Reshape, Quantize, ...",
+          "match": "\\b(tpu)\\s*(\\.)\\s*([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.control.sigil.vertex" },
+            "2": { "name": "punctuation.accessor.vertex" },
+            "3": { "name": "support.function.tpu.vertex" }
+          }
+        },
+        {
+          "comment": "UNSAFE SURFACE — raw memory builtins. Own sub-scope so you can turn these up.",
+          "name": "support.function.unsafe.vertex",
+          "match": "\\b(new|delete|resize|copy|zero|addr|reinterpret)\\b(?=\\s*[\\(\\[])"
+        },
+        {
+          "comment": "core builtins — compile-time / runtime, ordinary weight",
+          "name": "support.function.builtin.vertex",
+          "match": "\\b(sizeof|alignof|panic|print|drop|Expected)\\b(?=\\s*\\()"
+        },
+        {
+          "comment": "predeclared constraints",
+          "name": "support.type.constraint.vertex",
+          "match": "\\b(any|comparable)\\b"
+        }
       ]
     },
+
+    "functions": {
+      "patterns": [
+        {
+          "comment": "LOUD — ownership intrinsics. .transfer() kills the binding; .upgrade() is the fallible one.",
+          "match": "(\\.)\\s*(transfer|upgrade)\\b(?=\\s*\\()",
+          "captures": {
+            "1": { "name": "punctuation.accessor.vertex" },
+            "2": { "name": "keyword.control.intrinsic.vertex" }
+          }
+        },
+        {
+          "comment": "method call",
+          "match": "(\\.)\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "punctuation.accessor.vertex" },
+            "2": { "name": "entity.name.function.method.vertex" }
+          }
+        },
+        {
+          "comment": "free call / construction / instantiation-then-call",
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\(|\\[[^\\]]*\\]\\s*\\()",
+          "name": "entity.name.function.call.vertex"
+        },
+        {
+          "comment": "tuple access — t.0, t.0.0",
+          "match": "(\\.)([0-9]+)",
+          "captures": {
+            "1": { "name": "punctuation.accessor.vertex" },
+            "2": { "name": "constant.numeric.tuple-index.vertex" }
+          }
+        },
+        {
+          "comment": "implicit enum member — .North, .Text(\"x\") — no operand before the dot",
+          "match": "(?<![A-Za-z0-9_)\\]])(\\.)([A-Z][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "punctuation.accessor.vertex" },
+            "2": { "name": "variable.other.enummember.vertex" }
+          }
+        },
+        {
+          "comment": "qualified member — Status.Active, pkg.Foo",
+          "match": "(?<=[A-Za-z0-9_])(\\.)([A-Z][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "punctuation.accessor.vertex" },
+            "2": { "name": "variable.other.enummember.vertex" }
+          }
+        },
+        {
+          "comment": "QUIET — ordinary field / property access",
+          "match": "(\\.)([a-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "punctuation.accessor.vertex" },
+            "2": { "name": "variable.other.member.vertex" }
+          }
+        }
+      ]
+    },
+
     "types": {
       "patterns": [
-        { "name": "storage.type.builtin.vtx", "match": "\\b(int8|int16|int32|int64|uint8|uint16|uint32|uint64|int|uint|float32|float64|bool|string|char|void|tensor|typed_ptr|chan|map|bf16|fp8e4m3|fp8e5m2|int4)\\b" }
+        {
+          "comment": "signature-eligible + body-only scalar types",
+          "name": "support.type.primitive.vertex",
+          "match": "\\b(int|int4|int8|int16|int32|int64|uint|uint8|uint16|uint32|uint64|float32|float64|bf16|fp8e4m3|fp8e5m2|bool|string|char|byte|error)\\b"
+        },
+        {
+          "comment": "user types, constraints, abstract handles — Capitalized by convention",
+          "name": "entity.name.type.vertex",
+          "match": "\\b([A-Z][A-Za-z0-9_]*)\\b"
+        }
       ]
     },
-    "function-call": {
+
+    "numbers": {
       "patterns": [
         {
-          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "comment": "hex float must beat hex int — 0xFp2, 0xC.3p0",
+          "name": "constant.numeric.float.hexadecimal.vertex",
+          "match": "\\b0[xX][0-9a-fA-F][0-9a-fA-F_]*(?:\\.[0-9a-fA-F][0-9a-fA-F_]*)?[pP][+-]?[0-9][0-9_]*\\b"
+        },
+        {
+          "name": "constant.numeric.hex.vertex",
+          "match": "\\b0[xX][0-9a-fA-F][0-9a-fA-F_]*\\b"
+        },
+        {
+          "name": "constant.numeric.binary.vertex",
+          "match": "\\b0[bB][01][01_]*\\b"
+        },
+        {
+          "name": "constant.numeric.octal.vertex",
+          "match": "\\b0[oO][0-7][0-7_]*\\b"
+        },
+        {
+          "name": "constant.numeric.float.vertex",
+          "match": "\\b[0-9][0-9_]*(?:\\.[0-9][0-9_]*(?:[eE][+-]?[0-9][0-9_]*)?|[eE][+-]?[0-9][0-9_]*)\\b"
+        },
+        {
+          "name": "constant.numeric.integer.vertex",
+          "match": "\\b[0-9][0-9_]*\\b"
+        }
+      ]
+    },
+
+    "labels": {
+      "patterns": [
+        {
+          "comment": "QUIET — parameter labels, field names, struct-literal keys, map keys. Vertex is label-dense; this must not shout.",
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(:)(?!:)",
           "captures": {
-            "1": { "name": "entity.name.function.call.vtx" }
+            "1": { "name": "variable.parameter.label.vertex" },
+            "2": { "name": "punctuation.separator.key-value.vertex" }
           }
         }
       ]
     },
-    "type-names": {
-      "patterns": [
-        { "name": "entity.name.type.vtx", "match": "\\b[A-Z][A-Za-z0-9_]*\\b" }
-      ]
-    },
-    "intrinsics": {
-      "patterns": [
-        {
-          "match": "(\\.)(transfer|upgrade)\\b",
-          "captures": {
-            "1": { "name": "punctuation.accessor.vtx" },
-            "2": { "name": "support.function.intrinsic.vtx" }
-          }
-        }
-      ]
-    },
-    "enum-member": {
-      "patterns": [
-        {
-          "match": "(?<![\\w)\\]])(\\.)([A-Za-z_][A-Za-z0-9_]*)",
-          "captures": {
-            "1": { "name": "punctuation.accessor.vtx" },
-            "2": { "name": "variable.other.enummember.vtx" }
-          }
-        }
-      ]
-    },
+
     "operators": {
       "patterns": [
-        { "name": "keyword.operator.vtx", "match": "===|!==|&&|\\|\\||<<|>>|<=|>=|==|!=|->|\\.\\.|&\\+|&-|&\\*|\\+=|-=|\\*=|/=|%=|[-+*/%&|\\^~!<>=]" }
+        {
+          "comment": "UNSAFE-ish — wrapping arithmetic. Own scope; worth nudging brighter.",
+          "name": "keyword.operator.arithmetic.overflow.vertex",
+          "match": "&\\+|&-|&\\*"
+        },
+        {
+          "comment": "identity (classes only) — same allocation?, not same bytes",
+          "name": "keyword.operator.identity.vertex",
+          "match": "===|!=="
+        },
+        { "name": "keyword.operator.arrow.vertex", "match": "->" },
+        { "name": "keyword.operator.variadic.vertex", "match": "\\.\\.\\." },
+        { "name": "keyword.operator.range.vertex", "match": "\\.\\." },
+        { "name": "keyword.operator.assignment.compound.vertex", "match": "\\+=|-=|\\*=|/=|%=" },
+        { "name": "keyword.operator.comparison.vertex", "match": "==|!=|<=|>=" },
+        { "name": "keyword.operator.logical.vertex", "match": "&&|\\|\\||!" },
+        { "name": "keyword.operator.bitwise.shift.vertex", "match": "<<|>>" },
+        {
+          "comment": "& is address-of, dereference, and bitwise AND — sema decides, so one scope",
+          "name": "keyword.operator.bitwise.vertex",
+          "match": "&|\\||\\^|~"
+        },
+        { "name": "keyword.operator.relational.vertex", "match": "<|>" },
+        { "name": "keyword.operator.arithmetic.vertex", "match": "\\+|-|\\*|/|%" },
+        { "name": "keyword.operator.assignment.vertex", "match": "=" }
       ]
     },
+
     "punctuation": {
       "patterns": [
-        { "name": "punctuation.section.block.vtx", "match": "[{}]" },
-        { "name": "punctuation.section.parens.vtx", "match": "[()]" },
-        { "name": "punctuation.section.brackets.vtx", "match": "[\\[\\]]" },
-        { "name": "punctuation.separator.comma.vtx", "match": "," },
-        { "name": "punctuation.separator.colon.vtx", "match": ":" },
-        { "name": "punctuation.accessor.vtx", "match": "\\." }
+        { "name": "punctuation.section.braces.begin.vertex", "match": "\\{" },
+        { "name": "punctuation.section.braces.end.vertex", "match": "\\}" },
+        { "name": "punctuation.section.brackets.begin.vertex", "match": "\\[" },
+        { "name": "punctuation.section.brackets.end.vertex", "match": "\\]" },
+        { "name": "punctuation.section.parens.begin.vertex", "match": "\\(" },
+        { "name": "punctuation.section.parens.end.vertex", "match": "\\)" },
+        { "name": "punctuation.separator.comma.vertex", "match": "," },
+        { "name": "punctuation.terminator.vertex", "match": ";" }
       ]
     }
   }
