@@ -1,0 +1,130 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Vertex IR",
+  "scopeName": "source.vtxir",
+  "fileTypes": ["vir"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#section-keywords" },
+    { "include": "#directives" },
+    { "include": "#link-kinds" },
+    { "include": "#fn-attributes" },
+    { "include": "#param-attributes" },
+    { "include": "#terminators" },
+    { "include": "#orderings" },
+    { "include": "#literals" },
+    { "include": "#types" },
+    { "include": "#label-line" },
+    { "include": "#assignment" },
+    { "include": "#opcodes" },
+    { "include": "#qualified-ident" },
+    { "include": "#numbers" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "comments": {
+      "name": "comment.line.double-slash.vtxir",
+      "match": "//.*$"
+    },
+    "strings": {
+      "name": "string.quoted.double.vtxir",
+      "begin": "\"",
+      "end": "\"",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtxir" } },
+      "endCaptures":   { "0": { "name": "punctuation.definition.string.end.vtxir"   } },
+      "patterns": [
+        {
+          "name": "constant.character.escape.vtxir",
+          "match": "\\\\(?:[0nrt\\\\\"]|x[0-9a-fA-F]{2})"
+        }
+      ]
+    },
+    "section-keywords": {
+      "name": "keyword.control.directive.vtxir",
+      "match": "\\b(module|namespace|target|struct|fnsig|const|global|tls|link|extern|import|fn|end|export)\\b"
+    },
+    "directives": {
+      "name": "keyword.other.directive.vtxir",
+      "match": "\\b(align|zero|addr|loc)\\b"
+    },
+    "link-kinds": {
+      "name": "keyword.other.linkkind.vtxir",
+      "match": "\\b(static|shared|framework)\\b"
+    },
+    "fn-attributes": {
+      "name": "storage.modifier.attribute.vtxir",
+      "match": "\\b(noreturn|readonly|inline|noinline|cold|entry|extern_c)\\b"
+    },
+    "param-attributes": {
+      "name": "storage.modifier.attribute.vtxir",
+      "match": "\\b(byval|sret)\\b"
+    },
+    "terminators": {
+      "name": "keyword.control.terminator.vtxir",
+      "match": "\\b(br_if|br|switch|return|tailcall|trap|unreachable)\\b"
+    },
+    "orderings": {
+      "name": "variable.language.ordering.vtxir",
+      "match": "\\b(relaxed|acquire|release|acqrel|seqcst)\\b"
+    },
+    "literals": {
+      "patterns": [
+        { "name": "constant.language.boolean.vtxir", "match": "\\b(true|false)\\b" },
+        { "name": "constant.language.null.vtxir", "match": "\\bnull\\b" },
+        { "name": "constant.numeric.float.special.vtxir", "match": "(?<![\\w.])-?(NaN|Inf)\\b" }
+      ]
+    },
+    "types": {
+      "patterns": [
+        { "name": "storage.type.primitive.vtxir", "match": "\\b(i[1-9][0-9]*|f16|f32|f64|ptr|void|valist)\\b" },
+        { "name": "storage.type.compound.vtxir", "match": "\\b(vec|struct|array)\\b" }
+      ]
+    },
+    "label-line": {
+      "match": "^\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(:)\\s*$",
+      "captures": {
+        "1": { "name": "entity.name.label.vtxir" },
+        "2": { "name": "punctuation.separator.label.vtxir" }
+      }
+    },
+    "assignment": {
+      "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(=)(?!=)",
+      "captures": {
+        "1": { "name": "variable.other.assignment.vtxir" },
+        "2": { "name": "keyword.operator.assignment.vtxir" }
+      }
+    },
+    "opcodes": {
+      "match": "\\b(add|sub|mul|neg|abs|sqrt|udiv|sdiv|urem|srem|uaddo|saddo|usubo|ssubo|umulo|smulo|umulh|smulh|uadd_sat|sadd_sat|usub_sat|ssub_sat|and|or|xor|not|shl|lshr|ashr|rotl|rotr|ctlz|cttz|popcnt|min|max|fma|smin|smax|umin|umax|eq|ne|ult|ugt|ule|uge|slt|sgt|sle|sge|lt|gt|le|ge|trunc|sext|zext|stoint_sat|utoint_sat|stoint|utoint|bitcast|call|syscall|va_start|va_arg|va_end|alloca|load_vol|store_vol|load|store|memcopy|memmove|memset|field|index|atomic_load|atomic_store|atomic_add|atomic_sub|atomic_and|atomic_or|atomic_xor|atomic_xchg|cmpxchg|fence)(?:\\.([A-Za-z_][A-Za-z0-9_\\[\\],]*))?\\b",
+      "captures": {
+        "1": { "name": "support.function.opcode.vtxir" },
+        "2": { "name": "storage.type.suffix.vtxir" }
+      }
+    },
+    "qualified-ident": {
+      "match": "\\b([A-Za-z_][A-Za-z0-9_]*)(\\.)([A-Za-z_][A-Za-z0-9_]*)\\b",
+      "captures": {
+        "1": { "name": "entity.name.namespace.vtxir" },
+        "2": { "name": "punctuation.accessor.vtxir" },
+        "3": { "name": "variable.other.member.vtxir" }
+      }
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.float.vtxir", "match": "\\b-?[0-9]+\\.[0-9]+(?:e-?[0-9]+)?\\b" },
+        { "name": "constant.numeric.integer.vtxir", "match": "\\b-?[0-9]+\\b" }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        { "name": "punctuation.section.brackets.begin.vtxir", "match": "\\[" },
+        { "name": "punctuation.section.brackets.end.vtxir",   "match": "\\]" },
+        { "name": "punctuation.section.parens.begin.vtxir",   "match": "\\(" },
+        { "name": "punctuation.section.parens.end.vtxir",     "match": "\\)" },
+        { "name": "punctuation.separator.comma.vtxir",        "match": "," },
+        { "name": "punctuation.separator.colon.vtxir",        "match": ":" }
+      ]
+    }
+  }
+}

@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/package",
   "name": "vscode-vertex",
   "displayName": "Vertex Language Support",
-  "description": "Syntax highlighting for the Vertex programming language: .vs source files, vs.mod module manifests, and vs.lib native-library manifests",
-  "version": "1.0.5",
+  "description": "Syntax highlighting for the Vertex programming language: .vs source files, vs.mod module manifests, vs.lib native-library manifests, and .vir intermediate representation files",
+  "version": "2.0.0",
   "publisher": "vertex-language",
   "repository": {
     "type": "git",
@@ -32,6 +32,12 @@
         "aliases": ["Vertex Library Manifest", "vs.lib"],
         "filenames": ["vs.lib"],
         "configuration": "./language-configuration-lib.json"
+      },
+      {
+        "id": "vertex-ir",
+        "aliases": ["Vertex IR", "vertex-ir", "vir"],
+        "extensions": [".vir"],
+        "configuration": "./language-configuration-ir.json"
       }
     ],
     "grammars": [
@@ -51,11 +57,17 @@
         "path": "./syntaxes/vertex-lib.tmLanguage.json"
       },
       {
+        "language": "vertex-ir",
+        "scopeName": "source.vtxir",
+        "path": "./syntaxes/vertex-ir.tmLanguage.json"
+      },
+      {
         "scopeName": "markdown.vertex.codeblock",
         "path": "./syntaxes/vertex-markdown-injection.tmLanguage.json",
         "injectTo": ["text.html.markdown"],
         "embeddedLanguages": {
-          "meta.embedded.block.vertex": "vertex"
+          "meta.embedded.block.vertex": "vertex",
+          "meta.embedded.block.vertex-ir": "vertex-ir"
         }
       }
     ]
