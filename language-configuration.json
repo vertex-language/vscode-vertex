@@ -12,19 +12,19 @@
     { "open": "{", "close": "}" },
     { "open": "[", "close": "]" },
     { "open": "(", "close": ")" },
+    { "open": "'", "close": "'", "notIn": ["string", "comment"] },
     { "open": "\"", "close": "\"", "notIn": ["string", "comment"] },
     { "open": "`", "close": "`", "notIn": ["string", "comment"] },
-    { "open": "'", "close": "'", "notIn": ["string", "comment"] },
-    { "open": "/*", "close": "*/", "notIn": ["string"] }
+    { "open": "/**", "close": " */", "notIn": ["string", "comment"] }
   ],
-  "autoCloseBefore": ":.,=}])>` \n\t",
   "surroundingPairs": [
     ["{", "}"],
     ["[", "]"],
     ["(", ")"],
+    ["'", "'"],
     ["\"", "\""],
     ["`", "`"],
-    ["'", "'"]
+    ["<", ">"]
   ],
   "colorizedBracketPairs": [
     ["{", "}"],
@@ -33,17 +33,23 @@
   ],
   "wordPattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\@\\#\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s]+)",
   "indentationRules": {
-    "increaseIndentPattern": "^.*(\\bcase\\b.*:|\\bdefault\\b\\s*:|\\{[^}\"'`]*|\\([^)\"'`]*|\\[[^\\]\"'`]*)$",
-    "decreaseIndentPattern": "^\\s*(\\bcase\\b.*:|\\bdefault\\b\\s*:|\\}|\\)|\\])\\s*$"
+    "increaseIndentPattern": "^((?!//).)*(\\{[^}\"'`]*|\\([^)\"'`]*|\\[[^\\]\"'`]*)$",
+    "decreaseIndentPattern": "^((?!.*?/\\*).*\\*/)?\\s*[\\}\\]\\)].*$"
+  },
+  "folding": {
+    "markers": {
+      "start": "^\\s*//\\s*#?region\\b",
+      "end": "^\\s*//\\s*#?endregion\\b"
+    }
   },
   "onEnterRules": [
     {
-      "beforeText": "^\\s*/\\*(?!/)([^\\*]|\\*(?!/))*$",
+      "beforeText": "^\\s*/\\*\\*(?!/)([^\\*]|\\*(?!/))*$",
       "afterText": "^\\s*\\*/$",
       "action": { "indent": "indentOutdent", "appendText": " * " }
     },
     {
-      "beforeText": "^\\s*/\\*(?!/)([^\\*]|\\*(?!/))*$",
+      "beforeText": "^\\s*/\\*\\*(?!/)([^\\*]|\\*(?!/))*$",
       "action": { "indent": "none", "appendText": " * " }
     },
     {
@@ -54,12 +60,5 @@
       "beforeText": "^(\\t|[ ])*[ ]\\*/\\s*$",
       "action": { "indent": "none", "removeText": 1 }
     }
-  ],
-  "folding": {
-    "offSide": false,
-    "markers": {
-      "start": "^\\s*//\\s*#?region\\b",
-      "end": "^\\s*//\\s*#?endregion\\b"
-    }
-  }
+  ]
 }

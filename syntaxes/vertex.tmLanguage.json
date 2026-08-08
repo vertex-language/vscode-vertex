@@ -5,368 +5,511 @@
   "fileTypes": ["vtx", "vs"],
 
   "patterns": [
-    { "include": "#comments" },
-    { "include": "#strings" },
-    { "include": "#package-clause" },
-    { "include": "#build-clause" },
-    { "include": "#import-clause" },
-    { "include": "#declare-clause" },
-    { "include": "#expected" },
-    { "include": "#function-declaration" },
-    { "include": "#type-declaration" },
-    { "include": "#namespaces" },
-    { "include": "#keywords" },
-    { "include": "#constants" },
-    { "include": "#predeclared-types" },
-    { "include": "#constraints" },
-    { "include": "#builtins" },
-    { "include": "#numbers" },
-    { "include": "#dots" },
-    { "include": "#member-access" },
-    { "include": "#function-call" },
-    { "include": "#type-name" },
-    { "include": "#operators" },
-    { "include": "#punctuation" }
+    { "include": "#hashbang" },
+    { "include": "#statements" }
   ],
 
   "repository": {
 
+    "hashbang": {
+      "match": "\\A#!.*$",
+      "name": "comment.line.shebang.vtx"
+    },
+
     "comments": {
       "patterns": [
         {
-          "name": "comment.line.double-slash.vtx",
-          "begin": "//",
-          "end": "$",
-          "beginCaptures": {
-            "0": { "name": "punctuation.definition.comment.vtx" }
-          }
+          "name": "comment.block.documentation.vtx",
+          "begin": "/\\*\\*(?!/)",
+          "end": "\\*/",
+          "patterns": [
+            { "match": "@[A-Za-z]+", "name": "keyword.other.documentation.tag.vtx" }
+          ]
         },
         {
           "name": "comment.block.vtx",
           "begin": "/\\*",
-          "end": "\\*/",
-          "beginCaptures": {
-            "0": { "name": "punctuation.definition.comment.begin.vtx" }
-          },
-          "endCaptures": {
-            "0": { "name": "punctuation.definition.comment.end.vtx" }
+          "end": "\\*/"
+        },
+        {
+          "name": "comment.line.double-slash.vtx",
+          "begin": "//",
+          "end": "(?=$)"
+        }
+      ]
+    },
+
+    "directives": {
+      "match": "(^\\s*)(\")(use (?:cuda|metal|stablehlo|freestanding))(\")(\\s*;?)",
+      "captures": {
+        "2": { "name": "punctuation.definition.string.begin.vtx" },
+        "3": { "name": "string.quoted.double.directive.vtx" },
+        "4": { "name": "punctuation.definition.string.end.vtx" },
+        "5": { "name": "punctuation.terminator.statement.vtx" }
+      }
+    },
+
+    "decorators": {
+      "patterns": [
+        {
+          "match": "(@)(packed|align|bits|objc)\\b",
+          "captures": {
+            "1": { "name": "punctuation.decorator.vtx" },
+            "2": { "name": "support.function.decorator.vtx" }
           }
+        },
+        {
+          "match": "(@)([A-Za-z_$][\\w$]*)",
+          "captures": {
+            "1": { "name": "punctuation.decorator.vtx" },
+            "2": { "name": "entity.name.function.decorator.vtx" }
+          }
+        }
+      ]
+    },
+
+    "module-specifier-string": {
+      "name": "string.quoted.double.module-specifier.vtx",
+      "begin": "(?:(?<=\\bfrom\\s)|(?<=\\bmodule\\s)|(?<=\\brequire\\()|(?<=\\bimport\\())\"",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtx" } },
+      "end": "\"",
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.vtx" } },
+      "patterns": [
+        { "match": "^[A-Za-z][A-Za-z0-9+.\\-]*(?=:)", "name": "entity.name.tag.scheme.vtx" },
+        { "match": ":", "name": "punctuation.separator.scheme.vtx" },
+        { "include": "#string-escape" }
+      ]
+    },
+
+    "string-escape": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.vtx",
+          "match": "\\\\(x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]+\\}|u[0-9A-Fa-f]{4}|[^xu])"
         }
       ]
     },
 
     "strings": {
       "patterns": [
+        { "include": "#module-specifier-string" },
         {
           "name": "string.quoted.double.vtx",
           "begin": "\"",
-          "end": "\"|$",
-          "beginCaptures": {
-            "0": { "name": "punctuation.definition.string.begin.vtx" }
-          },
-          "endCaptures": {
-            "0": { "name": "punctuation.definition.string.end.vtx" }
-          },
-          "patterns": [{ "include": "#escapes" }]
-        },
-        {
-          "name": "string.quoted.other.raw.vtx",
-          "begin": "`",
-          "end": "`",
-          "beginCaptures": {
-            "0": { "name": "punctuation.definition.string.begin.vtx" }
-          },
-          "endCaptures": {
-            "0": { "name": "punctuation.definition.string.end.vtx" }
-          }
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtx" } },
+          "end": "\"",
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.vtx" } },
+          "patterns": [{ "include": "#string-escape" }]
         },
         {
           "name": "string.quoted.single.vtx",
           "begin": "'",
-          "end": "'|$",
-          "beginCaptures": {
-            "0": { "name": "punctuation.definition.string.begin.vtx" }
-          },
-          "endCaptures": {
-            "0": { "name": "punctuation.definition.string.end.vtx" }
-          },
-          "patterns": [{ "include": "#escapes" }]
-        }
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtx" } },
+          "end": "'",
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.vtx" } },
+          "patterns": [{ "include": "#string-escape" }]
+        },
+        { "include": "#template-literal" }
       ]
     },
 
-    "escapes": {
+    "template-literal": {
+      "name": "string.template.vtx",
+      "begin": "`",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtx" } },
+      "end": "`",
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.vtx" } },
       "patterns": [
+        { "include": "#string-escape" },
         {
-          "name": "constant.character.escape.vtx",
-          "match": "\\\\(?:[\\\\'\"nrtvbf0]|x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]+\\})"
-        },
-        {
-          "name": "invalid.illegal.unknown-escape.vtx",
-          "match": "\\\\."
+          "name": "meta.template.expression.vtx",
+          "begin": "\\$\\{",
+          "beginCaptures": { "0": { "name": "punctuation.definition.template-expression.begin.vtx" } },
+          "end": "\\}",
+          "endCaptures": { "0": { "name": "punctuation.definition.template-expression.end.vtx" } },
+          "patterns": [{ "include": "#expression" }]
         }
       ]
     },
 
-    "package-clause": {
-      "match": "\\b(package)\\s+([A-Za-z_][A-Za-z0-9_]*)",
-      "captures": {
-        "1": { "name": "keyword.control.package.vtx" },
-        "2": { "name": "entity.name.namespace.vtx" }
-      }
-    },
-
-    "build-clause": {
-      "match": "\\b(build)\\s+([A-Za-z_][A-Za-z0-9_]*)",
-      "captures": {
-        "1": { "name": "keyword.control.build.vtx" },
-        "2": { "name": "support.constant.buildtag.vtx" }
-      }
-    },
-
-    "import-clause": {
-      "match": "\\b(import)\\b",
-      "captures": {
-        "1": { "name": "keyword.control.import.vtx" }
-      }
-    },
-
-    "declare-clause": {
-      "match": "\\b(declare)\\s+(framework|module)\\b",
-      "captures": {
-        "1": { "name": "keyword.control.declare.vtx" },
-        "2": { "name": "keyword.other.declare-kind.vtx" }
-      }
-    },
-
-    "expected": {
-      "match": "\\b(Expected)\\s*(\\()\\s*(error)?",
-      "captures": {
-        "1": { "name": "support.type.expected.vtx" },
-        "2": { "name": "punctuation.section.parens.begin.vtx" },
-        "3": { "name": "keyword.other.error.vtx" }
-      }
-    },
-
-    "function-declaration": {
+    "regex": {
+      "name": "string.regexp.vtx",
+      "begin": "(?<![\\w$\\)\\]])/(?![/*])",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtx" } },
+      "end": "/[a-zA-Z]*",
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.vtx" } },
       "patterns": [
+        { "match": "\\\\.", "name": "constant.character.escape.vtx" },
         {
-          "comment": "method / init / deinit — func (recv: Type) name",
-          "match": "\\b(func)\\s+(\\()\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(:)\\s*(?:(mut|var|shared)\\s+)?([A-Za-z_][A-Za-z0-9_]*)(?:\\s*\\[[^\\]]*\\])?\\s*(\\))\\s*([A-Za-z_][A-Za-z0-9_]*)",
-          "captures": {
-            "1": { "name": "storage.type.function.vtx" },
-            "2": { "name": "punctuation.section.parens.begin.vtx" },
-            "3": { "name": "variable.parameter.receiver.vtx" },
-            "4": { "name": "punctuation.separator.colon.vtx" },
-            "5": { "name": "storage.modifier.ownership.vtx" },
-            "6": { "name": "entity.name.type.vtx" },
-            "7": { "name": "punctuation.section.parens.end.vtx" },
-            "8": { "name": "entity.name.function.vtx" }
-          }
-        },
-        {
-          "comment": "plain declaration — func name",
-          "match": "\\b(func)\\s+([A-Za-z_][A-Za-z0-9_]*)",
-          "captures": {
-            "1": { "name": "storage.type.function.vtx" },
-            "2": { "name": "entity.name.function.vtx" }
-          }
-        },
-        {
-          "comment": "func type / anonymous function",
-          "name": "storage.type.function.vtx",
-          "match": "\\bfunc\\b"
+          "name": "constant.other.character-class.regexp.vtx",
+          "begin": "\\[",
+          "end": "\\]",
+          "patterns": [{ "match": "\\\\.", "name": "constant.character.escape.vtx" }]
         }
       ]
-    },
-
-    "type-declaration": {
-      "patterns": [
-        {
-          "match": "\\b(struct|class|enum|constraint)\\s+([A-Za-z_][A-Za-z0-9_]*)",
-          "captures": {
-            "1": { "name": "storage.type.vtx" },
-            "2": { "name": "entity.name.type.vtx" }
-          }
-        },
-        {
-          "match": "\\b(type)\\s+([A-Za-z_][A-Za-z0-9_]*)",
-          "captures": {
-            "1": { "name": "storage.type.vtx" },
-            "2": { "name": "entity.name.type.vtx" }
-          }
-        }
-      ]
-    },
-
-    "namespaces": {
-      "comment": "grammar.md 5.1 NamespaceExpression — a launch keyword before `.` is a namespace, not a launch",
-      "name": "support.class.namespace.vtx",
-      "match": "\\b(?:async|gpu|npu|chan)\\b(?=\\s*\\.)"
-    },
-
-    "keywords": {
-      "patterns": [
-        {
-          "name": "keyword.control.vtx",
-          "match": "\\b(?:break|case|continue|default|defer|else|fallthrough|for|if|in|return|select|switch|while)\\b"
-        },
-        {
-          "name": "keyword.control.flow.vtx",
-          "match": "\\b(?:await|thread)\\b"
-        },
-        {
-          "name": "storage.modifier.marker.vtx",
-          "match": "\\b(?:async|gpu|npu|test)\\b"
-        },
-        {
-          "name": "keyword.operator.cast.vtx",
-          "match": "\\bas\\b"
-        },
-        {
-          "name": "storage.type.vtx",
-          "match": "\\b(?:let|var|struct|class|enum|type|constraint|chan|map|vector|tensor|typed_ptr|abstract)\\b"
-        },
-        {
-          "name": "storage.modifier.ownership.vtx",
-          "match": "\\b(?:mut|unique|shared|weak)\\b"
-        },
-        {
-          "name": "keyword.other.contextual.vtx",
-          "match": "\\b(?:init|deinit|framework|module)\\b"
-        }
-      ]
-    },
-
-    "constants": {
-      "name": "constant.language.vtx",
-      "match": "\\b(?:true|false|nil)\\b"
-    },
-
-    "predeclared-types": {
-      "name": "support.type.primitive.vtx",
-      "match": "\\b(?:int8|int16|int32|int64|int|uint8|uint16|uint32|uint64|uint|byte|float32|float64|bool|char|string)\\b"
-    },
-
-    "constraints": {
-      "name": "support.type.constraint.vtx",
-      "match": "\\b(?:any|comparable)\\b"
-    },
-
-    "builtins": {
-      "comment": "semantics.md 1.8 reserved names, in call position",
-      "name": "support.function.builtin.vtx",
-      "match": "\\b(?:new|delete|resize|copy|zero|addr|sizeof|alignof|reinterpret|upgrade|unique|shared|weak|drop|panic|blend|min|max|clamp)\\b(?=\\s*[\\(\\[])"
     },
 
     "numbers": {
       "patterns": [
+        { "name": "constant.numeric.hex.vtx", "match": "\\b0[xX][0-9a-fA-F](?:_?[0-9a-fA-F])*n?\\b" },
+        { "name": "constant.numeric.binary.vtx", "match": "\\b0[bB][01](?:_?[01])*n?\\b" },
+        { "name": "constant.numeric.octal.vtx", "match": "\\b0[oO][0-7](?:_?[0-7])*n?\\b" },
         {
-          "name": "constant.numeric.float.hexadecimal.vtx",
-          "match": "\\b0[xX][0-9A-Fa-f][0-9A-Fa-f_]*(?:\\.[0-9A-Fa-f_]*)?[pP][+-]?[0-9][0-9_]*\\b"
+          "name": "constant.numeric.decimal.vtx",
+          "match": "\\b(?:0|[1-9](?:_?[0-9])*)(?:\\.(?:[0-9](?:_?[0-9])*)?)?(?:[eE][+-]?[0-9](?:_?[0-9])*)?n?\\b"
         },
         {
-          "name": "constant.numeric.integer.hexadecimal.vtx",
-          "match": "\\b0[xX][0-9A-Fa-f][0-9A-Fa-f_]*\\b"
-        },
-        {
-          "name": "constant.numeric.integer.octal.vtx",
-          "match": "\\b0[oO][0-7][0-7_]*\\b"
-        },
-        {
-          "name": "constant.numeric.integer.binary.vtx",
-          "match": "\\b0[bB][01][01_]*\\b"
-        },
-        {
-          "name": "constant.numeric.float.vtx",
-          "match": "(?<![\\w.])[0-9][0-9_]*(?:\\.[0-9][0-9_]*(?:[eE][+-]?[0-9][0-9_]*)?|[eE][+-]?[0-9][0-9_]*)(?![\\w.])"
-        },
-        {
-          "name": "constant.numeric.integer.decimal.vtx",
-          "match": "(?<![\\w.])[0-9][0-9_]*\\b"
+          "name": "constant.numeric.decimal.vtx",
+          "match": "\\.[0-9](?:_?[0-9])*(?:[eE][+-]?[0-9](?:_?[0-9])*)?\\b"
         }
       ]
     },
 
-    "dots": {
-      "comment": "matched before member access so `0..5` never reads as a tuple index",
+    "keywords": {
       "patterns": [
-        {
-          "name": "keyword.operator.variadic.vtx",
-          "match": "\\.\\.\\."
-        },
-        {
-          "name": "keyword.operator.range.vtx",
-          "match": "\\.\\."
-        }
+        { "name": "keyword.control.conditional.vtx", "match": "\\b(if|else|switch|case|default)\\b" },
+        { "name": "keyword.control.loop.vtx", "match": "\\b(for|while|do)\\b" },
+        { "name": "keyword.control.flow.vtx", "match": "\\b(break|continue|return|throw)\\b" },
+        { "name": "keyword.control.exception.vtx", "match": "\\b(try|catch|finally)\\b" },
+        { "name": "keyword.control.debugger.vtx", "match": "\\bdebugger\\b" },
+        { "name": "keyword.control.inheritance.vtx", "match": "\\b(extends|implements)\\b" },
+        { "name": "keyword.control.module.vtx", "match": "\\b(import|export|from|require|with)\\b" },
+        { "name": "keyword.other.vtx", "match": "\\b(defer|source)\\b" },
+        { "name": "storage.modifier.vtx", "match": "\\b(public|private|protected|static|abstract|readonly|override|declare|accessor|async)\\b" },
+        { "name": "storage.type.vtx", "match": "\\b(var|let|const|function|class|struct|interface|type|enum|namespace|module|get|set)\\b" },
+        { "name": "storage.type.function.vtx", "match": "\\b(constructor|destructor)\\b" },
+        { "name": "storage.modifier.mode.vtx", "match": "\\bmutating\\b" },
+        { "name": "storage.modifier.accelerated.vtx", "match": "\\b(kernel|graph)\\b(?=\\s+function)" },
+        { "name": "keyword.operator.new.vtx", "match": "\\bnew\\b" },
+        { "name": "keyword.operator.expression.instanceof.vtx", "match": "\\binstanceof\\b" },
+        { "name": "keyword.operator.expression.typeof.vtx", "match": "\\btypeof\\b" },
+        { "name": "keyword.operator.word.vtx", "match": "\\b(in|of|delete|void|yield|await|as|satisfies|is|keyof|infer|unique|out|asserts)\\b" },
+        { "name": "keyword.control.using.vtx", "match": "\\busing\\b" },
+        { "name": "constant.language.vtx", "match": "\\b(true|false|null|undefined)\\b" },
+        { "name": "variable.language.this.vtx", "match": "\\b(this|super)\\b" },
+        { "name": "variable.language.global.vtx", "match": "\\bglobal\\b" }
       ]
     },
 
-    "member-access": {
+    "primitive-types": {
+      "name": "support.type.primitive.vtx",
+      "match": "\\b(any|unknown|never|void|object|string|number|bigint|boolean|symbol|intrinsic|int8|int16|int32|int64|uint8|uint16|uint32|uint64|usize|float32|float64|byte)\\b"
+    },
+
+    "vertex-container-types": {
+      "name": "support.class.builtin.vtx",
+      "match": "\\b(Array|FixedArray|span|block|Tensor|simd)\\b"
+    },
+
+    "vertex-pointer-types": {
+      "name": "support.type.pointer.vtx",
+      "match": "\\b(unique_ptr|shared_ptr|weak_ptr|mutable_ptr|const_ptr|void_ptr|device_ptr)\\b"
+    },
+
+    "vertex-intrinsic-functions": {
+      "name": "support.function.intrinsic.vtx",
+      "match": "\\b(sizeof|alignof|offsetof|bit_cast|pointer_cast|pointer_from_address|unaligned_load|unaligned_store|volatile_load|volatile_store|alloc|try_alloc|alloc_uninit|construct_at|destroy_at|addressof|move|compile|launch)\\b"
+    },
+
+    "vertex-thread-intrinsics": {
+      "match": "\\b(threadIdx|blockIdx|blockDim|gridDim)\\b(\\.(x|y|z))?",
+      "captures": {
+        "1": { "name": "variable.language.thread.vtx" },
+        "3": { "name": "support.constant.thread-axis.vtx" }
+      }
+    },
+
+    "private-identifier": {
+      "name": "variable.other.property.private.vtx",
+      "match": "#[A-Za-z_$][\\w$]*"
+    },
+
+    "generics": {
+      "begin": "<",
+      "beginCaptures": { "0": { "name": "punctuation.definition.typeparameters.begin.vtx" } },
+      "end": ">",
+      "endCaptures": { "0": { "name": "punctuation.definition.typeparameters.end.vtx" } },
       "patterns": [
-        {
-          "match": "(\\.)\\s*([A-Za-z_][A-Za-z0-9_]*)(?=\\s*(?:\\[[^\\[\\]]*\\])?\\s*\\()",
-          "captures": {
-            "1": { "name": "punctuation.accessor.vtx" },
-            "2": { "name": "entity.name.function.method.vtx" }
-          }
-        },
-        {
-          "match": "(\\.)\\s*([A-Za-z_][A-Za-z0-9_]*)",
-          "captures": {
-            "1": { "name": "punctuation.accessor.vtx" },
-            "2": { "name": "variable.other.member.vtx" }
-          }
-        },
-        {
-          "comment": "tuple positional access — x.0 / x.1",
-          "match": "(\\.)([0-9]+)",
-          "captures": {
-            "1": { "name": "punctuation.accessor.vtx" },
-            "2": { "name": "variable.other.member.tuple.vtx" }
-          }
-        }
+        { "include": "#comments" },
+        { "match": "\\b(const|in|out)\\b", "name": "storage.modifier.vtx" },
+        { "match": "\\bextends\\b", "name": "keyword.control.inheritance.vtx" },
+        { "match": "\\b(mutating|readonly)\\b", "name": "storage.modifier.mode.vtx" },
+        { "include": "#primitive-types" },
+        { "include": "#vertex-container-types" },
+        { "include": "#vertex-pointer-types" },
+        { "include": "#numbers" },
+        { "include": "#strings" },
+        { "include": "#generics" },
+        { "match": "[A-Za-z_$][\\w$]*", "name": "entity.name.type.vtx" },
+        { "include": "#punctuation" }
+      ]
+    },
+
+    "type-annotation": {
+      "begin": "(:)(?!:)",
+      "beginCaptures": { "1": { "name": "punctuation.separator.colon.vtx" } },
+      "end": "(?=[,;)=\\]\\}])|$",
+      "patterns": [
+        { "include": "#comments" },
+        { "match": "\\b(mutating|readonly)\\b", "name": "storage.modifier.mode.vtx" },
+        { "match": "\\b(keyof|infer|unique|typeof|is|asserts|satisfies|as)\\b", "name": "keyword.operator.word.vtx" },
+        { "include": "#primitive-types" },
+        { "include": "#vertex-container-types" },
+        { "include": "#vertex-pointer-types" },
+        { "include": "#strings" },
+        { "include": "#numbers" },
+        { "include": "#generics" },
+        { "match": "\\[|\\]", "name": "punctuation.definition.array.vtx" },
+        { "match": "\\(|\\)", "name": "punctuation.definition.parameters.vtx" },
+        { "match": "\\{|\\}", "name": "punctuation.definition.block.vtx" },
+        { "match": "=>", "name": "storage.type.function.arrow.vtx" },
+        { "match": "\\||&", "name": "keyword.operator.type.vtx" },
+        { "match": "\\?", "name": "keyword.operator.optional.vtx" },
+        { "match": "\\.\\.\\.", "name": "keyword.operator.spread.vtx" },
+        { "match": ",", "name": "punctuation.separator.comma.vtx" },
+        { "match": "[A-Za-z_$][\\w$]*", "name": "entity.name.type.vtx" }
       ]
     },
 
     "function-call": {
-      "name": "entity.name.function.call.vtx",
-      "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b(?=\\s*(?:\\[[^\\[\\]]*\\])?\\s*\\()"
+      "match": "\\b([A-Za-z_$][\\w$]*)\\s*(?=(?:<[^<>]*>\\s*)?\\()",
+      "captures": { "1": { "name": "entity.name.function.vtx" } }
     },
 
-    "type-name": {
-      "comment": "heuristic: a capitalized identifier not in call position is a type",
-      "name": "entity.name.type.vtx",
-      "match": "\\b[A-Z][A-Za-z0-9_]*\\b"
+    "property-access": {
+      "match": "(?<=\\.)\\s*([A-Za-z_$][\\w$]*)",
+      "captures": { "1": { "name": "variable.other.property.vtx" } }
     },
 
-    "operators": {
-      "patterns": [
-        { "name": "keyword.operator.arrow.vtx", "match": "->" },
-        { "name": "keyword.operator.identity.vtx", "match": "===|!==" },
-        { "name": "keyword.operator.assignment.vtx", "match": "<<=|>>=" },
-        { "name": "keyword.operator.assignment.vtx", "match": "\\+=|-=|\\*=|/=|%=|&=|\\|=|\\^=" },
-        { "name": "keyword.operator.comparison.vtx", "match": "==|!=|<=|>=" },
-        { "name": "keyword.operator.logical.vtx", "match": "&&|\\|\\|" },
-        { "name": "keyword.operator.arithmetic.wrapping.vtx", "match": "&\\+|&-|&\\*" },
-        { "name": "keyword.operator.bitwise.shift.vtx", "match": "<<|>>" },
-        { "name": "keyword.operator.comparison.vtx", "match": "<|>" },
-        { "name": "keyword.operator.logical.vtx", "match": "!" },
-        { "name": "keyword.operator.arithmetic.vtx", "match": "[+\\-*/%]" },
-        { "name": "keyword.operator.bitwise.vtx", "match": "[&|^~]" },
-        { "name": "keyword.operator.assignment.vtx", "match": "=" }
-      ]
+    "capitalized-identifier": {
+      "match": "\\b[A-Z][\\w$]*\\b",
+      "name": "entity.name.type.vtx"
+    },
+
+    "identifiers": {
+      "match": "[A-Za-z_$][\\w$]*",
+      "name": "variable.other.readwrite.vtx"
     },
 
     "punctuation": {
       "patterns": [
-        { "name": "punctuation.section.block.vtx", "match": "[{}]" },
-        { "name": "punctuation.section.parens.vtx", "match": "[()]" },
-        { "name": "punctuation.section.brackets.vtx", "match": "[\\[\\]]" },
-        { "name": "punctuation.separator.comma.vtx", "match": "," },
-        { "name": "punctuation.separator.colon.vtx", "match": ":" },
-        { "name": "punctuation.accessor.vtx", "match": "\\." }
+        { "match": "\\?\\.(?!\\d)", "name": "punctuation.accessor.optional.vtx" },
+        { "match": "\\.\\.\\.", "name": "keyword.operator.spread.vtx" },
+        { "match": "=>", "name": "storage.type.function.arrow.vtx" },
+        { "match": "(===|!==|==|!=)", "name": "keyword.operator.comparison.vtx" },
+        { "match": "(<=|>=)", "name": "keyword.operator.relational.vtx" },
+        { "match": "(&&=|\\|\\|=|\\?\\?=)", "name": "keyword.operator.assignment.logical.vtx" },
+        { "match": "(&&|\\|\\||\\?\\?)", "name": "keyword.operator.logical.vtx" },
+        { "match": "(\\*\\*=|\\+=|-=|\\*=|/=|%=|<<=|>>>=|>>=|&=|\\^=|\\|=)", "name": "keyword.operator.assignment.compound.vtx" },
+        { "match": "(\\+\\+|--)", "name": "keyword.operator.increment-decrement.vtx" },
+        { "match": "\\*\\*", "name": "keyword.operator.exponent.vtx" },
+        { "match": "(<<|>>>|>>)", "name": "keyword.operator.bitwise.shift.vtx" },
+        { "match": "[+\\-*/%]", "name": "keyword.operator.arithmetic.vtx" },
+        { "match": "[&|\\^~]", "name": "keyword.operator.bitwise.vtx" },
+        { "match": "!", "name": "keyword.operator.logical.not.vtx" },
+        { "match": "=", "name": "keyword.operator.assignment.vtx" },
+        { "match": "\\?", "name": "keyword.operator.ternary.vtx" },
+        { "match": "[<>]", "name": "keyword.operator.relational.vtx" },
+        { "match": ":", "name": "punctuation.separator.colon.vtx" },
+        { "match": ",", "name": "punctuation.separator.comma.vtx" },
+        { "match": ";", "name": "punctuation.terminator.statement.vtx" },
+        { "match": "\\.", "name": "punctuation.accessor.vtx" },
+        { "match": "@", "name": "punctuation.decorator.vtx" }
+      ]
+    },
+
+    "braces": {
+      "begin": "\\{",
+      "beginCaptures": { "0": { "name": "punctuation.definition.block.begin.vtx" } },
+      "end": "\\}",
+      "endCaptures": { "0": { "name": "punctuation.definition.block.end.vtx" } },
+      "patterns": [{ "include": "#statements" }]
+    },
+
+    "parens": {
+      "begin": "\\(",
+      "beginCaptures": { "0": { "name": "punctuation.definition.parameters.begin.vtx" } },
+      "end": "\\)",
+      "endCaptures": { "0": { "name": "punctuation.definition.parameters.end.vtx" } },
+      "patterns": [{ "include": "#statements" }]
+    },
+
+    "brackets": {
+      "begin": "\\[",
+      "beginCaptures": { "0": { "name": "punctuation.definition.array.begin.vtx" } },
+      "end": "\\]",
+      "endCaptures": { "0": { "name": "punctuation.definition.array.end.vtx" } },
+      "patterns": [{ "include": "#statements" }]
+    },
+
+    "expression": {
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#decorators" },
+        { "include": "#regex" },
+        { "include": "#strings" },
+        { "include": "#numbers" },
+        { "include": "#keywords" },
+        { "include": "#primitive-types" },
+        { "include": "#vertex-container-types" },
+        { "include": "#vertex-pointer-types" },
+        { "include": "#vertex-intrinsic-functions" },
+        { "include": "#vertex-thread-intrinsics" },
+        { "include": "#private-identifier" },
+        { "include": "#function-call" },
+        { "include": "#property-access" },
+        { "include": "#capitalized-identifier" },
+        { "include": "#braces" },
+        { "include": "#parens" },
+        { "include": "#brackets" },
+        { "include": "#punctuation" },
+        { "include": "#identifiers" }
+      ]
+    },
+
+    "declare-module": {
+      "begin": "\\b(declare)\\s+(module)\\s+(?=\")",
+      "beginCaptures": {
+        "1": { "name": "storage.modifier.vtx" },
+        "2": { "name": "storage.type.namespace.vtx" }
+      },
+      "end": "(?<=\\})|(?=;)",
+      "patterns": [
+        { "include": "#module-specifier-string" },
+        { "include": "#braces" }
+      ]
+    },
+
+    "declare-global": {
+      "match": "\\b(declare)\\s+(global)\\b",
+      "captures": {
+        "1": { "name": "storage.modifier.vtx" },
+        "2": { "name": "storage.type.namespace.vtx" }
+      }
+    },
+
+    "import-export": {
+      "patterns": [
+        { "match": "\\b(import)\\s+(type)\\b", "captures": { "1": { "name": "keyword.control.module.vtx" }, "2": { "name": "keyword.control.type.vtx" } } },
+        { "match": "\\b(export)\\s+(type)\\b", "captures": { "1": { "name": "keyword.control.module.vtx" }, "2": { "name": "keyword.control.type.vtx" } } },
+        { "match": "\\b(import)\\s+(defer|source)\\b", "captures": { "1": { "name": "keyword.control.module.vtx" }, "2": { "name": "keyword.other.vtx" } } },
+        { "match": "\\b(export)\\s+(default)\\b", "captures": { "1": { "name": "keyword.control.module.vtx" }, "2": { "name": "keyword.control.vtx" } } },
+        { "match": "\\b(export)\\s+(as)\\s+(namespace)\\b", "captures": { "1": { "name": "keyword.control.module.vtx" }, "2": { "name": "keyword.operator.word.vtx" }, "3": { "name": "storage.type.namespace.vtx" } } },
+        { "match": "\\bimport\\b", "name": "keyword.control.module.vtx" },
+        { "match": "\\bexport\\b", "name": "keyword.control.module.vtx" },
+        { "match": "\\bfrom\\b", "name": "keyword.control.module.vtx" },
+        { "match": "\\bwith\\b", "name": "keyword.control.module.vtx" },
+        { "match": "\\*\\s+as\\b", "name": "keyword.operator.word.vtx" }
+      ]
+    },
+
+    "class-declaration": {
+      "begin": "\\b(?:(export)\\s+)?(?:(default)\\s+)?(?:(abstract)\\s+)?(class)\\b",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.module.vtx" },
+        "2": { "name": "keyword.control.vtx" },
+        "3": { "name": "storage.modifier.vtx" },
+        "4": { "name": "storage.type.class.vtx" }
+      },
+      "end": "(?=\\{)|(?=;)",
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#generics" },
+        { "match": "\\b(extends|implements)\\b", "name": "keyword.control.inheritance.vtx" },
+        { "match": "[A-Za-z_$][\\w$]*", "name": "entity.name.class.vtx" }
+      ]
+    },
+
+    "struct-declaration": {
+      "begin": "\\bstruct\\b",
+      "beginCaptures": { "0": { "name": "storage.type.struct.vtx" } },
+      "end": "(?=\\{)|(?=;)",
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#generics" },
+        { "match": "\\bimplements\\b", "name": "keyword.control.inheritance.vtx" },
+        { "match": "[A-Za-z_$][\\w$]*", "name": "entity.name.class.struct.vtx" }
+      ]
+    },
+
+    "interface-declaration": {
+      "begin": "\\binterface\\b",
+      "beginCaptures": { "0": { "name": "storage.type.interface.vtx" } },
+      "end": "(?=\\{)",
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#generics" },
+        { "match": "\\bextends\\b", "name": "keyword.control.inheritance.vtx" },
+        { "match": "[A-Za-z_$][\\w$]*", "name": "entity.name.type.interface.vtx" }
+      ]
+    },
+
+    "enum-declaration": {
+      "match": "\\b(?:(const)\\s+)?(enum)\\s+([A-Za-z_$][\\w$]*)",
+      "captures": {
+        "1": { "name": "storage.modifier.vtx" },
+        "2": { "name": "storage.type.enum.vtx" },
+        "3": { "name": "entity.name.type.enum.vtx" }
+      }
+    },
+
+    "namespace-declaration": {
+      "match": "\\b(namespace)\\s+([A-Za-z_$][\\w$.]*)",
+      "captures": {
+        "1": { "name": "storage.type.namespace.vtx" },
+        "2": { "name": "entity.name.type.module.vtx" }
+      }
+    },
+
+    "type-alias-declaration": {
+      "begin": "\\b(type)\\s+([A-Za-z_$][\\w$]*)",
+      "beginCaptures": {
+        "1": { "name": "storage.type.type.vtx" },
+        "2": { "name": "entity.name.type.alias.vtx" }
+      },
+      "end": "(?=;)",
+      "patterns": [
+        { "include": "#generics" },
+        { "include": "#expression" }
+      ]
+    },
+
+    "function-declaration": {
+      "match": "\\b(?:(kernel|graph)\\s+)?(?:(async)\\s+)?(function)\\b\\s*(\\*)?\\s*([A-Za-z_$][\\w$]*)?",
+      "captures": {
+        "1": { "name": "storage.modifier.accelerated.vtx" },
+        "2": { "name": "storage.modifier.vtx" },
+        "3": { "name": "storage.type.function.vtx" },
+        "4": { "name": "keyword.operator.generator.vtx" },
+        "5": { "name": "entity.name.function.vtx" }
+      }
+    },
+
+    "constructor-destructor": {
+      "match": "\\b(constructor|destructor)\\b",
+      "name": "storage.type.function.vtx"
+    },
+
+    "statements": {
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#directives" },
+        { "include": "#decorators" },
+        { "include": "#declare-module" },
+        { "include": "#declare-global" },
+        { "include": "#import-export" },
+        { "include": "#class-declaration" },
+        { "include": "#struct-declaration" },
+        { "include": "#interface-declaration" },
+        { "include": "#enum-declaration" },
+        { "include": "#namespace-declaration" },
+        { "include": "#type-alias-declaration" },
+        { "include": "#function-declaration" },
+        { "include": "#constructor-destructor" },
+        { "include": "#type-annotation" },
+        { "include": "#expression" }
       ]
     }
+
   }
 }
