@@ -6,510 +6,535 @@
 
   "patterns": [
     { "include": "#hashbang" },
-    { "include": "#statements" }
+    { "include": "#comments" },
+    { "include": "#namespace-header" },
+    { "include": "#use-directive" },
+    { "include": "#import-declaration" },
+    { "include": "#declarations" },
+    { "include": "#decorators" },
+    { "include": "#strings" },
+    { "include": "#regex" },
+    { "include": "#numbers" },
+    { "include": "#language-constants" },
+    { "include": "#predefined-types" },
+    { "include": "#numeric-type-names" },
+    { "include": "#builtin-types" },
+    { "include": "#builtin-functions" },
+    { "include": "#accelerator-intrinsics" },
+    { "include": "#keywords" },
+    { "include": "#function-call" },
+    { "include": "#type-name" },
+    { "include": "#private-identifier" },
+    { "include": "#operators" },
+    { "include": "#punctuation" }
   ],
 
   "repository": {
 
     "hashbang": {
-      "match": "\\A#!.*$",
-      "name": "comment.line.shebang.vtx"
+      "comment": "§1.1 HashbangComment — admitted only as the very first characters of the input.",
+      "name": "comment.line.shebang.vertex",
+      "match": "\\A#!.*$"
     },
 
     "comments": {
       "patterns": [
-        {
-          "name": "comment.block.documentation.vtx",
-          "begin": "/\\*\\*(?!/)",
-          "end": "\\*/",
-          "patterns": [
-            { "match": "@[A-Za-z]+", "name": "keyword.other.documentation.tag.vtx" }
-          ]
-        },
-        {
-          "name": "comment.block.vtx",
-          "begin": "/\\*",
-          "end": "\\*/"
-        },
-        {
-          "name": "comment.line.double-slash.vtx",
-          "begin": "//",
-          "end": "(?=$)"
-        }
+        { "include": "#triple-slash-directive" },
+        { "include": "#check-pragma" },
+        { "include": "#block-comment" },
+        { "include": "#line-comment" }
       ]
     },
-
-    "directives": {
-      "match": "(^\\s*)(\")(use (?:cuda|metal|stablehlo|freestanding))(\")(\\s*;?)",
+    "triple-slash-directive": {
+      "comment": "§13.2 TripleSlashDirective. Unlisted in the fork diff, so inherited unchanged — and unexercised by any spec document.",
+      "name": "comment.line.triple-slash.vertex",
+      "begin": "^\\s*(///)\\s*(?=<reference\\b)",
+      "beginCaptures": { "1": { "name": "punctuation.definition.comment.vertex" } },
+      "end": "$",
+      "patterns": [
+        { "name": "keyword.control.directive.reference.vertex", "match": "<reference\\b" },
+        {
+          "match": "\\b(path|types|lib|resolution-mode)\\s*(=)",
+          "captures": {
+            "1": { "name": "entity.other.attribute-name.vertex" },
+            "2": { "name": "punctuation.separator.key-value.vertex" }
+          }
+        },
+        { "include": "#string-double" },
+        { "include": "#string-single" },
+        { "name": "punctuation.definition.tag.end.vertex", "match": "/>" }
+      ]
+    },
+    "check-pragma": {
+      "comment": "§13.3 CheckPragma. Inherited unchanged, so the spelling is still `@ts-`, not `@vtx-`.",
+      "match": "(//)\\s*(@ts-(?:expect-error|ignore|nocheck|check))\\b(.*)$",
       "captures": {
-        "2": { "name": "punctuation.definition.string.begin.vtx" },
-        "3": { "name": "string.quoted.double.directive.vtx" },
-        "4": { "name": "punctuation.definition.string.end.vtx" },
-        "5": { "name": "punctuation.terminator.statement.vtx" }
+        "1": { "name": "punctuation.definition.comment.vertex" },
+        "2": { "name": "storage.type.pragma.vertex" },
+        "3": { "name": "comment.line.double-slash.vertex" }
+      }
+    },
+    "block-comment": {
+      "name": "comment.block.vertex",
+      "begin": "/\\*",
+      "beginCaptures": { "0": { "name": "punctuation.definition.comment.begin.vertex" } },
+      "end": "\\*/",
+      "endCaptures": { "0": { "name": "punctuation.definition.comment.end.vertex" } }
+    },
+    "line-comment": {
+      "name": "comment.line.double-slash.vertex",
+      "begin": "//",
+      "beginCaptures": { "0": { "name": "punctuation.definition.comment.vertex" } },
+      "end": "$"
+    },
+
+    "namespace-header": {
+      "comment": "§7 NamespaceHeader — file-scoped, first item in the CompilationUnit, cannot nest or be re-opened. The braced NamespaceBody form is removed, so `namespace` never introduces a block.",
+      "match": "^\\s*(namespace)\\s+([_$[:alpha:]][_$[:alnum:]]*(?:\\s*\\.\\s*[_$[:alpha:]][_$[:alnum:]]*)*)",
+      "captures": {
+        "1": { "name": "keyword.control.namespace.vertex" },
+        "2": { "name": "entity.name.namespace.vertex" }
       }
     },
 
-    "decorators": {
+    "use-directive": {
+      "comment": "§13.1 UseDirective: use Identifier. Takes no arguments — no version, no parens, never a string. The grammar admits any Identifier; the four slots below are the ones the build actually checks (use.md), so they get distinct scopes and anything else falls through to the generic arm.",
       "patterns": [
         {
-          "match": "(@)(packed|align|bits|objc)\\b",
+          "comment": "Memory model slot — optional, implied by every platform.",
+          "match": "^\\s*(use)\\s+(native|host)\\b",
           "captures": {
-            "1": { "name": "punctuation.decorator.vtx" },
-            "2": { "name": "support.function.decorator.vtx" }
+            "1": { "name": "keyword.control.directive.use.vertex" },
+            "2": { "name": "support.constant.directive.memory-model.vertex" }
           }
         },
         {
-          "match": "(@)([A-Za-z_$][\\w$]*)",
+          "comment": "Platform slot — fixes the numeric table and the foreign resolver.",
+          "match": "^\\s*(use)\\s+(any|windows|linux|darwin|wasm|android|js)\\b",
           "captures": {
-            "1": { "name": "punctuation.decorator.vtx" },
-            "2": { "name": "entity.name.function.decorator.vtx" }
+            "1": { "name": "keyword.control.directive.use.vertex" },
+            "2": { "name": "support.constant.directive.platform.vertex" }
+          }
+        },
+        {
+          "comment": "Runtime slot — native platforms only; noentry requires nostd.",
+          "match": "^\\s*(use)\\s+(nostd|noentry)\\b",
+          "captures": {
+            "1": { "name": "keyword.control.directive.use.vertex" },
+            "2": { "name": "support.constant.directive.runtime.vertex" }
+          }
+        },
+        {
+          "comment": "Accelerated backend slot — gates kernel func / graph func bodies.",
+          "match": "^\\s*(use)\\s+(cuda|msl|stablehlo)\\b",
+          "captures": {
+            "1": { "name": "keyword.control.directive.use.vertex" },
+            "2": { "name": "support.constant.directive.backend.vertex" }
+          }
+        },
+        {
+          "comment": "Grammatical but not a known slot value. Not marked invalid — that is a build-time check, not a parse error.",
+          "match": "^\\s*(use)\\s+([_$[:alpha:]][_$[:alnum:]]*)",
+          "captures": {
+            "1": { "name": "keyword.control.directive.use.vertex" },
+            "2": { "name": "support.constant.directive.vertex" }
           }
         }
       ]
     },
 
-    "module-specifier-string": {
-      "name": "string.quoted.double.module-specifier.vtx",
-      "begin": "(?:(?<=\\bfrom\\s)|(?<=\\bmodule\\s)|(?<=\\brequire\\()|(?<=\\bimport\\())\"",
-      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtx" } },
-      "end": "\"",
-      "endCaptures": { "0": { "name": "punctuation.definition.string.end.vtx" } },
+    "import-declaration": {
+      "comment": "§4.1 ImportDeclaration: import ImportSpec | import ( {ImportSpec} ). ImportSpec is [ImportAlias] StringLiteral — no named bindings, no FromClause, no `from`/`require`/`defer`. An ImportAlias is therefore only ever the identifier immediately preceding a specifier string, which is why this is scoped to the declaration rather than matched loose.",
       "patterns": [
-        { "match": "^[A-Za-z][A-Za-z0-9+.\\-]*(?=:)", "name": "entity.name.tag.scheme.vtx" },
-        { "match": ":", "name": "punctuation.separator.scheme.vtx" },
+        {
+          "begin": "\\b(import)\\s*(\\()",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.import.vertex" },
+            "2": { "name": "punctuation.definition.parameters.vertex" }
+          },
+          "end": "\\)",
+          "endCaptures": { "0": { "name": "punctuation.definition.parameters.vertex" } },
+          "patterns": [
+            { "include": "#comments" },
+            {
+              "comment": "ImportAlias: Identifier or `_`. The group needs no separator — after a spec's StringLiteral the next token is a StringLiteral, an Identifier/_, or `)`.",
+              "match": "([_$[:alpha:]][_$[:alnum:]]*)(?=\\s*[\"'])",
+              "captures": { "1": { "name": "entity.name.namespace.alias.vertex" } }
+            },
+            { "include": "#string-double" },
+            { "include": "#string-single" }
+          ]
+        },
+        {
+          "match": "\\b(import)\\s+(?:([_$[:alpha:]][_$[:alnum:]]*)\\s+)?(?=[\"'])",
+          "captures": {
+            "1": { "name": "keyword.control.import.vertex" },
+            "2": { "name": "entity.name.namespace.alias.vertex" }
+          }
+        }
+      ]
+    },
+
+    "declarations": {
+      "patterns": [
+        { "include": "#ambient-module" },
+        {
+          "comment": "§12 AmbientStructDeclaration: declare struct BindingIdentifier — a layout-free type, legal only in pointer positions.",
+          "match": "\\b(declare)\\s+(struct)\\s+([_$[:alpha:]][_$[:alnum:]]*)",
+          "captures": {
+            "1": { "name": "storage.modifier.declare.vertex" },
+            "2": { "name": "storage.type.vertex" },
+            "3": { "name": "entity.name.type.vertex" }
+          }
+        },
+        {
+          "comment": "§5.2 FunctionDeclaration: {Decorator} {FunctionModifier} func BindingIdentifier CallSignature. FunctionModifier is kernel|graph; the async and generator variants take the function -> func swap only.",
+          "match": "\\b(?:(kernel|graph)\\s+)?(?:(async)\\s+)?(func)\\s*(\\*)?\\s*([_$[:alpha:]][_$[:alnum:]]*)?",
+          "captures": {
+            "1": { "name": "storage.modifier.function.vertex" },
+            "2": { "name": "storage.modifier.async.vertex" },
+            "3": { "name": "storage.type.function.vertex" },
+            "4": { "name": "keyword.generator.asterisk.vertex" },
+            "5": { "name": "entity.name.function.vertex" }
+          }
+        },
+        {
+          "comment": "§6, §7 — class, struct, interface, enum heads.",
+          "match": "\\b(class|struct|interface|enum)\\s+([_$[:alpha:]][_$[:alnum:]]*)",
+          "captures": {
+            "1": { "name": "storage.type.vertex" },
+            "2": { "name": "entity.name.type.vertex" }
+          }
+        },
+        {
+          "comment": "§5.1 TypeAliasDeclaration. Unlisted in the fork diff, so inherited — but main_llama.vs asserts there is no alias form. Highlighted pending confirmation; if the alias really is gone, delete this arm and `type` reverts to an ordinary identifier.",
+          "match": "\\b(type)\\s+([_$[:alpha:]][_$[:alnum:]]*)(?=\\s*(<|=))",
+          "captures": {
+            "1": { "name": "storage.type.alias.vertex" },
+            "2": { "name": "entity.name.type.alias.vertex" }
+          }
+        },
+        {
+          "comment": "§6 DestructorDeclaration — no parameters, no modifiers, mandatory Block. Legal only under `native`; illegal under `host` on both android and js.",
+          "match": "\\b(destructor)\\s*(?=\\()",
+          "captures": { "1": { "name": "storage.type.destructor.vertex" } }
+        },
+        {
+          "match": "\\b(constructor)\\s*(?=\\(|<)",
+          "captures": { "1": { "name": "storage.type.constructor.vertex" } }
+        }
+      ]
+    },
+
+    "ambient-module": {
+      "comment": "§12 AmbientModuleDeclaration: declare module StringLiteral. Scoped as a begin/end so the scheme prefix is only ever recognised in specifier position, never in an arbitrary string that happens to start with `cpp:`.",
+      "begin": "\\b(declare)\\s+(module)\\b",
+      "beginCaptures": {
+        "1": { "name": "storage.modifier.declare.vertex" },
+        "2": { "name": "storage.type.module.vertex" }
+      },
+      "end": "(?<=[\"'])|(?=[^\\s\"'])",
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#module-specifier-double" },
+        { "include": "#module-specifier-single" }
+      ]
+    },
+    "module-specifier-double": {
+      "comment": "Scheme prefixes cost zero grammar — they live inside the StringLiteral, and an unknown scheme is a resolution error rather than a parse error. The live set is dynamic: (windows/linux/darwin, dlopen at first use), framework: (darwin), and cpp: (C++ mangling). `objc:` and `jvm:` are gone: darwin spells Objective-C access through framework:, and android takes a bare package name with no scheme at all.",
+      "name": "string.quoted.double.module.vertex",
+      "begin": "\"",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vertex" } },
+      "end": "\"|(?=$)",
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.vertex" } },
+      "patterns": [
+        {
+          "match": "\\G(dynamic|framework|cpp)(:)",
+          "captures": {
+            "1": { "name": "keyword.other.scheme.vertex" },
+            "2": { "name": "punctuation.separator.scheme.vertex" }
+          }
+        },
+        { "include": "#string-escape" }
+      ]
+    },
+    "module-specifier-single": {
+      "name": "string.quoted.single.module.vertex",
+      "begin": "'",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vertex" } },
+      "end": "'|(?=$)",
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.vertex" } },
+      "patterns": [
+        {
+          "match": "\\G(dynamic|framework|cpp)(:)",
+          "captures": {
+            "1": { "name": "keyword.other.scheme.vertex" },
+            "2": { "name": "punctuation.separator.scheme.vertex" }
+          }
+        },
         { "include": "#string-escape" }
       ]
     },
 
-    "string-escape": {
+    "decorators": {
+      "comment": "§11. Decorator itself is unedited; what changed is where {Decorator} may appear — FunctionDeclaration (§5), StructDeclaration and StructElement (§6). Known spellings: @packed, @align(N), @bits(N), @inline, @objc. There is no @android or @jvm — `use android` says it once per file instead.",
       "patterns": [
         {
-          "name": "constant.character.escape.vtx",
-          "match": "\\\\(x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]+\\}|u[0-9A-Fa-f]{4}|[^xu])"
-        }
+          "match": "(@)\\s*([_$[:alpha:]][_$[:alnum:]]*(?:\\s*\\.\\s*[_$[:alpha:]][_$[:alnum:]]*)*)",
+          "captures": {
+            "1": { "name": "punctuation.decorator.vertex" },
+            "2": { "name": "entity.name.function.decorator.vertex" }
+          }
+        },
+        { "name": "punctuation.decorator.vertex", "match": "(@)(?=\\s*\\()" }
       ]
     },
 
     "strings": {
       "patterns": [
-        { "include": "#module-specifier-string" },
-        {
-          "name": "string.quoted.double.vtx",
-          "begin": "\"",
-          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtx" } },
-          "end": "\"",
-          "endCaptures": { "0": { "name": "punctuation.definition.string.end.vtx" } },
-          "patterns": [{ "include": "#string-escape" }]
-        },
-        {
-          "name": "string.quoted.single.vtx",
-          "begin": "'",
-          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtx" } },
-          "end": "'",
-          "endCaptures": { "0": { "name": "punctuation.definition.string.end.vtx" } },
-          "patterns": [{ "include": "#string-escape" }]
-        },
-        { "include": "#template-literal" }
+        { "include": "#member-name-string" },
+        { "include": "#string-double" },
+        { "include": "#string-single" },
+        { "include": "#template" }
       ]
     },
-
-    "template-literal": {
-      "name": "string.template.vtx",
+    "member-name-string": {
+      "comment": "A StringLiteral in member position is a name, not data: JVM overload descriptors (\"sample002(Ljava/lang/String;)V\"), Objective-C selectors (\"sample002:sample003:\"), and C++ operators (\"operator+\"). Covers both the declaration site and the a[\"...\"](b) call site.",
+      "match": "(\")([^\"\\n]*)(\")(?=\\s*[(<])",
+      "captures": {
+        "1": { "name": "punctuation.definition.string.begin.vertex" },
+        "2": { "name": "entity.name.function.member.vertex" },
+        "3": { "name": "punctuation.definition.string.end.vertex" }
+      }
+    },
+    "string-double": {
+      "name": "string.quoted.double.vertex",
+      "begin": "\"",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vertex" } },
+      "end": "\"|(?=$)",
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.vertex" } },
+      "patterns": [{ "include": "#string-escape" }]
+    },
+    "string-single": {
+      "comment": "Vertex has no character literal — 'A' is a String in TS and stayed one here.",
+      "name": "string.quoted.single.vertex",
+      "begin": "'",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vertex" } },
+      "end": "'|(?=$)",
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.vertex" } },
+      "patterns": [{ "include": "#string-escape" }]
+    },
+    "string-escape": {
+      "comment": "§1.6.2 EscapeSequence, LineContinuation, and the NonEscapeCharacter fallback.",
+      "patterns": [
+        {
+          "name": "constant.character.escape.vertex",
+          "match": "\\\\(?:['\"\\\\bfnrtv]|0(?![0-9])|x[0-9a-fA-F]{2}|u\\{[0-9a-fA-F]{1,6}\\}|u[0-9a-fA-F]{4}|\\r?\\n)"
+        },
+        { "name": "constant.character.escape.vertex", "match": "\\\\[^0-9xu\\r\\n]" },
+        { "name": "invalid.illegal.escape.vertex", "match": "\\\\." }
+      ]
+    },
+    "template": {
+      "name": "string.template.vertex",
       "begin": "`",
-      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtx" } },
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.template.begin.vertex" } },
       "end": "`",
-      "endCaptures": { "0": { "name": "punctuation.definition.string.end.vtx" } },
+      "endCaptures": { "0": { "name": "punctuation.definition.string.template.end.vertex" } },
       "patterns": [
         { "include": "#string-escape" },
         {
-          "name": "meta.template.expression.vtx",
+          "name": "meta.template.expression.vertex",
           "begin": "\\$\\{",
-          "beginCaptures": { "0": { "name": "punctuation.definition.template-expression.begin.vtx" } },
+          "beginCaptures": { "0": { "name": "punctuation.definition.template-expression.begin.vertex" } },
           "end": "\\}",
-          "endCaptures": { "0": { "name": "punctuation.definition.template-expression.end.vtx" } },
-          "patterns": [{ "include": "#expression" }]
+          "endCaptures": { "0": { "name": "punctuation.definition.template-expression.end.vertex" } },
+          "patterns": [{ "include": "$self" }],
+          "contentName": "meta.embedded.line.vertex"
         }
       ]
     },
 
     "regex": {
-      "name": "string.regexp.vtx",
-      "begin": "(?<![\\w$\\)\\]])/(?![/*])",
-      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vtx" } },
-      "end": "/[a-zA-Z]*",
-      "endCaptures": { "0": { "name": "punctuation.definition.string.end.vtx" } },
+      "comment": "§1.6.4. RegularExpressionLiteral survives — §1.8 names it among the tokens that can end a statement. The goal symbol is chosen by the preceding token, so the lookbehind whitelists tokens that cannot end an expression. `of` and `from` are absent because they are no longer keywords.",
+      "name": "string.regexp.vertex",
+      "begin": "(?<!\\+\\+|--|\\})(?<=[=(:,\\[?+!&|;{}]|=>|&&|\\|\\||\\*/|^return|[^\\._$[:alnum:]]return|^case|[^\\._$[:alnum:]]case|^typeof|[^\\._$[:alnum:]]typeof|^in|[^\\._$[:alnum:]]in|^new|[^\\._$[:alnum:]]new|^throw|[^\\._$[:alnum:]]throw|^yield|[^\\._$[:alnum:]]yield|^await|[^\\._$[:alnum:]]await|^delete|[^\\._$[:alnum:]]delete|^void|[^\\._$[:alnum:]]void)\\s*(/)(?![/*])",
+      "beginCaptures": { "1": { "name": "punctuation.definition.string.begin.vertex" } },
+      "end": "(/)([_$[:alpha:]][_$[:alnum:]]*)?|(?=$)",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.string.end.vertex" },
+        "2": { "name": "keyword.other.regexp.flags.vertex" }
+      },
       "patterns": [
-        { "match": "\\\\.", "name": "constant.character.escape.vtx" },
         {
-          "name": "constant.other.character-class.regexp.vtx",
+          "name": "constant.other.character-class.set.regexp.vertex",
           "begin": "\\[",
           "end": "\\]",
-          "patterns": [{ "match": "\\\\.", "name": "constant.character.escape.vtx" }]
-        }
+          "patterns": [{ "name": "constant.character.escape.regexp.vertex", "match": "\\\\." }]
+        },
+        { "name": "constant.character.escape.regexp.vertex", "match": "\\\\." },
+        { "name": "keyword.operator.quantifier.regexp.vertex", "match": "[*+?]|\\{\\d+(,\\d*)?\\}" },
+        { "name": "keyword.operator.or.regexp.vertex", "match": "\\|" },
+        { "name": "punctuation.definition.group.regexp.vertex", "match": "[()]" }
       ]
     },
 
     "numbers": {
+      "comment": "§1.6.1. The first DecimalLiteral alternative requires fractional digits, so `1.` is not a literal and `0..10` lexes as 0 .. 10 rather than 0. . 10 — which is what makes the range form work without a lexer hack. Underscores are separators only and carry no grouping convention. No legacy octal.",
       "patterns": [
-        { "name": "constant.numeric.hex.vtx", "match": "\\b0[xX][0-9a-fA-F](?:_?[0-9a-fA-F])*n?\\b" },
-        { "name": "constant.numeric.binary.vtx", "match": "\\b0[bB][01](?:_?[01])*n?\\b" },
-        { "name": "constant.numeric.octal.vtx", "match": "\\b0[oO][0-7](?:_?[0-7])*n?\\b" },
+        { "name": "invalid.illegal.numeric.legacy-octal.vertex", "match": "\\b0[0-9_]+n?\\b" },
+        { "name": "invalid.illegal.numeric.separator.vertex", "match": "\\b[0-9][0-9_]*_(?=[^0-9])" },
+        { "name": "constant.numeric.hex.vertex", "match": "\\b0[xX][0-9a-fA-F](?:_?[0-9a-fA-F])*n?\\b" },
+        { "name": "constant.numeric.octal.vertex", "match": "\\b0[oO][0-7](?:_?[0-7])*n?\\b" },
+        { "name": "constant.numeric.binary.vertex", "match": "\\b0[bB][01](?:_?[01])*n?\\b" },
+        { "name": "constant.numeric.bigint.vertex", "match": "\\b(?:0|[1-9](?:_?[0-9])*)n\\b" },
         {
-          "name": "constant.numeric.decimal.vtx",
-          "match": "\\b(?:0|[1-9](?:_?[0-9])*)(?:\\.(?:[0-9](?:_?[0-9])*)?)?(?:[eE][+-]?[0-9](?:_?[0-9])*)?n?\\b"
+          "name": "constant.numeric.decimal.vertex",
+          "match": "\\b(?:0|[1-9](?:_?[0-9])*)\\.[0-9](?:_?[0-9])*(?:[eE][+-]?[0-9](?:_?[0-9])*)?"
         },
         {
-          "name": "constant.numeric.decimal.vtx",
-          "match": "\\.[0-9](?:_?[0-9])*(?:[eE][+-]?[0-9](?:_?[0-9])*)?\\b"
+          "name": "constant.numeric.decimal.vertex",
+          "match": "(?<![_$[:alnum:].])\\.[0-9](?:_?[0-9])*(?:[eE][+-]?[0-9](?:_?[0-9])*)?"
+        },
+        {
+          "name": "constant.numeric.decimal.vertex",
+          "match": "\\b(?:0|[1-9](?:_?[0-9])*)(?:[eE][+-]?[0-9](?:_?[0-9])*)?\\b"
         }
       ]
     },
 
+    "language-constants": {
+      "patterns": [
+        { "name": "constant.language.boolean.vertex", "match": "\\b(true|false)\\b" },
+        {
+          "comment": "`null` is load-bearing in type position too — absence is always an explicit union at every foreign boundary. Scoped as a constant in both positions, matching TS.",
+          "name": "constant.language.null.vertex",
+          "match": "\\bnull\\b"
+        },
+        { "name": "constant.language.undefined.vertex", "match": "\\bundefined\\b" },
+        { "name": "variable.language.this.vertex", "match": "\\bthis\\b" },
+        { "name": "variable.language.super.vertex", "match": "\\bsuper\\b" }
+      ]
+    },
+
+    "predefined-types": {
+      "comment": "§2 PredefinedType. Two entries replaced: number -> int, boolean -> bool. `void` is listed here rather than as the void operator: `: void` is ubiquitous in Vertex and the unary operator is unexercised, so type position wins the collision. This block sits above #keywords for that reason.",
+      "name": "support.type.primitive.vertex",
+      "match": "\\b(any|unknown|never|void|object|string|symbol|bigint|int|bool|intrinsic)\\b"
+    },
+    "numeric-type-names": {
+      "comment": "§2 — these are ordinary TypeIdentifiers, not PredefinedType entries. That distinction is exactly what makes int32(a) parse as a CallExpression. Highlighted as types, so a conversion call reads as a type name followed by an argument list, which is what it is.",
+      "name": "support.type.numeric.vertex",
+      "match": "\\b(int8|int16|int32|int64|uint8|uint16|uint32|uint64|usize|float32|float64|byte)\\b"
+    },
+    "builtin-types": {
+      "comment": "Pointer family (native, plus weak_ptr as the lone survivor under android), contiguous storage, and the accelerated types. All lowercase, so the capitalized #type-name heuristic below would miss every one of them.",
+      "name": "support.type.builtin.vertex",
+      "match": "\\b(shared_ptr|unique_ptr|weak_ptr|mutable_ptr|const_ptr|void_ptr|device_ptr|span|block|array|vector|simd|tensor)\\b"
+    },
+    "builtin-functions": {
+      "comment": "native.md §2-§3 and §8. Layout introspection, allocation, placement construction, pointer casts, explicit load/store, and the kernel compile/launch pair. Ordered longest-first for readability; \\b already prevents alloc from shadowing alloc_uninit.",
+      "name": "support.function.builtin.vertex",
+      "match": "\\b(make_unique|make_shared|alloc_uninit|try_alloc|alloc|construct_at|destroy_at|addressof|bit_cast|pointer_cast|pointer_from_address|unaligned_load|unaligned_store|volatile_load|volatile_store|sizeof|alignof|offsetof|move|compile|launch)\\b(?=\\s*[(<])"
+    },
+    "accelerator-intrinsics": {
+      "comment": "native.md §8 — thread-context intrinsics, legal only inside a kernel func body.",
+      "name": "support.variable.intrinsic.vertex",
+      "match": "\\b(threadIdx|blockIdx|blockDim|gridDim)\\b"
+    },
+
     "keywords": {
+      "comment": "§1.5. Deliberately absent: `function`, `of`, `from`, `require`, `defer` — each removed from the keyword set, so each is now an ordinary identifier and must not be highlighted. `number` and `boolean` are orphaned contextual entries and behave the same way.",
       "patterns": [
-        { "name": "keyword.control.conditional.vtx", "match": "\\b(if|else|switch|case|default)\\b" },
-        { "name": "keyword.control.loop.vtx", "match": "\\b(for|while|do)\\b" },
-        { "name": "keyword.control.flow.vtx", "match": "\\b(break|continue|return|throw)\\b" },
-        { "name": "keyword.control.exception.vtx", "match": "\\b(try|catch|finally)\\b" },
-        { "name": "keyword.control.debugger.vtx", "match": "\\bdebugger\\b" },
-        { "name": "keyword.control.inheritance.vtx", "match": "\\b(extends|implements)\\b" },
-        { "name": "keyword.control.module.vtx", "match": "\\b(import|export|from|require|with)\\b" },
-        { "name": "keyword.other.vtx", "match": "\\b(defer|source)\\b" },
-        { "name": "storage.modifier.vtx", "match": "\\b(public|private|protected|static|abstract|readonly|override|declare|accessor|async)\\b" },
-        { "name": "storage.type.vtx", "match": "\\b(var|let|const|function|class|struct|interface|type|enum|namespace|module|get|set)\\b" },
-        { "name": "storage.type.function.vtx", "match": "\\b(constructor|destructor)\\b" },
-        { "name": "storage.modifier.mode.vtx", "match": "\\bmutating\\b" },
-        { "name": "storage.modifier.accelerated.vtx", "match": "\\b(kernel|graph)\\b(?=\\s+function)" },
-        { "name": "keyword.operator.new.vtx", "match": "\\bnew\\b" },
-        { "name": "keyword.operator.expression.instanceof.vtx", "match": "\\binstanceof\\b" },
-        { "name": "keyword.operator.expression.typeof.vtx", "match": "\\btypeof\\b" },
-        { "name": "keyword.operator.word.vtx", "match": "\\b(in|of|delete|void|yield|await|as|satisfies|is|keyof|infer|unique|out|asserts)\\b" },
-        { "name": "keyword.control.using.vtx", "match": "\\busing\\b" },
-        { "name": "constant.language.vtx", "match": "\\b(true|false|null|undefined)\\b" },
-        { "name": "variable.language.this.vtx", "match": "\\b(this|super)\\b" },
-        { "name": "variable.language.global.vtx", "match": "\\bglobal\\b" }
-      ]
-    },
-
-    "primitive-types": {
-      "name": "support.type.primitive.vtx",
-      "match": "\\b(any|unknown|never|void|object|string|number|bigint|boolean|symbol|intrinsic|int8|int16|int32|int64|uint8|uint16|uint32|uint64|usize|float32|float64|byte)\\b"
-    },
-
-    "vertex-container-types": {
-      "name": "support.class.builtin.vtx",
-      "match": "\\b(Array|FixedArray|span|block|Tensor|simd)\\b"
-    },
-
-    "vertex-pointer-types": {
-      "name": "support.type.pointer.vtx",
-      "match": "\\b(unique_ptr|shared_ptr|weak_ptr|mutable_ptr|const_ptr|void_ptr|device_ptr)\\b"
-    },
-
-    "vertex-intrinsic-functions": {
-      "name": "support.function.intrinsic.vtx",
-      "match": "\\b(sizeof|alignof|offsetof|bit_cast|pointer_cast|pointer_from_address|unaligned_load|unaligned_store|volatile_load|volatile_store|alloc|try_alloc|alloc_uninit|construct_at|destroy_at|addressof|move|compile|launch)\\b"
-    },
-
-    "vertex-thread-intrinsics": {
-      "match": "\\b(threadIdx|blockIdx|blockDim|gridDim)\\b(\\.(x|y|z))?",
-      "captures": {
-        "1": { "name": "variable.language.thread.vtx" },
-        "3": { "name": "support.constant.thread-axis.vtx" }
-      }
-    },
-
-    "private-identifier": {
-      "name": "variable.other.property.private.vtx",
-      "match": "#[A-Za-z_$][\\w$]*"
-    },
-
-    "generics": {
-      "begin": "<",
-      "beginCaptures": { "0": { "name": "punctuation.definition.typeparameters.begin.vtx" } },
-      "end": ">",
-      "endCaptures": { "0": { "name": "punctuation.definition.typeparameters.end.vtx" } },
-      "patterns": [
-        { "include": "#comments" },
-        { "match": "\\b(const|in|out)\\b", "name": "storage.modifier.vtx" },
-        { "match": "\\bextends\\b", "name": "keyword.control.inheritance.vtx" },
-        { "match": "\\b(mutating|readonly)\\b", "name": "storage.modifier.mode.vtx" },
-        { "include": "#primitive-types" },
-        { "include": "#vertex-container-types" },
-        { "include": "#vertex-pointer-types" },
-        { "include": "#numbers" },
-        { "include": "#strings" },
-        { "include": "#generics" },
-        { "match": "[A-Za-z_$][\\w$]*", "name": "entity.name.type.vtx" },
-        { "include": "#punctuation" }
-      ]
-    },
-
-    "type-annotation": {
-      "begin": "(:)(?!:)",
-      "beginCaptures": { "1": { "name": "punctuation.separator.colon.vtx" } },
-      "end": "(?=[,;)=\\]\\}])|$",
-      "patterns": [
-        { "include": "#comments" },
-        { "match": "\\b(mutating|readonly)\\b", "name": "storage.modifier.mode.vtx" },
-        { "match": "\\b(keyof|infer|unique|typeof|is|asserts|satisfies|as)\\b", "name": "keyword.operator.word.vtx" },
-        { "include": "#primitive-types" },
-        { "include": "#vertex-container-types" },
-        { "include": "#vertex-pointer-types" },
-        { "include": "#strings" },
-        { "include": "#numbers" },
-        { "include": "#generics" },
-        { "match": "\\[|\\]", "name": "punctuation.definition.array.vtx" },
-        { "match": "\\(|\\)", "name": "punctuation.definition.parameters.vtx" },
-        { "match": "\\{|\\}", "name": "punctuation.definition.block.vtx" },
-        { "match": "=>", "name": "storage.type.function.arrow.vtx" },
-        { "match": "\\||&", "name": "keyword.operator.type.vtx" },
-        { "match": "\\?", "name": "keyword.operator.optional.vtx" },
-        { "match": "\\.\\.\\.", "name": "keyword.operator.spread.vtx" },
-        { "match": ",", "name": "punctuation.separator.comma.vtx" },
-        { "match": "[A-Za-z_$][\\w$]*", "name": "entity.name.type.vtx" }
+        {
+          "comment": "§8. `if let` binds one identifier, no patterns, and `let` is contextually reserved by position after `if`.",
+          "match": "\\b(if)\\s+(let)\\b",
+          "captures": {
+            "1": { "name": "keyword.control.flow.vertex" },
+            "2": { "name": "keyword.control.binding.vertex" }
+          }
+        },
+        {
+          "comment": "§8 — `case X:` and fallthrough are gone (comma lists replace grouped fallthrough); for-in is the sole iteration form. try/catch/finally/throw are inherited unedited but semantically unexercised: Vertex does not unwind, and foreign failure is always a return union.",
+          "name": "keyword.control.flow.vertex",
+          "match": "\\b(break|case|catch|continue|default|do|else|finally|for|if|return|switch|throw|try|while)\\b"
+        },
+        { "name": "keyword.control.import.vertex", "match": "\\b(import|export)\\b" },
+        { "name": "keyword.other.debugger.vertex", "match": "\\bdebugger\\b" },
+        {
+          "comment": "Still reserved (§1.5), but the WithStatement production is removed (§8) — reserved with nothing to derive.",
+          "name": "invalid.illegal.reserved.vertex",
+          "match": "\\bwith\\b"
+        },
+        {
+          "name": "keyword.operator.expression.vertex",
+          "match": "\\b(typeof|instanceof|in|delete|await|yield|new|keyof|as|satisfies|is|asserts|infer)\\b"
+        },
+        {
+          "name": "storage.type.vertex",
+          "match": "\\b(var|let|const|class|struct|enum|interface|func|type|namespace|module|constructor|destructor|accessor)\\b"
+        },
+        {
+          "comment": "`readonly` occupies two binding sites, disambiguated by position — member modifier before an identifier, prefix type operator after a `:`. `mutating` is contextual, legal only following a `:` in parameter, return, or this-parameter position, so `var mutating = 0` stays a legal binding. Neither distinction is expressible here; both take the one modifier scope.",
+          "name": "storage.modifier.vertex",
+          "match": "\\b(public|private|protected|static|abstract|override|readonly|declare|async|get|set|out|in|mutating|unique|kernel|graph|implements|extends|package|global|meta|target|use)\\b"
+        }
       ]
     },
 
     "function-call": {
-      "match": "\\b([A-Za-z_$][\\w$]*)\\s*(?=(?:<[^<>]*>\\s*)?\\()",
-      "captures": { "1": { "name": "entity.name.function.vtx" } }
+      "comment": "Placed above #type-name so a capitalized call reads as a call — Win32 and framework entry points are capitalized, and Sample001() construction is a call too. A bare capitalized identifier still falls through to the type heuristic.",
+      "match": "([_$[:alpha:]][_$[:alnum:]]*)\\s*(?=\\()",
+      "captures": { "1": { "name": "entity.name.function.call.vertex" } }
+    },
+    "type-name": {
+      "comment": "Heuristic: capitalized identifiers are type references. The grammar has no such rule — this is presentation only.",
+      "name": "entity.name.type.vertex",
+      "match": "\\b([A-Z][_$[:alnum:]]*)\\b"
+    },
+    "private-identifier": {
+      "comment": "§1.4 PrivateIdentifier.",
+      "name": "variable.other.property.private.vertex",
+      "match": "#[_$[:alpha:]][_$[:alnum:]]*"
     },
 
-    "property-access": {
-      "match": "(?<=\\.)\\s*([A-Za-z_$][\\w$]*)",
-      "captures": { "1": { "name": "variable.other.property.vtx" } }
-    },
-
-    "capitalized-identifier": {
-      "match": "\\b[A-Z][\\w$]*\\b",
-      "name": "entity.name.type.vtx"
-    },
-
-    "identifiers": {
-      "match": "[A-Za-z_$][\\w$]*",
-      "name": "variable.other.readwrite.vtx"
+    "operators": {
+      "comment": "§1.7 Punctuator. `>>`, `>>>`, `>>=` and `>>>=` are NOT tokens: a `>` is only ever matched alone, so compound shift forms surface as adjacent `>` operators, exactly as the grammar writes them (`> >`, `> >=`). `..` is matched after `...` and before `.` for maximal munch. `?.` is optional chaining only when not followed by a decimal digit.",
+      "patterns": [
+        { "name": "keyword.operator.spread.vertex", "match": "\\.\\.\\." },
+        { "name": "keyword.operator.range.vertex", "match": "\\.\\." },
+        { "name": "keyword.operator.optional-chaining.vertex", "match": "\\?\\.(?!\\d)" },
+        { "name": "keyword.operator.arrow.vertex", "match": "=>" },
+        {
+          "name": "keyword.operator.assignment.compound.vertex",
+          "match": "(\\*\\*=|<<=|&&=|\\|\\|=|\\?\\?=|\\+=|-=|\\*=|/=|%=|&=|\\|=|\\^=)"
+        },
+        { "name": "keyword.operator.comparison.vertex", "match": "(===|!==|==|!=)" },
+        { "name": "keyword.operator.logical.vertex", "match": "(&&|\\|\\||\\?\\?)" },
+        { "name": "keyword.operator.bitwise.shift.vertex", "match": "<<" },
+        { "name": "keyword.operator.relational.vertex", "match": "(<=|>=|<|>)" },
+        { "name": "keyword.operator.arithmetic.vertex", "match": "(\\*\\*|\\+\\+|--|\\+|-|\\*|/|%)" },
+        { "name": "keyword.operator.bitwise.vertex", "match": "(&|\\||\\^|~)" },
+        { "name": "keyword.operator.logical.not.vertex", "match": "!" },
+        { "name": "keyword.operator.ternary.vertex", "match": "\\?" },
+        { "name": "keyword.operator.assignment.vertex", "match": "=" }
+      ]
     },
 
     "punctuation": {
       "patterns": [
-        { "match": "\\?\\.(?!\\d)", "name": "punctuation.accessor.optional.vtx" },
-        { "match": "\\.\\.\\.", "name": "keyword.operator.spread.vtx" },
-        { "match": "=>", "name": "storage.type.function.arrow.vtx" },
-        { "match": "(===|!==|==|!=)", "name": "keyword.operator.comparison.vtx" },
-        { "match": "(<=|>=)", "name": "keyword.operator.relational.vtx" },
-        { "match": "(&&=|\\|\\|=|\\?\\?=)", "name": "keyword.operator.assignment.logical.vtx" },
-        { "match": "(&&|\\|\\||\\?\\?)", "name": "keyword.operator.logical.vtx" },
-        { "match": "(\\*\\*=|\\+=|-=|\\*=|/=|%=|<<=|>>>=|>>=|&=|\\^=|\\|=)", "name": "keyword.operator.assignment.compound.vtx" },
-        { "match": "(\\+\\+|--)", "name": "keyword.operator.increment-decrement.vtx" },
-        { "match": "\\*\\*", "name": "keyword.operator.exponent.vtx" },
-        { "match": "(<<|>>>|>>)", "name": "keyword.operator.bitwise.shift.vtx" },
-        { "match": "[+\\-*/%]", "name": "keyword.operator.arithmetic.vtx" },
-        { "match": "[&|\\^~]", "name": "keyword.operator.bitwise.vtx" },
-        { "match": "!", "name": "keyword.operator.logical.not.vtx" },
-        { "match": "=", "name": "keyword.operator.assignment.vtx" },
-        { "match": "\\?", "name": "keyword.operator.ternary.vtx" },
-        { "match": "[<>]", "name": "keyword.operator.relational.vtx" },
-        { "match": ":", "name": "punctuation.separator.colon.vtx" },
-        { "match": ",", "name": "punctuation.separator.comma.vtx" },
-        { "match": ";", "name": "punctuation.terminator.statement.vtx" },
-        { "match": "\\.", "name": "punctuation.accessor.vtx" },
-        { "match": "@", "name": "punctuation.decorator.vtx" }
-      ]
-    },
-
-    "braces": {
-      "begin": "\\{",
-      "beginCaptures": { "0": { "name": "punctuation.definition.block.begin.vtx" } },
-      "end": "\\}",
-      "endCaptures": { "0": { "name": "punctuation.definition.block.end.vtx" } },
-      "patterns": [{ "include": "#statements" }]
-    },
-
-    "parens": {
-      "begin": "\\(",
-      "beginCaptures": { "0": { "name": "punctuation.definition.parameters.begin.vtx" } },
-      "end": "\\)",
-      "endCaptures": { "0": { "name": "punctuation.definition.parameters.end.vtx" } },
-      "patterns": [{ "include": "#statements" }]
-    },
-
-    "brackets": {
-      "begin": "\\[",
-      "beginCaptures": { "0": { "name": "punctuation.definition.array.begin.vtx" } },
-      "end": "\\]",
-      "endCaptures": { "0": { "name": "punctuation.definition.array.end.vtx" } },
-      "patterns": [{ "include": "#statements" }]
-    },
-
-    "expression": {
-      "patterns": [
-        { "include": "#comments" },
-        { "include": "#decorators" },
-        { "include": "#regex" },
-        { "include": "#strings" },
-        { "include": "#numbers" },
-        { "include": "#keywords" },
-        { "include": "#primitive-types" },
-        { "include": "#vertex-container-types" },
-        { "include": "#vertex-pointer-types" },
-        { "include": "#vertex-intrinsic-functions" },
-        { "include": "#vertex-thread-intrinsics" },
-        { "include": "#private-identifier" },
-        { "include": "#function-call" },
-        { "include": "#property-access" },
-        { "include": "#capitalized-identifier" },
-        { "include": "#braces" },
-        { "include": "#parens" },
-        { "include": "#brackets" },
-        { "include": "#punctuation" },
-        { "include": "#identifiers" }
-      ]
-    },
-
-    "declare-module": {
-      "begin": "\\b(declare)\\s+(module)\\s+(?=\")",
-      "beginCaptures": {
-        "1": { "name": "storage.modifier.vtx" },
-        "2": { "name": "storage.type.namespace.vtx" }
-      },
-      "end": "(?<=\\})|(?=;)",
-      "patterns": [
-        { "include": "#module-specifier-string" },
-        { "include": "#braces" }
-      ]
-    },
-
-    "declare-global": {
-      "match": "\\b(declare)\\s+(global)\\b",
-      "captures": {
-        "1": { "name": "storage.modifier.vtx" },
-        "2": { "name": "storage.type.namespace.vtx" }
-      }
-    },
-
-    "import-export": {
-      "patterns": [
-        { "match": "\\b(import)\\s+(type)\\b", "captures": { "1": { "name": "keyword.control.module.vtx" }, "2": { "name": "keyword.control.type.vtx" } } },
-        { "match": "\\b(export)\\s+(type)\\b", "captures": { "1": { "name": "keyword.control.module.vtx" }, "2": { "name": "keyword.control.type.vtx" } } },
-        { "match": "\\b(import)\\s+(defer|source)\\b", "captures": { "1": { "name": "keyword.control.module.vtx" }, "2": { "name": "keyword.other.vtx" } } },
-        { "match": "\\b(export)\\s+(default)\\b", "captures": { "1": { "name": "keyword.control.module.vtx" }, "2": { "name": "keyword.control.vtx" } } },
-        { "match": "\\b(export)\\s+(as)\\s+(namespace)\\b", "captures": { "1": { "name": "keyword.control.module.vtx" }, "2": { "name": "keyword.operator.word.vtx" }, "3": { "name": "storage.type.namespace.vtx" } } },
-        { "match": "\\bimport\\b", "name": "keyword.control.module.vtx" },
-        { "match": "\\bexport\\b", "name": "keyword.control.module.vtx" },
-        { "match": "\\bfrom\\b", "name": "keyword.control.module.vtx" },
-        { "match": "\\bwith\\b", "name": "keyword.control.module.vtx" },
-        { "match": "\\*\\s+as\\b", "name": "keyword.operator.word.vtx" }
-      ]
-    },
-
-    "class-declaration": {
-      "begin": "\\b(?:(export)\\s+)?(?:(default)\\s+)?(?:(abstract)\\s+)?(class)\\b",
-      "beginCaptures": {
-        "1": { "name": "keyword.control.module.vtx" },
-        "2": { "name": "keyword.control.vtx" },
-        "3": { "name": "storage.modifier.vtx" },
-        "4": { "name": "storage.type.class.vtx" }
-      },
-      "end": "(?=\\{)|(?=;)",
-      "patterns": [
-        { "include": "#comments" },
-        { "include": "#generics" },
-        { "match": "\\b(extends|implements)\\b", "name": "keyword.control.inheritance.vtx" },
-        { "match": "[A-Za-z_$][\\w$]*", "name": "entity.name.class.vtx" }
-      ]
-    },
-
-    "struct-declaration": {
-      "begin": "\\bstruct\\b",
-      "beginCaptures": { "0": { "name": "storage.type.struct.vtx" } },
-      "end": "(?=\\{)|(?=;)",
-      "patterns": [
-        { "include": "#comments" },
-        { "include": "#generics" },
-        { "match": "\\bimplements\\b", "name": "keyword.control.inheritance.vtx" },
-        { "match": "[A-Za-z_$][\\w$]*", "name": "entity.name.class.struct.vtx" }
-      ]
-    },
-
-    "interface-declaration": {
-      "begin": "\\binterface\\b",
-      "beginCaptures": { "0": { "name": "storage.type.interface.vtx" } },
-      "end": "(?=\\{)",
-      "patterns": [
-        { "include": "#comments" },
-        { "include": "#generics" },
-        { "match": "\\bextends\\b", "name": "keyword.control.inheritance.vtx" },
-        { "match": "[A-Za-z_$][\\w$]*", "name": "entity.name.type.interface.vtx" }
-      ]
-    },
-
-    "enum-declaration": {
-      "match": "\\b(?:(const)\\s+)?(enum)\\s+([A-Za-z_$][\\w$]*)",
-      "captures": {
-        "1": { "name": "storage.modifier.vtx" },
-        "2": { "name": "storage.type.enum.vtx" },
-        "3": { "name": "entity.name.type.enum.vtx" }
-      }
-    },
-
-    "namespace-declaration": {
-      "match": "\\b(namespace)\\s+([A-Za-z_$][\\w$.]*)",
-      "captures": {
-        "1": { "name": "storage.type.namespace.vtx" },
-        "2": { "name": "entity.name.type.module.vtx" }
-      }
-    },
-
-    "type-alias-declaration": {
-      "begin": "\\b(type)\\s+([A-Za-z_$][\\w$]*)",
-      "beginCaptures": {
-        "1": { "name": "storage.type.type.vtx" },
-        "2": { "name": "entity.name.type.alias.vtx" }
-      },
-      "end": "(?=;)",
-      "patterns": [
-        { "include": "#generics" },
-        { "include": "#expression" }
-      ]
-    },
-
-    "function-declaration": {
-      "match": "\\b(?:(kernel|graph)\\s+)?(?:(async)\\s+)?(function)\\b\\s*(\\*)?\\s*([A-Za-z_$][\\w$]*)?",
-      "captures": {
-        "1": { "name": "storage.modifier.accelerated.vtx" },
-        "2": { "name": "storage.modifier.vtx" },
-        "3": { "name": "storage.type.function.vtx" },
-        "4": { "name": "keyword.operator.generator.vtx" },
-        "5": { "name": "entity.name.function.vtx" }
-      }
-    },
-
-    "constructor-destructor": {
-      "match": "\\b(constructor|destructor)\\b",
-      "name": "storage.type.function.vtx"
-    },
-
-    "statements": {
-      "patterns": [
-        { "include": "#comments" },
-        { "include": "#directives" },
-        { "include": "#decorators" },
-        { "include": "#declare-module" },
-        { "include": "#declare-global" },
-        { "include": "#import-export" },
-        { "include": "#class-declaration" },
-        { "include": "#struct-declaration" },
-        { "include": "#interface-declaration" },
-        { "include": "#enum-declaration" },
-        { "include": "#namespace-declaration" },
-        { "include": "#type-alias-declaration" },
-        { "include": "#function-declaration" },
-        { "include": "#constructor-destructor" },
-        { "include": "#type-annotation" },
-        { "include": "#expression" }
+        {
+          "comment": "§1.8 — `;` remains a legal terminal everywhere, it is simply no longer required. Terminator insertion is rule-driven, not error-driven.",
+          "name": "punctuation.terminator.statement.vertex",
+          "match": ";"
+        },
+        { "name": "punctuation.separator.comma.vertex", "match": "," },
+        { "name": "punctuation.separator.colon.vertex", "match": ":" },
+        { "name": "punctuation.accessor.vertex", "match": "\\." },
+        { "name": "punctuation.definition.block.vertex", "match": "[{}]" },
+        { "name": "punctuation.definition.bracket.vertex", "match": "[\\[\\]]" },
+        { "name": "punctuation.definition.parameters.vertex", "match": "[()]" }
       ]
     }
-
   }
 }
