@@ -1,0 +1,314 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Vertex Workspace",
+  "scopeName": "source.vtx.work",
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#vertex"
+    },
+    {
+      "include": "#use"
+    },
+    {
+      "include": "#replace"
+    },
+    {
+      "match": "^\\s*([^\\s/]\\S*)",
+      "captures": {
+        "1": {
+          "name": "invalid.illegal.unknown-directive.vertex-work"
+        }
+      }
+    }
+  ],
+  "repository": {
+    "comment": {
+      "begin": "//",
+      "end": "$",
+      "name": "comment.line.double-slash.vertex-work",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.vertex-work"
+        }
+      }
+    },
+    "version": {
+      "patterns": [
+        {
+          "match": "\\bv?[0-9]+(?:\\.[0-9]+){0,2}(?:-[0-9A-Za-z.\\-]+)?(?:\\+[0-9A-Za-z.\\-]+)?(?![\\w./])",
+          "name": "constant.numeric.version.vertex-work"
+        },
+        {
+          "match": "\\S+",
+          "name": "constant.other.version.vertex-work"
+        }
+      ]
+    },
+    "vertex": {
+      "patterns": [
+        {
+          "begin": "^\\s*(vertex)\\s*(\\()\\s*(?=$|//)",
+          "end": "^\\s*(\\))",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-work"
+            },
+            "2": {
+              "name": "punctuation.section.block.begin.vertex-work"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.section.block.end.vertex-work"
+            }
+          },
+          "name": "meta.block.vertex.vertex-work",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "match": "(\\S+)",
+              "captures": {
+                "1": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(vertex)\\b",
+          "end": "(?=//)|$",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-work"
+            }
+          },
+          "name": "meta.directive.vertex.vertex-work",
+          "patterns": [
+            {
+              "match": "(\\S+)",
+              "captures": {
+                "1": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "use": {
+      "patterns": [
+        {
+          "begin": "^\\s*(use)\\s*(\\()\\s*(?=$|//)",
+          "end": "^\\s*(\\))",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-work"
+            },
+            "2": {
+              "name": "punctuation.section.block.begin.vertex-work"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.section.block.end.vertex-work"
+            }
+          },
+          "name": "meta.block.use.vertex-work",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "match": "(\\S+)",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.path.vertex-work"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(use)\\b",
+          "end": "(?=//)|$",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-work"
+            }
+          },
+          "name": "meta.directive.use.vertex-work",
+          "patterns": [
+            {
+              "match": "(\\S+)",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.path.vertex-work"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "replace": {
+      "patterns": [
+        {
+          "begin": "^\\s*(replace)\\s*(\\()\\s*(?=$|//)",
+          "end": "^\\s*(\\))",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-work"
+            },
+            "2": {
+              "name": "punctuation.section.block.begin.vertex-work"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.section.block.end.vertex-work"
+            }
+          },
+          "name": "meta.block.replace.vertex-work",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(?!=>)(\\S+))?\\s+(=>)\\s+((?:\\.\\.?(?:/\\S*)?|/\\S*))(?=\\s*(?://|$))",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.module-path.vertex-work"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                },
+                "3": {
+                  "name": "keyword.operator.arrow.vertex-work"
+                },
+                "4": {
+                  "name": "string.unquoted.path.vertex-work"
+                }
+              }
+            },
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(?!=>)(\\S+))?\\s+(=>)\\s+([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(\\S+))?",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.module-path.vertex-work"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                },
+                "3": {
+                  "name": "keyword.operator.arrow.vertex-work"
+                },
+                "4": {
+                  "name": "string.unquoted.module-path.vertex-work"
+                },
+                "5": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "match": "=>",
+              "name": "keyword.operator.arrow.vertex-work"
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(replace)\\b",
+          "end": "(?=//)|$",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-work"
+            }
+          },
+          "name": "meta.directive.replace.vertex-work",
+          "patterns": [
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(?!=>)(\\S+))?\\s+(=>)\\s+((?:\\.\\.?(?:/\\S*)?|/\\S*))(?=\\s*(?://|$))",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.module-path.vertex-work"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                },
+                "3": {
+                  "name": "keyword.operator.arrow.vertex-work"
+                },
+                "4": {
+                  "name": "string.unquoted.path.vertex-work"
+                }
+              }
+            },
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(?!=>)(\\S+))?\\s+(=>)\\s+([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(\\S+))?",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.module-path.vertex-work"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                },
+                "3": {
+                  "name": "keyword.operator.arrow.vertex-work"
+                },
+                "4": {
+                  "name": "string.unquoted.module-path.vertex-work"
+                },
+                "5": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "match": "=>",
+              "name": "keyword.operator.arrow.vertex-work"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

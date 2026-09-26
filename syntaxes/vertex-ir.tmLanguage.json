@@ -7,790 +7,597 @@
   ],
   "patterns": [
     {
-      "include": "#comment"
+      "include": "#comments"
     },
     {
-      "include": "#string"
+      "include": "#strings"
     },
     {
-      "include": "#label-def"
+      "include": "#module-header"
     },
     {
-      "include": "#declaration"
+      "include": "#struct-body"
     },
     {
-      "include": "#mnemonic"
+      "include": "#definitions"
     },
     {
-      "include": "#keyword"
+      "include": "#metadata"
     },
     {
-      "include": "#type"
+      "include": "#axis"
     },
     {
-      "include": "#sigil"
+      "include": "#branch"
     },
     {
-      "include": "#number"
+      "include": "#references"
     },
     {
-      "include": "#operator"
+      "include": "#instructions"
+    },
+    {
+      "include": "#field-init"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#types"
+    },
+    {
+      "include": "#registers"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#punctuation"
     }
   ],
   "repository": {
-    "comment": {
-      "patterns": [
-        {
-          "name": "comment.line.double-slash.vtxir",
-          "begin": "//",
-          "end": "$",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.definition.comment.vtxir"
-            }
-          }
-        }
-      ]
-    },
-    "string": {
-      "name": "string.quoted.double.vtxir",
-      "begin": "\"",
-      "end": "\"",
+    "comments": {
+      "begin": "//",
+      "end": "$",
+      "name": "comment.line.double-slash.vir",
       "beginCaptures": {
         "0": {
-          "name": "punctuation.definition.string.begin.vtxir"
+          "name": "punctuation.definition.comment.vir"
+        }
+      }
+    },
+    "strings": {
+      "begin": "\"",
+      "end": "\"|$",
+      "name": "string.quoted.double.vir",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.vir"
         }
       },
       "endCaptures": {
         "0": {
-          "name": "punctuation.definition.string.end.vtxir"
+          "name": "punctuation.definition.string.end.vir"
         }
       },
       "patterns": [
         {
-          "name": "constant.character.escape.vtxir",
-          "match": "\\\\(?:[nrtabfv0\\\\\"]|x[0-9A-Fa-f]{2})"
+          "match": "\\\\(?:[nrtabfv0\\\\\"]|x[0-9A-Fa-f]{2})",
+          "name": "constant.character.escape.vir"
         },
         {
-          "name": "invalid.illegal.unknown-escape.vtxir",
-          "match": "\\\\."
+          "match": "\\\\.",
+          "name": "invalid.illegal.escape.vir"
         }
       ]
     },
-    "label-def": {
+    "module-header": {
       "patterns": [
         {
-          "comment": "Block headers, pad blocks, and entry blocks",
-          "match": "^\\s*(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)(?=\\s*[(:]|\\s+pad\\b)",
+          "match": "^\\s*(module)\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": {
-              "name": "entity.name.label.vtxir"
+              "name": "keyword.other.module.vir"
+            },
+            "2": {
+              "name": "entity.name.namespace.vir"
             }
           }
+        },
+        {
+          "match": "^\\s*(use)\\b",
+          "captures": {
+            "1": {
+              "name": "keyword.other.use.vir"
+            }
+          }
+        },
+        {
+          "begin": "^\\s*(layout)\\s*(\\{)",
+          "end": "\\}",
+          "name": "meta.layout.vir",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.layout.vir"
+            },
+            "2": {
+              "name": "punctuation.section.block.begin.vir"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.block.end.vir"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comments"
+            },
+            {
+              "match": "\\b(abi|endian|ptrbits|stackalign|extfloat|vector|halffloat)\\b",
+              "name": "variable.other.property.layout.vir"
+            },
+            {
+              "match": "\\b(?:i1|i8|i16|i32|i64|i128|f16|bf16|f32|f64|f80|f128|ptr|v128)\\b",
+              "name": "storage.type.vir"
+            },
+            {
+              "match": "\\b[0-9]+\\b",
+              "name": "constant.numeric.integer.vir"
+            },
+            {
+              "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+              "name": "constant.language.layout.vir"
+            },
+            {
+              "match": ",",
+              "name": "punctuation.separator.comma.vir"
+            }
+          ]
         }
       ]
     },
-    "declaration": {
+    "definitions": {
       "patterns": [
         {
-          "comment": "module-decl: bare identifier",
-          "match": "\\b(module)\\s+([A-Za-z_][A-Za-z0-9_]*)\\b",
-          "captures": {
-            "1": {
-              "name": "keyword.other.declaration.vtxir"
-            },
-            "2": {
-              "name": "entity.name.namespace.module.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "use-decl",
-          "match": "\\b(use)\\b",
-          "captures": {
-            "1": {
-              "name": "keyword.other.declaration.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "import-decl for func and global",
-          "match": "\\b(import)\\s+(func)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
-          "captures": {
-            "1": {
-              "name": "keyword.other.declaration.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.declaration.vtxir"
-            },
-            "3": {
-              "name": "entity.name.function.vtxir"
-            }
-          }
-        },
-        {
-          "match": "\\b(import)\\s+(global)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
-          "captures": {
-            "1": {
-              "name": "keyword.other.declaration.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.declaration.vtxir"
-            },
-            "3": {
-              "name": "variable.other.global.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "alias-decl for func and global",
-          "match": "\\b(alias)\\s+(func)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
-          "captures": {
-            "1": {
-              "name": "keyword.other.declaration.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.declaration.vtxir"
-            },
-            "3": {
-              "name": "entity.name.function.vtxir"
-            },
-            "4": {
-              "name": "entity.name.function.vtxir"
-            }
-          }
-        },
-        {
-          "match": "\\b(alias)\\s+(global)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
-          "captures": {
-            "1": {
-              "name": "keyword.other.declaration.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.declaration.vtxir"
-            },
-            "3": {
-              "name": "variable.other.global.vtxir"
-            },
-            "4": {
-              "name": "variable.other.global.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "type-decl",
           "match": "\\b(type)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
           "captures": {
             "1": {
-              "name": "keyword.other.declaration.vtxir"
+              "name": "storage.type.type.vir"
             },
             "2": {
-              "name": "entity.name.type.vtxir"
+              "name": "entity.name.type.vir"
             }
           }
         },
         {
-          "comment": "global-decl with domain",
-          "match": "\\b(global)\\s+(ro|rw|tls)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
+          "match": "\\b(global)\\s+(?:(ro|rw|tls|shared)\\s+)?(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
           "captures": {
             "1": {
-              "name": "keyword.other.declaration.vtxir"
+              "name": "storage.type.global.vir"
             },
             "2": {
-              "name": "constant.language.domain.vtxir"
+              "name": "storage.modifier.domain.vir"
             },
             "3": {
-              "name": "variable.other.global.vtxir"
+              "name": "entity.name.variable.global.vir"
             }
           }
         },
         {
-          "comment": "func-def",
           "match": "\\b(func)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
           "captures": {
             "1": {
-              "name": "keyword.other.declaration.vtxir"
+              "name": "storage.type.function.vir"
             },
             "2": {
-              "name": "entity.name.function.vtxir"
+              "name": "entity.name.function.vir"
             }
           }
         },
         {
-          "comment": "Direct call and invoke targets",
-          "match": "\\b(call|invoke)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
+          "match": "\\b(alias)\\s+(func|global)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
           "captures": {
             "1": {
-              "name": "keyword.control.vtxir"
+              "name": "storage.type.alias.vir"
             },
             "2": {
-              "name": "entity.name.function.vtxir"
+              "name": "storage.type.vir"
+            },
+            "3": {
+              "name": "entity.name.function.vir"
+            },
+            "4": {
+              "name": "variable.other.symbol.vir"
             }
           }
         },
         {
-          "comment": "personality function",
-          "match": "\\b(personality)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
+          "match": "^\\s*(![A-Za-z_][A-Za-z0-9_]*)\\s*(=)",
           "captures": {
             "1": {
-              "name": "keyword.other.attribute.vtxir"
+              "name": "entity.name.tag.metadata.vir"
             },
             "2": {
-              "name": "entity.name.function.vtxir"
+              "name": "keyword.operator.assignment.vir"
             }
           }
         },
         {
-          "comment": "byval and sret type references",
-          "match": "\\b(byval|sret)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
+          "match": "^\\s*(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)(?=\\s*(?::|\\(|\\s+pad\\b))",
           "captures": {
             "1": {
-              "name": "storage.modifier.vtxir"
-            },
-            "2": {
-              "name": "entity.name.type.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "Type signature references (e.g. callind / invokeind : @Type)",
-          "match": "(?<=:)\\s*(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
-          "captures": {
-            "1": {
-              "name": "entity.name.type.vtxir"
+              "name": "entity.name.label.vir"
             }
           }
         }
       ]
     },
-    "mnemonic": {
+    "references": {
       "patterns": [
         {
-          "comment": "§9: i32 conversions — the destination names the namespace, the source names the verb",
-          "match": "(?<![\\w.$%@!])(i32)\\.(wrap_i64|zext_i1|bitcast_f32|[su]cvt_(?:sat_)?(?:f32|f64|f80|f128))\\b",
+          "match": "\\b(call|tail_call|invoke|ptr\\.getaddr)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
           "captures": {
             "1": {
-              "name": "storage.type.namespace.vtxir"
+              "patterns": [
+                {
+                  "include": "#instructions"
+                }
+              ]
             },
             "2": {
-              "name": "keyword.other.instruction.conversion.vtxir"
+              "name": "entity.name.function.call.vir"
             }
           }
         },
         {
-          "comment": "§9: i64 conversions",
-          "match": "(?<![\\w.$%@!])(i64)\\.(sext_i32|zext_i32|zext_i1|bitcast_f64|from_ptr|[su]cvt_(?:sat_)?(?:f32|f64|f80|f128))\\b",
+          "match": "\\b(br|to|unwind|ptr\\.blockaddr)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
           "captures": {
             "1": {
-              "name": "storage.type.namespace.vtxir"
+              "patterns": [
+                {
+                  "include": "#instructions"
+                },
+                {
+                  "include": "#keywords"
+                }
+              ]
             },
             "2": {
-              "name": "keyword.other.instruction.conversion.vtxir"
+              "name": "entity.name.label.vir"
             }
           }
         },
         {
-          "comment": "§9: f32 conversions",
-          "match": "(?<![\\w.$%@!])(f32)\\.([su]cvt_i(?:32|64)|fcvt_(?:f64|f80|f128)|bitcast_i32)\\b",
+          "match": "\\b(sret|byval|ptr\\.alloc|ptr\\.va_arg_ref\\s+%[A-Za-z0-9_.]+\\s*,|sizeof|alignof|offsetof)\\s+(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
           "captures": {
             "1": {
-              "name": "storage.type.namespace.vtxir"
+              "patterns": [
+                {
+                  "include": "#instructions"
+                },
+                {
+                  "include": "#keywords"
+                },
+                {
+                  "include": "#registers"
+                },
+                {
+                  "include": "#punctuation"
+                }
+              ]
             },
             "2": {
-              "name": "keyword.other.instruction.conversion.vtxir"
+              "name": "entity.name.type.vir"
             }
           }
         },
         {
-          "comment": "§9: f64 conversions",
-          "match": "(?<![\\w.$%@!])(f64)\\.([su]cvt_i(?:32|64)|fcvt_(?:f32|f80|f128)|bitcast_i64)\\b",
+          "match": "(%[A-Za-z0-9_.]+)\\s*(:)\\s*(@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*)",
           "captures": {
             "1": {
-              "name": "storage.type.namespace.vtxir"
+              "name": "variable.other.register.vir"
             },
             "2": {
-              "name": "keyword.other.instruction.conversion.vtxir"
+              "name": "punctuation.separator.vir"
+            },
+            "3": {
+              "name": "entity.name.type.vir"
             }
           }
         },
         {
-          "comment": "§9: f80 conversions",
-          "match": "(?<![\\w.$%@!])(f80)\\.([su]cvt_i(?:32|64)|fcvt_(?:f32|f64|f128))\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.conversion.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§9: f128 conversions",
-          "match": "(?<![\\w.$%@!])(f128)\\.([su]cvt_i(?:32|64)|fcvt_(?:f32|f64|f80))\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.conversion.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§9: pointer conversion",
-          "match": "(?<![\\w.$%@!])(ptr)\\.(from_i64)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.conversion.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§V: scalar into the low lane",
-          "match": "(?<![\\w.$%@!])(v128)\\.(zext_i32|zext_i64)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.conversion.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§12/§H: Atomics",
-          "match": "(?<![\\w.$%@!])(i32|i64|ptr)\\.(atomic_load|atomic_store|atomic_cas)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.atomic.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§12/§H: Narrow atomics (i32 namespace)",
-          "match": "(?<![\\w.$%@!])(i32)\\.(atomic_uload(?:8|16)|atomic_store(?:8|16)|atomic_cas(?:8|16))\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.atomic.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§12/§H: Atomic RMW",
-          "match": "(?<![\\w.$%@!])(i32|i64)\\.(atomic_rmw(?:add|sub|and|or|xor|xchg))\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.atomic.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§12/§H: Narrow Atomic RMW (i32 namespace)",
-          "match": "(?<![\\w.$%@!])(i32)\\.(atomic_rmw(?:add|sub|and|or|xor|xchg)(?:8|16))\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.atomic.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§12/§H: Pointer Atomic RMW",
-          "match": "(?<![\\w.$%@!])(ptr)\\.(atomic_rmw(?:add|sub|xchg))\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.atomic.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§10/§D: Full-width load / store",
-          "match": "(?<![\\w.$%@!])(i32|i64|f32|f64|f80|f128|ptr|v128)\\.(load|store)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.memory.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§10/§D2: Sub-width load / store",
-          "match": "(?<![\\w.$%@!])(i32)\\.(sload8|sload16|uload8|uload16|store8|store16)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.memory.vtxir"
-            }
-          }
-        },
-        {
-          "match": "(?<![\\w.$%@!])(i64)\\.(sload8|sload16|sload32|uload8|uload16|uload32|store8|store16|store32)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.memory.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§10/§D3: Pointer operations",
-          "match": "(?<![\\w.$%@!])(ptr)\\.(alloc|alloca|stacksave|stackrestore|getaddr|tlsaddr|blockaddr|frameaddr|returnaddr)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.memory.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§9/§D3: Pointer arithmetic",
-          "match": "(?<![\\w.$%@!])(ptr)\\.(add|sub|diff)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.operator.word.arithmetic.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§9/§A/§A2/§A5/§A6: Integer arithmetic, overflow predicates, shifts, bit counting",
-          "match": "(?<![\\w.$%@!])(i32|i64)\\.(add|sub|mul|sdiv|udiv|srem|urem|neg|smulhi|umulhi|saddo|uaddo|ssubo|smulo|umulo|shl|sshr|ushr|rotl|rotr|clz|ctz|popcnt|bswap)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.operator.word.arithmetic.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§9/§A4: Bitwise logic",
-          "match": "(?<![\\w.$%@!])(i1|i32|i64)\\.(not|and|or|xor)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.operator.word.arithmetic.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§9/§A3: Float arithmetic and unary math",
-          "match": "(?<![\\w.$%@!])(f32|f64|f80|f128)\\.(add|sub|mul|div|fma|neg|abs|sqrt|minimum|maximum|minnum|maxnum|copysign|ceil|floor|trunc|nearest)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.operator.word.arithmetic.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§9/§B: Integer comparisons",
-          "match": "(?<![\\w.$%@!])(i32|i64)\\.(eq|ne|slt|ult|sle|ule)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.operator.word.comparison.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§9/§B: Float comparisons",
-          "match": "(?<![\\w.$%@!])(f32|f64|f80|f128)\\.(eq|ne|lt|le|uno)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.operator.word.comparison.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§9/§B: Pointer comparisons",
-          "match": "(?<![\\w.$%@!])(ptr)\\.(eq|ne|lt|le)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.operator.word.comparison.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§9/§A7: Constants",
-          "match": "(?<![\\w.$%@!])(i1|i32|i64|f32|f64|f80|f128|ptr)\\.(const)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.const.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§9/§F: Select",
-          "match": "(?<![\\w.$%@!])(i1|i32|i64|f32|f64|f80|f128|ptr|v128)\\.(select)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§15/§I: Variadics",
-          "match": "(?<![\\w.$%@!])(i32|i64|f64|f80|f128|ptr)\\.(va_arg)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.vtxir"
-            }
-          }
-        },
-        {
-          "match": "(?<![\\w.$%@!])(ptr)\\.(va_arg_ref)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.other.instruction.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§V: whole-register v128 verbs",
-          "match": "(?<![\\w.$%@!])(v128)\\.(const|and|or|xor|not|andnot|shl_bytes|shr_bytes)\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.operator.word.arithmetic.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "§V: lane-shaped v128 verbs — the shape rides in the verb",
-          "match": "(?<![\\w.$%@!])(v128)\\.(i8x16_(?:add|add_sat_[su]|avgr_u|bitmask|eq|gt_s|max_u|min_u|narrow_[su]|sad_u|splat|sub|sub_sat_[su]|unpack_(?:high|low))|i16x8_(?:add|add_sat_[su]|avgr_u|eq|extract_lane_u|gt_s|madd_s|max_s|min_s|mul|mulhi_[su]|narrow_s|replace_lane|shl|shr_[su]|shuffle_(?:high|low)|splat|sub|sub_sat_[su]|unpack_(?:high|low))|i32x4_(?:add|eq|extract_lane|gt_s|mul_even_u|shl|shr_[su]|shuffle|splat|sub|unpack_(?:high|low))|i64x2_(?:add|extract_lane|shl|shr_u|splat|sub|unpack_(?:high|low)))\\b",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "keyword.operator.word.arithmetic.vtxir"
-            }
-          }
-        },
-        {
-          "comment": "Any other Type.Verb is not a VIR instruction",
-          "match": "(?<![\\w.$%@!])(i1|i8|i16|i32|i64|f32|f64|f80|f128|ptr|v128)\\.([A-Za-z_][A-Za-z0-9_]*)",
-          "captures": {
-            "1": {
-              "name": "storage.type.namespace.vtxir"
-            },
-            "2": {
-              "name": "invalid.illegal.unknown-mnemonic.vtxir"
-            }
-          }
+          "match": "@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*",
+          "name": "variable.other.symbol.vir"
         }
       ]
     },
-    "keyword": {
+    "instructions": {
       "patterns": [
         {
-          "comment": "§13/§14: Control flow, terminators, calls, and the asm goto terminator",
-          "name": "keyword.control.vtxir",
-          "match": "\\b(br_table|brind|brif|br|return|trap|invokeind|invoke|callind|call|resume|goto|to|unwind)\\b"
+          "match": "\\b((?:i1|i8|i16|i32|i64|i128|f16|bf16|f32|f64|f80|f128|ptr|v128))(\\.)([a-z][a-z0-9_]*)\\b",
+          "captures": {
+            "1": {
+              "name": "storage.type.namespace.vir"
+            },
+            "2": {
+              "name": "punctuation.accessor.vir"
+            },
+            "3": {
+              "name": "support.function.instruction.vir"
+            }
+          }
         },
         {
-          "comment": "§7/§G3: Exception pad clauses",
-          "name": "keyword.control.exception.vtxir",
-          "match": "\\b(pad|cleanup|catch|filter)\\b"
+          "match": "\\b(?:br|brif|br_table|brind|return|trap|resume|tail_call|tail_callind|invoke|invokeind)\\b",
+          "name": "keyword.control.terminator.vir"
         },
         {
-          "comment": "§8b/§11/§12/§15/§17: Bare mnemonics",
-          "name": "keyword.other.instruction.vtxir",
-          "match": "\\b(memcpy|memmove|memset|memcmp|fence|asm|va_start|va_end|va_copy)\\b"
+          "match": "\\b(?:call|callind)\\b",
+          "name": "keyword.control.call.vir"
         },
         {
-          "comment": "§3/§4: Module structure keywords",
-          "name": "keyword.other.declaration.vtxir",
-          "match": "\\b(module|use|layout|type|global|import|func|alias|struct|union)\\b"
-        },
-        {
-          "comment": "§3: Layout attributes",
-          "name": "entity.other.attribute-name.vtxir",
-          "match": "\\b(abi|endian|ptrbits|stackalign|extfloat|vector)\\b(?=\\s*(\"|[0-9]|[A-Za-z_]))"
-        },
-        {
-          "comment": "§3/§7: Layout values and the null catch clause",
-          "name": "constant.language.vtxir",
-          "match": "\\b(little|big|none|null)\\b"
-        },
-        {
-          "comment": "§5: TLS models",
-          "name": "constant.language.tlsmodel.vtxir",
-          "match": "\\b(global-dynamic|local-dynamic|initial-exec|local-exec)\\b"
-        },
-        {
-          "comment": "§8/§12: Atomic memory orderings",
-          "name": "constant.language.ordering.vtxir",
-          "match": "\\b(unordered|monotonic|acquire|release|acq_rel|seq_cst)\\b"
-        },
-        {
-          "comment": "§6: Calling conventions",
-          "name": "storage.modifier.callconv.vtxir",
-          "match": "\\b(ccc|fastcc|preserve_most|preserve_all|stdcall|fastcall|thiscall|vectorcall|ms_abi|sysv_abi)\\b"
-        },
-        {
-          "comment": "§3/§4/§5/§6/§8/§12: Modifiers and attributes",
-          "name": "storage.modifier.vtxir",
-          "match": "\\b(export|internal|hidden|protected|dllimport|dllexport|weak|common|packed|nounwind|returns_twice|naked|noreturn|byval|sret|zext|sext|noalias|volatile|singlethread)\\b"
-        },
-        {
-          "comment": "§4/§5/§6/§8b: Placements, asm clobbers, offsets, and initializers",
-          "name": "keyword.other.attribute.vtxir",
-          "match": "\\b(section|comdat|align|tlsmodel|personality|clobber|at|zeroed)\\b"
-        },
-        {
-          "comment": "§8b: Inline assembly constraints",
-          "name": "storage.modifier.constraint.vtxir",
-          "match": "\\b(reg|mem|imm)\\b"
-        },
-        {
-          "comment": "§5: Global domain specifiers",
-          "name": "constant.language.domain.vtxir",
-          "match": "(?<=\\bglobal\\s+)(ro|rw|tls)\\b"
-        },
-        {
-          "comment": "§8: Assemble-time constants",
-          "name": "support.function.symconst.vtxir",
-          "match": "\\b(sizeof|alignof|offsetof)\\b"
+          "match": "\\b(?:memcpy|memmove|memset|memcmp|fence|barrier|va_start|va_end|va_copy)\\b",
+          "name": "support.function.instruction.vir"
         }
       ]
     },
-    "type": {
+    "keywords": {
       "patterns": [
         {
-          "name": "storage.type.vtxir",
-          "match": "(?<![\\w.$%@!])(i1|i8|i16|i32|i64|f32|f64|f80|f128|ptr|v128)\\b(?!\\.)"
+          "match": "\\b(?:type|global|import|func|alias|asm)\\b",
+          "name": "storage.type.vir"
+        },
+        {
+          "match": "\\b(struct|union)\\b",
+          "name": "storage.type.$1.vir"
+        },
+        {
+          "match": "\\b(?:export|internal|hidden|protected|dllimport|dllexport|weak|common)\\b",
+          "name": "storage.modifier.linkage.vir"
+        },
+        {
+          "match": "\\b(?:ro|rw|tls|shared)\\b",
+          "name": "storage.modifier.domain.vir"
+        },
+        {
+          "match": "(?<![\\w-])(global-dynamic|local-dynamic|initial-exec|local-exec)(?![\\w-])",
+          "name": "constant.language.tls-model.vir"
+        },
+        {
+          "match": "\\b(?:section|comdat|align|tlsmodel|nounwind|personality|returns_twice|naked|noreturn|packed|at|zeroed|volatile|goto|clobber)\\b",
+          "name": "storage.modifier.vir"
+        },
+        {
+          "match": "\\b(?:byval|sret|zext|sext|noalias|swiftself|swiftasync|swiftindirect|swifterror|narrow8s|narrow8u|narrow16s|narrow16u)\\b",
+          "name": "storage.modifier.attribute.vir"
+        },
+        {
+          "match": "\\b(?:ccc|fastcc|preserve_most|preserve_all|stdcall|fastcall|thiscall|vectorcall|ms_abi|sysv_abi|kernel)\\b",
+          "name": "storage.modifier.callconv.vir"
+        },
+        {
+          "match": "\\b(?:unordered|monotonic|acquire|release|acq_rel|seq_cst|singlethread)\\b",
+          "name": "constant.language.ordering.vir"
+        },
+        {
+          "match": "\\b(?:workgroup|device|system)\\b",
+          "name": "constant.language.scope.vir"
+        },
+        {
+          "match": "\\b(?:pad|cleanup|catch|filter|to|unwind)\\b",
+          "name": "keyword.other.vir"
+        },
+        {
+          "match": "\\b(?:reg|mem|imm)\\b",
+          "name": "constant.language.constraint.vir"
+        },
+        {
+          "match": "\\b(?:sizeof|alignof|offsetof)\\b",
+          "name": "keyword.operator.symconst.vir"
+        },
+        {
+          "match": "\\bnull\\b",
+          "name": "constant.language.null.vir"
+        },
+        {
+          "match": "\\b(?:module|use|layout)\\b",
+          "name": "keyword.other.vir"
         }
       ]
     },
-    "sigil": {
+    "types": {
+      "match": "(\\[)([0-9]+)(\\])|\\b((?:i1|i8|i16|i32|i64|i128|f16|bf16|f32|f64|f80|f128|ptr|v128))\\b(?!\\.)",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.array.vir"
+        },
+        "2": {
+          "name": "constant.numeric.integer.vir"
+        },
+        "3": {
+          "name": "punctuation.definition.array.vir"
+        },
+        "4": {
+          "name": "storage.type.vir"
+        }
+      }
+    },
+    "registers": {
+      "match": "%[A-Za-z0-9_.]+",
+      "name": "variable.other.register.vir"
+    },
+    "metadata": {
+      "match": "![A-Za-z_][A-Za-z0-9_]*",
+      "name": "entity.other.attribute-name.metadata.vir"
+    },
+    "numbers": {
       "patterns": [
         {
-          "comment": "§1: SSA virtual registers (%ident or %decimal)",
-          "name": "variable.other.register.vtxir",
-          "match": "%(?:[A-Za-z_][A-Za-z0-9_]*|[0-9]+)"
+          "match": "(?<![\\w.%@])-?(?:inf|nan(?::0x[0-9A-Fa-f]+)?)\\b",
+          "name": "constant.numeric.float.special.vir"
         },
         {
-          "comment": "§1/§1b: Symbols (@ident)",
-          "name": "variable.other.global.vtxir",
-          "match": "@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*"
+          "match": "(?<![\\w.%@])-?0x[0-9A-Fa-f]+(?:\\.[0-9A-Fa-f]*)?[pP][+-]?[0-9]+\\b",
+          "name": "constant.numeric.float.hexadecimal.vir"
         },
         {
-          "comment": "§1/§16: Metadata nodes (!ident)",
-          "name": "entity.name.tag.metadata.vtxir",
-          "match": "![A-Za-z_][A-Za-z0-9_]*"
+          "match": "(?<![\\w.%@])-?0x[0-9A-Fa-f]+\\b",
+          "name": "constant.numeric.integer.hexadecimal.vir"
+        },
+        {
+          "match": "(?<![\\w.%@])-?[0-9]+(?:\\.[0-9]*(?:[eE][+-]?[0-9]+)?|[eE][+-]?[0-9]+)\\b",
+          "name": "constant.numeric.float.decimal.vir"
+        },
+        {
+          "match": "(?<![\\w.%@])-?[0-9]+\\b",
+          "name": "constant.numeric.integer.decimal.vir"
         }
       ]
     },
-    "number": {
+    "axis": {
+      "match": "(?<=workitem_id|workgroup_id|workgroup_size|num_workgroups)\\s+\\b([xyz])\\b",
+      "captures": {
+        "1": {
+          "name": "constant.language.axis.vir"
+        }
+      }
+    },
+    "punctuation": {
       "patterns": [
         {
-          "comment": "§1: Hexadecimal floating-point literals with binary exponent (p/P)",
-          "name": "constant.numeric.float.hexadecimal.vtxir",
-          "match": "-?\\b0[xX][0-9A-Fa-f]+(?:\\.[0-9A-Fa-f]*)?[pP][+-]?[0-9]+\\b"
+          "match": "\\.\\.\\.",
+          "name": "keyword.operator.variadic.vir"
         },
         {
-          "comment": "§1: Decimal floating-point literals with decimal point",
-          "name": "constant.numeric.float.vtxir",
-          "match": "-?\\b[0-9]+\\.[0-9]*(?:[eE][+-]?[0-9]+)?\\b"
+          "match": "=",
+          "name": "keyword.operator.assignment.vir"
         },
         {
-          "comment": "§1: Decimal floating-point literals with exponent only",
-          "name": "constant.numeric.float.vtxir",
-          "match": "-?\\b[0-9]+[eE][+-]?[0-9]+\\b"
+          "match": "[+-]",
+          "name": "keyword.operator.arithmetic.vir"
         },
         {
-          "comment": "§1: Special IEEE float literals (inf, nan, nan:0x...)",
-          "name": "constant.language.float.vtxir",
-          "match": "-?\\b(?:inf|nan)\\b(?::0[xX][0-9A-Fa-f]+)?"
+          "match": ",",
+          "name": "punctuation.separator.comma.vir"
         },
         {
-          "comment": "§1: Hexadecimal integer literals",
-          "name": "constant.numeric.integer.hexadecimal.vtxir",
-          "match": "-?\\b0[xX][0-9A-Fa-f]+\\b"
+          "match": ":",
+          "name": "punctuation.separator.colon.vir"
         },
         {
-          "comment": "§1: Decimal integer literals",
-          "name": "constant.numeric.integer.vtxir",
-          "match": "-?\\b[0-9]+\\b"
+          "match": "[{}]",
+          "name": "punctuation.section.braces.vir"
+        },
+        {
+          "match": "[()]",
+          "name": "punctuation.section.parens.vir"
+        },
+        {
+          "match": "[\\[\\]]",
+          "name": "punctuation.section.brackets.vir"
+        },
+        {
+          "match": "\\.",
+          "name": "punctuation.accessor.vir"
         }
       ]
     },
-    "operator": {
+    "branch": {
+      "begin": "\\b(br|brif|br_table|brind)\\b|\\b(asm)\\s+(goto)\\b",
+      "end": "(?=//)|$",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.terminator.vir"
+        },
+        "2": {
+          "name": "support.function.instruction.vir"
+        },
+        "3": {
+          "name": "keyword.control.terminator.vir"
+        }
+      },
       "patterns": [
         {
-          "name": "keyword.operator.ellipsis.vtxir",
-          "match": "\\.\\.\\."
+          "include": "#strings"
         },
         {
-          "name": "keyword.operator.assignment.vtxir",
-          "match": "="
+          "include": "#keywords"
         },
         {
-          "name": "keyword.operator.reloc.vtxir",
-          "match": "[+-]"
+          "match": "@[A-Za-z_$?@.<>][A-Za-z0-9_$?@.<>]*",
+          "name": "entity.name.label.vir"
         },
         {
-          "name": "punctuation.separator.vtxir",
-          "match": "[,:]"
+          "include": "#metadata"
+        },
+        {
+          "include": "#types"
+        },
+        {
+          "include": "#registers"
+        },
+        {
+          "include": "#numbers"
+        },
+        {
+          "include": "#punctuation"
         }
       ]
+    },
+    "struct-body": {
+      "begin": "\\b(struct|union)\\s*(\\{)",
+      "end": "\\}",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.type.$1.vir"
+        },
+        "2": {
+          "name": "punctuation.section.braces.vir"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.braces.vir"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#comments"
+        },
+        {
+          "match": "(?:^|(?<=[{,]))\\s*([A-Za-z_][A-Za-z0-9_]*)\\s+(?=(?:i1|i8|i16|i32|i64|i128|f16|bf16|f32|f64|f80|f128|ptr|v128)\\b|@|\\[)",
+          "captures": {
+            "1": {
+              "name": "variable.other.property.vir"
+            }
+          }
+        },
+        {
+          "match": "\\b(at)\\b",
+          "name": "storage.modifier.vir"
+        },
+        {
+          "include": "#types"
+        },
+        {
+          "include": "#references"
+        },
+        {
+          "include": "#numbers"
+        },
+        {
+          "include": "#punctuation"
+        }
+      ]
+    },
+    "field-init": {
+      "match": "(?<=[{,])\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(?==(?!=))",
+      "captures": {
+        "1": {
+          "name": "variable.other.property.vir"
+        }
+      }
     }
   }
 }

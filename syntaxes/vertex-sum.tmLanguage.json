@@ -1,0 +1,49 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Vertex Checksums",
+  "scopeName": "source.vtx.sum",
+  "patterns": [
+    {
+      "match": "^\\s*(\\S+)\\s+(\\S+)\\s+(?:([A-Za-z][A-Za-z0-9]*)(:))?([A-Za-z0-9+/=_\\-]+)\\s*$",
+      "captures": {
+        "1": {
+          "name": "string.unquoted.module-path.vertex-sum"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#version"
+            }
+          ]
+        },
+        "3": {
+          "name": "keyword.other.hash-algorithm.vertex-sum"
+        },
+        "4": {
+          "name": "punctuation.separator.vertex-sum"
+        },
+        "5": {
+          "name": "constant.other.hash.vertex-sum"
+        }
+      }
+    },
+    {
+      "match": "^\\s*\\S.*$",
+      "name": "invalid.illegal.line.vertex-sum"
+    }
+  ],
+  "repository": {
+    "version": {
+      "patterns": [
+        {
+          "match": "\\bv?[0-9]+(?:\\.[0-9]+){0,2}(?:-[0-9A-Za-z.\\-]+)?(?:\\+[0-9A-Za-z.\\-]+)?(?![\\w./])",
+          "name": "constant.numeric.version.vertex-sum"
+        },
+        {
+          "match": "\\S+",
+          "name": "constant.other.version.vertex-sum"
+        }
+      ]
+    }
+  }
+}

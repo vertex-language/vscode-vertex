@@ -1,81 +1,102 @@
 # Vertex Language Support
 
-VS Code syntax highlighting for the [Vertex programming language](https://github.com/vertex-language/vertex-language).
+VS Code syntax highlighting for the [Vertex programming language](https://github.com/vertex-language/vertex-language):
+every file the Vertex toolchain reads and writes.
 
-The extension covers the two file types the Vertex toolchain reads and writes:
+| File | Language ID | Grammar scope | Read or written by |
+|------|-------------|---------------|--------------------|
+| `*.vs`, `*.vinterface` | `vertex` | `source.vtx` | [`vsc`](https://github.com/vertex-language/vsc); `vsc build --emit interface` writes `.vinterface` |
+| `*.vir` | `vertex-ir` | `source.vtxir` | [`ir`](https://github.com/vertex-language/ir), `vsc build --emit vir` |
+| `vs.mod` | `vertex-mod` | `source.vtx.mod` | `vsc`: a module's path, toolchain, platforms and requirements |
+| `vs.work` | `vertex-work` | `source.vtx.work` | `vsc`: local modules used in place of fetched ones |
+| `vs.sum` | `vertex-sum` | `source.vtx.sum` | `vsc`: each required module version's tree hash |
 
-| File    | Language ID | Grammar scope  | Configuration file              | Produced / read by |
-|---------|-------------|----------------|---------------------------------|--------------------|
-| `*.vs`  | `vertex`    | `source.vtx`   | `language-configuration.json`   | [`vsc`](https://github.com/vertex-language/vsc) |
-| `*.vir` | `vertex-ir` | `source.vtxir` | `language-configuration-ir.json`| [`ir`](https://github.com/vertex-language/ir), `vsc --emit vir` |
+Fenced code blocks in Markdown are highlighted too, tagged `vertex`/`vs`,
+`vertex-ir`/`vir`, `vs.mod`, `vs.work` or `vs.sum`.
 
-Fenced code blocks in Markdown tagged `vertex` or `vs`, and `vertex-ir` or
-`vir`, are highlighted with the same grammars.
+## What's highlighted
+
+**`.vs` and `.vinterface`.** Vertex shares its core dialect with Swift, so the
+grammar covers the Swift syntax `vsc` reads: every reserved word, the
+contextual keywords where they are keywords (`mutating func`, but not
+`let mutating`), attributes, `#if` conditions, `#available`, the `#` literals,
+macro expansions, nested `/* */` comments, doc comments and their
+`- Parameter` fields, string interpolation, raw (`#"…"#`) and multiline
+(`"""`) strings, regex literals, and binary, octal, hex and hex-float numbers.
+A malformed number such as `0b12` is marked the way `vsc` reports it. On top of
+that, the Vertex additions:
+
+- `package` declarations (`package http`), told apart from `package func`
+- folder imports, aliased and grouped (`import geom "./geometry"`, `import ( … )`)
+- receiver methods and their ownership (`func (v: inout Vec2) scale(by:)`)
+- the lowercase primitive types (`int32`, `uint8`, `float32`, `string`, `never`, …)
+- the `kernel` and `graph` execution modifiers, only where a signature puts them
+
+**`.vir`.** The module header (`module`, `use`, `layout`), type, global, import,
+alias and function declarations, every `ns.verb` instruction (`i64.add`,
+`ptr.getaddr`, `v128.i32x4_add`, …), terminators and calls, registers
+(`%0`, `%bb1.0`), symbols by role (a function after `call`, a type after `sret`,
+a label on a branch), struct fields, metadata (`!dbg`), attributes, calling
+conventions, orderings and literals.
+
+**`vs.mod` and `vs.work`.** Each directive `vsc` accepts, on one line or as a
+`( … )` block: `module`, `vertex`, `platform`, `require`, `exclude` and
+`replace` in `vs.mod`; `vertex`, `use` and `replace` in `vs.work`. Module paths,
+versions, local directories and the `=>` of a replacement are each scoped by
+position, as `vsc` reads them, and any other directive is marked as the error
+`vsc` makes it.
+
+**`vs.sum`.** Each `module version h1:hash` line, with a line of any other shape
+marked as the error `vsc` makes it.
+
+## Editor behavior
+
+- **`.vs`**: brackets and auto-closing for `{}`, `[]`, `()`, `"` and `` ` ``;
+  `/** */` and `///` doc-comment continuation; indentation for `case`,
+  `default` and `#if`; folding on `// MARK:`, `//#region` and `#if` blocks.
+- **`.vir`**: indentation after function bodies and block labels, and word
+  selection that keeps `%reg`, `@symbol` and `i32.add` whole.
+- **`vs.mod`, `vs.work`**: `//` comments, and indenting and folding of
+  `( … )` blocks.
 
 ## Installation
-
-### From source
 
 ```bash
 git clone https://github.com/vertex-language/vscode-vertex.git
 cd vscode-vertex
-npm install -g @vscode/vsce
-vsce package
+npx @vscode/vsce package
+code --install-extension vscode-vertex-5.0.0.vsix
 ```
 
-This produces `vscode-vertex-<version>.vsix` in the project directory. Install it with:
+Or install the `.vsix` with **Extensions: Install from VSIX...** in the
+Command Palette. The extension is not on the Marketplace yet.
 
-- **Command Palette** → `Extensions: Install from VSIX...`, or
-- **Extensions view** → `...` menu → **Install from VSIX**, or
-- from the terminal:
+## Working on the grammars
 
-  ```bash
-  code --install-extension vscode-vertex-4.0.0.vsix
-  ```
+The grammars in `syntaxes/` are generated. Edit the generators in `scripts/`
+and rebuild:
 
-### From the Marketplace
+```bash
+npm run build
+```
 
-Not yet published — installation currently requires building from source as
-described above.
+`npm test` tokenizes the cases in `test/cases.json` with VS Code's own TextMate
+engine and checks each token's scope. To see how a file tokenizes, or to find
+anything marked invalid across a corpus:
 
-## What's highlighted
+```bash
+node test/tokenize.js dump source.vtx path/to/file.vs
+```
 
-- **`.vs` — Vertex source.** Vertex shares its core dialect with Swift, so the
-  grammar covers the Swift syntax `vsc` accepts — declarations, reserved and
-  contextual keywords, attributes, `#if` and the other `#` directives, macro
-  expansions, nested block comments, string interpolation, raw (`#"…"#`) and
-  multiline (`"""`) strings, extended regex literals, and binary, octal, hex
-  and hex-float numbers — plus the Vertex extensions:
-  - `package` declarations (`package app`)
-  - folder imports, aliased and grouped (`import geom "./geometry"`)
-  - receiver methods with ownership (`func (v: borrowing Vec2) length()`)
-  - lowercase primitive spellings (`int32`, `uint8`, `float32`, `double`,
-    `string`, `char`, `never`, …)
-  - `kernel` and `graph` execution modifiers
-- **`.vir` — Vertex IR.** Module header (`module`, `use`, `layout`), type,
-  global, import, alias and function declarations, every `Type.Verb` mnemonic
-  in the `i1`/`i32`/`i64`/`f32`/`f64`/`f80`/`f128`/`ptr`/`v128` namespaces
-  (an unknown verb on a known namespace is marked invalid), bare mnemonics and
-  terminators, registers (`%0`), symbols (`@_$s4main…`), metadata (`!dbg`),
-  block labels, calling conventions, orderings, and literals.
+```bash
+node test/tokenize.js invalid source.vtx ../*/*.vs
+```
 
-## Editor behavior
-
-- **`.vs`** — brackets and auto-closing for `{}`, `[]`, `()`, `"`, and `` ` ``
-  (backtick-escaped identifiers); `/* */` and `/** */` comment continuation;
-  `///` doc-comment continuation; indentation for `case`/`default` and
-  `#if`/`#else`/`#endif`; folding on `//#region`, `// MARK:` and `#if` blocks.
-- **`.vir`** — brackets and auto-closing for `{}`, `[]`, `()`, and `"`;
-  indentation after function bodies and block labels (`@entry:`); word
-  selection that keeps `%reg`, `@symbol` and `i32.add` whole.
-
-## Contributing
-
-Issues and pull requests are welcome at
-[vertex-language/vscode-vertex](https://github.com/vertex-language/vscode-vertex).
-The compiler ([`vsc`](https://github.com/vertex-language/vsc)) and the IR
-specification ([`ir/spec`](https://github.com/vertex-language/ir/tree/main/spec))
-are the source of truth for both grammars.
+The source of truth is the toolchain: the scanner and parser in
+[`vsc`](https://github.com/vertex-language/vsc) (`token/kind.go`,
+`docs/vertex_spec.md`), its module files (`pkg/vsmod.go`, `importer/sum.go`),
+and the IR specification and printer in
+[`ir`](https://github.com/vertex-language/ir) (`spec/grammar.md`, `text/`).
 
 ## License
 

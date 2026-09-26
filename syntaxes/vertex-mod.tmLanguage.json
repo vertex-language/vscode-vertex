@@ -1,0 +1,530 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Vertex Module",
+  "scopeName": "source.vtx.mod",
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#module"
+    },
+    {
+      "include": "#vertex"
+    },
+    {
+      "include": "#platform"
+    },
+    {
+      "include": "#require"
+    },
+    {
+      "include": "#exclude"
+    },
+    {
+      "include": "#replace"
+    },
+    {
+      "match": "^\\s*([^\\s/]\\S*)",
+      "captures": {
+        "1": {
+          "name": "invalid.illegal.unknown-directive.vertex-mod"
+        }
+      }
+    }
+  ],
+  "repository": {
+    "comment": {
+      "begin": "//",
+      "end": "$",
+      "name": "comment.line.double-slash.vertex-mod",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.vertex-mod"
+        }
+      }
+    },
+    "version": {
+      "patterns": [
+        {
+          "match": "\\bv?[0-9]+(?:\\.[0-9]+){0,2}(?:-[0-9A-Za-z.\\-]+)?(?:\\+[0-9A-Za-z.\\-]+)?(?![\\w./])",
+          "name": "constant.numeric.version.vertex-mod"
+        },
+        {
+          "match": "\\S+",
+          "name": "constant.other.version.vertex-mod"
+        }
+      ]
+    },
+    "module": {
+      "patterns": [
+        {
+          "begin": "^\\s*(module)\\s*(\\()\\s*(?=$|//)",
+          "end": "^\\s*(\\))",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-mod"
+            },
+            "2": {
+              "name": "punctuation.section.block.begin.vertex-mod"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.section.block.end.vertex-mod"
+            }
+          },
+          "name": "meta.block.module.vertex-mod",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)",
+              "captures": {
+                "1": {
+                  "name": "entity.name.namespace.module.vertex-mod"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(module)\\b",
+          "end": "(?=//)|$",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-mod"
+            }
+          },
+          "name": "meta.directive.module.vertex-mod",
+          "patterns": [
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)",
+              "captures": {
+                "1": {
+                  "name": "entity.name.namespace.module.vertex-mod"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "vertex": {
+      "patterns": [
+        {
+          "begin": "^\\s*(vertex)\\s*(\\()\\s*(?=$|//)",
+          "end": "^\\s*(\\))",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-mod"
+            },
+            "2": {
+              "name": "punctuation.section.block.begin.vertex-mod"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.section.block.end.vertex-mod"
+            }
+          },
+          "name": "meta.block.vertex.vertex-mod",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "match": "(\\S+)",
+              "captures": {
+                "1": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(vertex)\\b",
+          "end": "(?=//)|$",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-mod"
+            }
+          },
+          "name": "meta.directive.vertex.vertex-mod",
+          "patterns": [
+            {
+              "match": "(\\S+)",
+              "captures": {
+                "1": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "platform": {
+      "patterns": [
+        {
+          "begin": "^\\s*(platform)\\s*(\\()\\s*(?=$|//)",
+          "end": "^\\s*(\\))",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-mod"
+            },
+            "2": {
+              "name": "punctuation.section.block.begin.vertex-mod"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.section.block.end.vertex-mod"
+            }
+          },
+          "name": "meta.block.platform.vertex-mod",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "match": "(\\S+)(?:\\s+(\\S+))?",
+              "captures": {
+                "1": {
+                  "name": "support.constant.platform.vertex-mod"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(platform)\\b",
+          "end": "(?=//)|$",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-mod"
+            }
+          },
+          "name": "meta.directive.platform.vertex-mod",
+          "patterns": [
+            {
+              "match": "(\\S+)(?:\\s+(\\S+))?",
+              "captures": {
+                "1": {
+                  "name": "support.constant.platform.vertex-mod"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "require": {
+      "patterns": [
+        {
+          "begin": "^\\s*(require)\\s*(\\()\\s*(?=$|//)",
+          "end": "^\\s*(\\))",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-mod"
+            },
+            "2": {
+              "name": "punctuation.section.block.begin.vertex-mod"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.section.block.end.vertex-mod"
+            }
+          },
+          "name": "meta.block.require.vertex-mod",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(\\S+))?",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.module-path.vertex-mod"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(require)\\b",
+          "end": "(?=//)|$",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-mod"
+            }
+          },
+          "name": "meta.directive.require.vertex-mod",
+          "patterns": [
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(\\S+))?",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.module-path.vertex-mod"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "exclude": {
+      "patterns": [
+        {
+          "begin": "^\\s*(exclude)\\s*(\\()\\s*(?=$|//)",
+          "end": "^\\s*(\\))",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-mod"
+            },
+            "2": {
+              "name": "punctuation.section.block.begin.vertex-mod"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.section.block.end.vertex-mod"
+            }
+          },
+          "name": "meta.block.exclude.vertex-mod",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(\\S+))?",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.module-path.vertex-mod"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(exclude)\\b",
+          "end": "(?=//)|$",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-mod"
+            }
+          },
+          "name": "meta.directive.exclude.vertex-mod",
+          "patterns": [
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(\\S+))?",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.module-path.vertex-mod"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "replace": {
+      "patterns": [
+        {
+          "begin": "^\\s*(replace)\\s*(\\()\\s*(?=$|//)",
+          "end": "^\\s*(\\))",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-mod"
+            },
+            "2": {
+              "name": "punctuation.section.block.begin.vertex-mod"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.section.block.end.vertex-mod"
+            }
+          },
+          "name": "meta.block.replace.vertex-mod",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(?!=>)(\\S+))?\\s+(=>)\\s+((?:\\.\\.?(?:/\\S*)?|/\\S*))(?=\\s*(?://|$))",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.module-path.vertex-mod"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                },
+                "3": {
+                  "name": "keyword.operator.arrow.vertex-mod"
+                },
+                "4": {
+                  "name": "string.unquoted.path.vertex-mod"
+                }
+              }
+            },
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(?!=>)(\\S+))?\\s+(=>)\\s+([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(\\S+))?",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.module-path.vertex-mod"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                },
+                "3": {
+                  "name": "keyword.operator.arrow.vertex-mod"
+                },
+                "4": {
+                  "name": "string.unquoted.module-path.vertex-mod"
+                },
+                "5": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "match": "=>",
+              "name": "keyword.operator.arrow.vertex-mod"
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(replace)\\b",
+          "end": "(?=//)|$",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.directive.vertex-mod"
+            }
+          },
+          "name": "meta.directive.replace.vertex-mod",
+          "patterns": [
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(?!=>)(\\S+))?\\s+(=>)\\s+((?:\\.\\.?(?:/\\S*)?|/\\S*))(?=\\s*(?://|$))",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.module-path.vertex-mod"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                },
+                "3": {
+                  "name": "keyword.operator.arrow.vertex-mod"
+                },
+                "4": {
+                  "name": "string.unquoted.path.vertex-mod"
+                }
+              }
+            },
+            {
+              "match": "([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(?!=>)(\\S+))?\\s+(=>)\\s+([^\\s/(),]+(?:/[^\\s/(),]+)*)(?:\\s+(\\S+))?",
+              "captures": {
+                "1": {
+                  "name": "string.unquoted.module-path.vertex-mod"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                },
+                "3": {
+                  "name": "keyword.operator.arrow.vertex-mod"
+                },
+                "4": {
+                  "name": "string.unquoted.module-path.vertex-mod"
+                },
+                "5": {
+                  "patterns": [
+                    {
+                      "include": "#version"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "match": "=>",
+              "name": "keyword.operator.arrow.vertex-mod"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/package",
   "name": "vscode-vertex",
   "displayName": "Vertex Language Support",
-  "description": "Syntax highlighting for the Vertex programming language: .vs source files and .vir Vertex IR files",
-  "version": "4.0.0",
+  "description": "Syntax highlighting for the Vertex toolchain: .vs source, .vinterface interfaces, .vir Vertex IR, and vs.mod, vs.work and vs.sum",
+  "version": "5.0.0",
   "publisher": "vertex-language",
   "license": "MIT",
   "repository": {
@@ -14,12 +14,20 @@
     "vscode": "^1.70.0"
   },
   "categories": ["Programming Languages"],
+  "scripts": {
+    "build": "python3 scripts/vertex.py syntaxes && python3 scripts/vertex_ir.py syntaxes && python3 scripts/vertex_mod.py syntaxes",
+    "test": "node test/tokenize.js expect test/cases.json"
+  },
+  "devDependencies": {
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.3.2"
+  },
   "contributes": {
     "languages": [
       {
         "id": "vertex",
         "aliases": ["Vertex", "vertex"],
-        "extensions": [".vs"],
+        "extensions": [".vs", ".vinterface"],
         "configuration": "./language-configuration.json"
       },
       {
@@ -27,6 +35,24 @@
         "aliases": ["Vertex IR", "vertex-ir", "vir"],
         "extensions": [".vir"],
         "configuration": "./language-configuration-ir.json"
+      },
+      {
+        "id": "vertex-mod",
+        "aliases": ["Vertex Module File", "vs.mod"],
+        "filenames": ["vs.mod"],
+        "configuration": "./language-configuration-mod.json"
+      },
+      {
+        "id": "vertex-work",
+        "aliases": ["Vertex Workspace File", "vs.work"],
+        "filenames": ["vs.work"],
+        "configuration": "./language-configuration-mod.json"
+      },
+      {
+        "id": "vertex-sum",
+        "aliases": ["Vertex Checksum File", "vs.sum"],
+        "filenames": ["vs.sum"],
+        "configuration": "./language-configuration-sum.json"
       }
     ],
     "grammars": [
@@ -41,12 +67,30 @@
         "path": "./syntaxes/vertex-ir.tmLanguage.json"
       },
       {
+        "language": "vertex-mod",
+        "scopeName": "source.vtx.mod",
+        "path": "./syntaxes/vertex-mod.tmLanguage.json"
+      },
+      {
+        "language": "vertex-work",
+        "scopeName": "source.vtx.work",
+        "path": "./syntaxes/vertex-work.tmLanguage.json"
+      },
+      {
+        "language": "vertex-sum",
+        "scopeName": "source.vtx.sum",
+        "path": "./syntaxes/vertex-sum.tmLanguage.json"
+      },
+      {
         "scopeName": "markdown.vertex.codeblock",
         "path": "./syntaxes/vertex-markdown-injection.tmLanguage.json",
         "injectTo": ["text.html.markdown"],
         "embeddedLanguages": {
           "meta.embedded.block.vertex": "vertex",
-          "meta.embedded.block.vertex-ir": "vertex-ir"
+          "meta.embedded.block.vertex-ir": "vertex-ir",
+          "meta.embedded.block.vertex-mod": "vertex-mod",
+          "meta.embedded.block.vertex-work": "vertex-work",
+          "meta.embedded.block.vertex-sum": "vertex-sum"
         }
       }
     ]

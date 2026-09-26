@@ -4,8 +4,21 @@
   "injectionSelector": "L:text.html.markdown",
   "fileTypes": [],
   "patterns": [
-    { "include": "#vertex-fenced-code-block" },
-    { "include": "#vertex-ir-fenced-code-block" }
+    {
+      "include": "#vertex-fenced-code-block"
+    },
+    {
+      "include": "#vertex-ir-fenced-code-block"
+    },
+    {
+      "include": "#vertex-mod-fenced-code-block"
+    },
+    {
+      "include": "#vertex-work-fenced-code-block"
+    },
+    {
+      "include": "#vertex-sum-fenced-code-block"
+    }
   ],
   "repository": {
     "vertex-fenced-code-block": {
@@ -13,12 +26,20 @@
       "name": "markup.fenced_code.block.markdown",
       "end": "(^|\\G)(\\2|\\s{0,3})(\\3)\\s*$",
       "beginCaptures": {
-        "3": { "name": "punctuation.definition.markdown" },
-        "4": { "name": "fenced_code.block.language.markdown" },
-        "5": { "name": "fenced_code.block.language.attributes.markdown" }
+        "3": {
+          "name": "punctuation.definition.markdown"
+        },
+        "4": {
+          "name": "fenced_code.block.language.markdown"
+        },
+        "5": {
+          "name": "fenced_code.block.language.attributes.markdown"
+        }
       },
       "endCaptures": {
-        "3": { "name": "punctuation.definition.markdown" }
+        "3": {
+          "name": "punctuation.definition.markdown"
+        }
       },
       "patterns": [
         {
@@ -26,7 +47,9 @@
           "while": "(^|\\G)(?!\\s*([`~]{3,})\\s*$)",
           "contentName": "meta.embedded.block.vertex",
           "patterns": [
-            { "include": "source.vtx" }
+            {
+              "include": "source.vtx"
+            }
           ]
         }
       ]
@@ -36,12 +59,20 @@
       "name": "markup.fenced_code.block.markdown",
       "end": "(^|\\G)(\\2|\\s{0,3})(\\3)\\s*$",
       "beginCaptures": {
-        "3": { "name": "punctuation.definition.markdown" },
-        "4": { "name": "fenced_code.block.language.markdown" },
-        "5": { "name": "fenced_code.block.language.attributes.markdown" }
+        "3": {
+          "name": "punctuation.definition.markdown"
+        },
+        "4": {
+          "name": "fenced_code.block.language.markdown"
+        },
+        "5": {
+          "name": "fenced_code.block.language.attributes.markdown"
+        }
       },
       "endCaptures": {
-        "3": { "name": "punctuation.definition.markdown" }
+        "3": {
+          "name": "punctuation.definition.markdown"
+        }
       },
       "patterns": [
         {
@@ -49,7 +80,108 @@
           "while": "(^|\\G)(?!\\s*([`~]{3,})\\s*$)",
           "contentName": "meta.embedded.block.vertex-ir",
           "patterns": [
-            { "include": "source.vtxir" }
+            {
+              "include": "source.vtxir"
+            }
+          ]
+        }
+      ]
+    },
+    "vertex-mod-fenced-code-block": {
+      "begin": "(^|\\G)(\\s*)(`{3,}|~{3,})\\s*(?i:(vs\\.mod|vsmod|vertex-mod)(\\s+[^`~]*)?$)",
+      "name": "markup.fenced_code.block.markdown",
+      "end": "(^|\\G)(\\2|\\s{0,3})(\\3)\\s*$",
+      "beginCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        },
+        "4": {
+          "name": "fenced_code.block.language.markdown"
+        },
+        "5": {
+          "name": "fenced_code.block.language.attributes.markdown"
+        }
+      },
+      "endCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        }
+      },
+      "patterns": [
+        {
+          "begin": "(^|\\G)(\\s*)(.*)",
+          "while": "(^|\\G)(?!\\s*([`~]{3,})\\s*$)",
+          "contentName": "meta.embedded.block.vertex-mod",
+          "patterns": [
+            {
+              "include": "source.vtx.mod"
+            }
+          ]
+        }
+      ]
+    },
+    "vertex-work-fenced-code-block": {
+      "begin": "(^|\\G)(\\s*)(`{3,}|~{3,})\\s*(?i:(vs\\.work|vswork|vertex-work)(\\s+[^`~]*)?$)",
+      "name": "markup.fenced_code.block.markdown",
+      "end": "(^|\\G)(\\2|\\s{0,3})(\\3)\\s*$",
+      "beginCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        },
+        "4": {
+          "name": "fenced_code.block.language.markdown"
+        },
+        "5": {
+          "name": "fenced_code.block.language.attributes.markdown"
+        }
+      },
+      "endCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        }
+      },
+      "patterns": [
+        {
+          "begin": "(^|\\G)(\\s*)(.*)",
+          "while": "(^|\\G)(?!\\s*([`~]{3,})\\s*$)",
+          "contentName": "meta.embedded.block.vertex-work",
+          "patterns": [
+            {
+              "include": "source.vtx.work"
+            }
+          ]
+        }
+      ]
+    },
+    "vertex-sum-fenced-code-block": {
+      "begin": "(^|\\G)(\\s*)(`{3,}|~{3,})\\s*(?i:(vs\\.sum|vssum|vertex-sum)(\\s+[^`~]*)?$)",
+      "name": "markup.fenced_code.block.markdown",
+      "end": "(^|\\G)(\\2|\\s{0,3})(\\3)\\s*$",
+      "beginCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        },
+        "4": {
+          "name": "fenced_code.block.language.markdown"
+        },
+        "5": {
+          "name": "fenced_code.block.language.attributes.markdown"
+        }
+      },
+      "endCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        }
+      },
+      "patterns": [
+        {
+          "begin": "(^|\\G)(\\s*)(.*)",
+          "while": "(^|\\G)(?!\\s*([`~]{3,})\\s*$)",
+          "contentName": "meta.embedded.block.vertex-sum",
+          "patterns": [
+            {
+              "include": "source.vtx.sum"
+            }
           ]
         }
       ]
