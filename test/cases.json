@@ -943,7 +943,7 @@
  ],
  [
   "source.vtx.vsx",
-  "@reactive.State var count = 0",
+  "@state.State var count = 0",
   "var",
   "storage.type.var.vertex"
  ],
