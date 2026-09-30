@@ -1,0 +1,1697 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Vertex Markup",
+  "scopeName": "source.vtx.vsx",
+  "fileTypes": [
+    "vsx"
+  ],
+  "patterns": [
+    {
+      "include": "#shebang"
+    },
+    {
+      "include": "#code"
+    }
+  ],
+  "repository": {
+    "shebang": {
+      "match": "\\A#!.*$",
+      "name": "comment.line.shebang.vertex"
+    },
+    "code": {
+      "patterns": [
+        {
+          "include": "#comments"
+        },
+        {
+          "include": "#compiler-control"
+        },
+        {
+          "include": "#markup"
+        },
+        {
+          "include": "#attributes"
+        },
+        {
+          "include": "#strings"
+        },
+        {
+          "include": "#regex"
+        },
+        {
+          "include": "#numbers"
+        },
+        {
+          "include": "#package-declaration"
+        },
+        {
+          "include": "#import-declaration"
+        },
+        {
+          "include": "#function-declaration"
+        },
+        {
+          "include": "#type-declaration"
+        },
+        {
+          "include": "#variable-declaration"
+        },
+        {
+          "include": "#enum-case"
+        },
+        {
+          "include": "#accessors"
+        },
+        {
+          "include": "#execution-modifier"
+        },
+        {
+          "include": "#keywords"
+        },
+        {
+          "include": "#pound-words"
+        },
+        {
+          "include": "#macro-expansion"
+        },
+        {
+          "include": "#types"
+        },
+        {
+          "include": "#backtick-identifier"
+        },
+        {
+          "include": "#special-identifiers"
+        },
+        {
+          "include": "#argument-label"
+        },
+        {
+          "include": "#function-call"
+        },
+        {
+          "include": "#member-access"
+        },
+        {
+          "include": "#operators"
+        },
+        {
+          "include": "#brace-block"
+        },
+        {
+          "include": "#paren-group"
+        },
+        {
+          "include": "#punctuation"
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "begin": "/\\*\\*(?!/)",
+          "end": "\\*/",
+          "name": "comment.block.documentation.vertex",
+          "captures": {
+            "0": {
+              "name": "punctuation.definition.comment.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#nested-block-comment"
+            },
+            {
+              "include": "#doc-markup"
+            }
+          ]
+        },
+        {
+          "begin": "/\\*",
+          "end": "\\*/",
+          "name": "comment.block.vertex",
+          "captures": {
+            "0": {
+              "name": "punctuation.definition.comment.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#nested-block-comment"
+            }
+          ]
+        },
+        {
+          "begin": "///",
+          "end": "$",
+          "name": "comment.line.triple-slash.documentation.vertex",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#doc-markup"
+            }
+          ]
+        },
+        {
+          "match": "(//)\\s*(MARK|TODO|FIXME|NOTE|HACK|XXX)(:)?(.*)$",
+          "name": "comment.line.double-slash.vertex",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.comment.vertex"
+            },
+            "2": {
+              "name": "keyword.other.comment-tag.vertex"
+            },
+            "3": {
+              "name": "punctuation.separator.vertex"
+            }
+          }
+        },
+        {
+          "begin": "//",
+          "end": "$",
+          "name": "comment.line.double-slash.vertex",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.vertex"
+            }
+          }
+        }
+      ]
+    },
+    "nested-block-comment": {
+      "begin": "/\\*",
+      "end": "\\*/",
+      "name": "comment.block.nested.vertex",
+      "patterns": [
+        {
+          "include": "#nested-block-comment"
+        }
+      ]
+    },
+    "doc-markup": {
+      "patterns": [
+        {
+          "match": "(?<=^|///|\\*)\\s*(-)\\s+(Parameters?|Returns|Throws|Note|Warning|Important|Precondition|Postcondition|Complexity|SeeAlso|Author|Since|Version|Attention|Bug|Experiment|Invariant|Requires|Todo)\\b(?:\\s+((?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)))?\\s*(:)",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.list.vertex"
+            },
+            "2": {
+              "name": "keyword.other.documentation.vertex"
+            },
+            "3": {
+              "name": "variable.parameter.documentation.vertex"
+            },
+            "4": {
+              "name": "punctuation.separator.vertex"
+            }
+          }
+        },
+        {
+          "match": "`[^`]+`",
+          "name": "markup.inline.raw.vertex"
+        }
+      ]
+    },
+    "compiler-control": {
+      "patterns": [
+        {
+          "begin": "^\\s*(#)(if|elseif)\\b",
+          "end": "(?=//|/\\*)|$",
+          "beginCaptures": {
+            "0": {
+              "name": "keyword.control.directive.conditional.vertex"
+            },
+            "1": {
+              "name": "punctuation.definition.directive.vertex"
+            }
+          },
+          "name": "meta.preprocessor.conditional.vertex",
+          "patterns": [
+            {
+              "match": "\\b(os|arch|canImport|targetEnvironment|swift|compiler|hasFeature|hasAttribute|_endian|_pointerBitWidth|_runtime|_ptrauth|_hasAtomicBitWidth|_compiler_version)\\s*(?=\\()",
+              "captures": {
+                "1": {
+                  "name": "support.function.condition.vertex"
+                }
+              }
+            },
+            {
+              "match": "\\b(?:true|false)\\b",
+              "name": "constant.language.boolean.vertex"
+            },
+            {
+              "match": "&&|\\|\\||!|>=|<",
+              "name": "keyword.operator.logical.vertex"
+            },
+            {
+              "include": "#numbers"
+            },
+            {
+              "match": "[()]",
+              "name": "punctuation.section.parens.vertex"
+            },
+            {
+              "match": "(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)",
+              "name": "variable.other.condition.vertex"
+            }
+          ]
+        },
+        {
+          "match": "^\\s*(#)(else|endif)\\b",
+          "captures": {
+            "0": {
+              "name": "keyword.control.directive.conditional.vertex"
+            },
+            "1": {
+              "name": "punctuation.definition.directive.vertex"
+            }
+          }
+        },
+        {
+          "begin": "(#)(error|warning)\\s*(\\()",
+          "end": "\\)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.directive.vertex"
+            },
+            "2": {
+              "name": "keyword.control.directive.diagnostic.vertex"
+            },
+            "3": {
+              "name": "punctuation.section.arguments.begin.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.arguments.end.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#strings"
+            }
+          ]
+        }
+      ]
+    },
+    "pound-words": {
+      "patterns": [
+        {
+          "begin": "(#)(available|unavailable)\\s*(\\()",
+          "end": "\\)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.keyword.vertex"
+            },
+            "2": {
+              "name": "keyword.other.availability.vertex"
+            },
+            "3": {
+              "name": "punctuation.section.arguments.begin.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.arguments.end.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "match": "\\b(macOS|macOSApplicationExtension|iOS|iOSApplicationExtension|tvOS|watchOS|visionOS|macCatalyst|Linux|Windows|Android|FreeBSD|OpenBSD|WASI|Cygwin|Haiku)\\b",
+              "name": "support.constant.platform.vertex"
+            },
+            {
+              "match": "\\*",
+              "name": "keyword.other.wildcard.vertex"
+            },
+            {
+              "include": "#numbers"
+            },
+            {
+              "include": "#punctuation"
+            }
+          ]
+        },
+        {
+          "match": "(#)(available|unavailable|selector|keyPath|sourceLocation)\\b",
+          "captures": {
+            "0": {
+              "name": "keyword.other.pound.vertex"
+            },
+            "1": {
+              "name": "punctuation.definition.keyword.vertex"
+            }
+          }
+        },
+        {
+          "match": "(#)(file|fileID|filePath|line|column|function|dsohandle|colorLiteral|fileLiteral|imageLiteral)\\b",
+          "captures": {
+            "0": {
+              "name": "support.variable.literal.vertex"
+            },
+            "1": {
+              "name": "punctuation.definition.keyword.vertex"
+            }
+          }
+        }
+      ]
+    },
+    "macro-expansion": {
+      "match": "(#)((?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*))",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.macro.vertex"
+        },
+        "2": {
+          "name": "entity.name.function.macro.vertex"
+        }
+      }
+    },
+    "attributes": {
+      "patterns": [
+        {
+          "begin": "(@)((?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*))\\s*(\\()",
+          "end": "\\)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.attribute.vertex"
+            },
+            "2": {
+              "name": "storage.modifier.attribute.vertex"
+            },
+            "3": {
+              "name": "punctuation.section.arguments.begin.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.arguments.end.vertex"
+            }
+          },
+          "name": "meta.attribute.vertex",
+          "patterns": [
+            {
+              "match": "\\b((?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*))\\s*(:)",
+              "captures": {
+                "1": {
+                  "name": "variable.parameter.attribute.vertex"
+                },
+                "2": {
+                  "name": "punctuation.separator.vertex"
+                }
+              }
+            },
+            {
+              "include": "#code"
+            }
+          ]
+        },
+        {
+          "match": "(@)((?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*))",
+          "name": "meta.attribute.vertex",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.attribute.vertex"
+            },
+            "2": {
+              "name": "storage.modifier.attribute.vertex"
+            }
+          }
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "begin": "\"\"\"",
+          "end": "\"\"\"",
+          "name": "string.quoted.triple.vertex",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#interpolation"
+            },
+            {
+              "match": "\\\\(?:[0\\\\tnr\"\\']|u\\{[0-9A-Fa-f]{1,8}\\})",
+              "name": "constant.character.escape.vertex"
+            },
+            {
+              "match": "\\\\.",
+              "name": "invalid.illegal.escape.vertex"
+            }
+          ]
+        },
+        {
+          "begin": "#\"\"\"",
+          "end": "\"\"\"#",
+          "name": "string.quoted.triple.raw.vertex",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#raw-interpolation"
+            },
+            {
+              "match": "\\\\#(?:[0\\\\tnr\"\\']|u\\{[0-9A-Fa-f]{1,8}\\})",
+              "name": "constant.character.escape.vertex"
+            }
+          ]
+        },
+        {
+          "begin": "(#{2,})\"\"\"",
+          "end": "\"\"\"\\1",
+          "name": "string.quoted.triple.raw.vertex",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.vertex"
+            }
+          },
+          "patterns": []
+        },
+        {
+          "begin": "\"",
+          "end": "\"|$",
+          "name": "string.quoted.double.vertex",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#interpolation"
+            },
+            {
+              "match": "\\\\(?:[0\\\\tnr\"\\']|u\\{[0-9A-Fa-f]{1,8}\\})",
+              "name": "constant.character.escape.vertex"
+            },
+            {
+              "match": "\\\\.",
+              "name": "invalid.illegal.escape.vertex"
+            }
+          ]
+        },
+        {
+          "begin": "#\"",
+          "end": "\"#|$",
+          "name": "string.quoted.double.raw.vertex",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#raw-interpolation"
+            },
+            {
+              "match": "\\\\#(?:[0\\\\tnr\"\\']|u\\{[0-9A-Fa-f]{1,8}\\})",
+              "name": "constant.character.escape.vertex"
+            }
+          ]
+        },
+        {
+          "begin": "(#{2,})\"",
+          "end": "\"\\1|$",
+          "name": "string.quoted.double.raw.vertex",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.vertex"
+            }
+          },
+          "patterns": []
+        }
+      ]
+    },
+    "interpolation": {
+      "begin": "\\\\\\(",
+      "end": "\\)",
+      "contentName": "source.vtx",
+      "name": "meta.embedded.line.vertex",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.begin.vertex"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.end.vertex"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#code"
+        }
+      ]
+    },
+    "raw-interpolation": {
+      "begin": "\\\\#\\(",
+      "end": "\\)",
+      "contentName": "source.vtx",
+      "name": "meta.embedded.line.vertex",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.begin.vertex"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.end.vertex"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#code"
+        }
+      ]
+    },
+    "regex": {
+      "patterns": [
+        {
+          "begin": "(#+)/",
+          "end": "/\\1",
+          "name": "string.regexp.extended.vertex",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.regexp.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.regexp.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#regex-guts"
+            }
+          ]
+        },
+        {
+          "match": "(?<=^|[\\s(\\[{,:=;!&|?])(/)(?![\\s/*])((?:\\\\.|[^/\\\\\\n])+)(/)(?![\\w/])",
+          "name": "string.regexp.vertex",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.string.begin.regexp.vertex"
+            },
+            "2": {
+              "patterns": [
+                {
+                  "include": "#regex-guts"
+                }
+              ]
+            },
+            "3": {
+              "name": "punctuation.definition.string.end.regexp.vertex"
+            }
+          }
+        }
+      ]
+    },
+    "regex-guts": {
+      "patterns": [
+        {
+          "match": "\\\\[dDwWsSbBnrt]",
+          "name": "constant.character.escape.backslash.regexp"
+        },
+        {
+          "match": "\\\\.",
+          "name": "constant.character.escape.regexp"
+        },
+        {
+          "match": "[*+?]|\\{\\d+(?:,\\d*)?\\}",
+          "name": "keyword.operator.quantifier.regexp"
+        },
+        {
+          "match": "[|^$]",
+          "name": "keyword.operator.regexp"
+        },
+        {
+          "match": "\\[\\^?|\\]",
+          "name": "punctuation.definition.character-class.regexp"
+        },
+        {
+          "match": "\\((?:\\?(?:<(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)>|[:=!]|<[=!]))?|\\)",
+          "name": "punctuation.definition.group.regexp"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "match": "\\b0x[0-9A-Fa-f][0-9A-Fa-f_]*(?:\\.[0-9A-Fa-f][0-9A-Fa-f_]*)?[pP][+-]?[0-9][0-9_]*\\b",
+          "name": "constant.numeric.float.hexadecimal.vertex"
+        },
+        {
+          "match": "\\b0x[0-9A-Fa-f][0-9A-Fa-f_]*\\b",
+          "name": "constant.numeric.integer.hexadecimal.vertex"
+        },
+        {
+          "match": "\\b0o[0-7][0-7_]*\\b",
+          "name": "constant.numeric.integer.octal.vertex"
+        },
+        {
+          "match": "\\b0b[01][01_]*\\b",
+          "name": "constant.numeric.integer.binary.vertex"
+        },
+        {
+          "match": "\\b[0-9][0-9_]*(?:\\.[0-9][0-9_]*(?:[eE][+-]?[0-9][0-9_]*)?|[eE][+-]?[0-9][0-9_]*)\\b",
+          "name": "constant.numeric.float.decimal.vertex"
+        },
+        {
+          "match": "\\b[0-9][0-9_]*\\b",
+          "name": "constant.numeric.integer.decimal.vertex"
+        },
+        {
+          "match": "(?<![.\\w])[0-9][0-9A-Za-z_]*[A-Za-z_][0-9A-Za-z_]*\\b",
+          "name": "invalid.illegal.numeric.vertex"
+        }
+      ]
+    },
+    "package-declaration": {
+      "match": "^\\s*(package)\\s+(?!(?:func|var|let|class|struct|enum|init|subscript|actor|protocol|extension|case|typealias|deinit|operator|macro|precedencegroup|import|associatedtype|public|private|fileprivate|internal|open|package|mutating|nonmutating|lazy|weak|unowned|convenience|required|dynamic|final|override|indirect|optional|nonisolated|distributed|infix|prefix|postfix|borrowing|consuming|__consuming|_const|_local|static)\\b)((?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*))\\s*(?=$|//|;)",
+      "captures": {
+        "1": {
+          "name": "keyword.other.package.vertex"
+        },
+        "2": {
+          "name": "entity.name.namespace.vertex"
+        }
+      }
+    },
+    "import-declaration": {
+      "patterns": [
+        {
+          "begin": "\\b(import)\\s*(\\()",
+          "end": "\\)",
+          "name": "meta.import.vertex",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.control.import.vertex"
+            },
+            "2": {
+              "name": "punctuation.section.imports.begin.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.imports.end.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comments"
+            },
+            {
+              "match": "(?:\\b((?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*))\\s+)?(\")([^\"]*)(\")",
+              "captures": {
+                "1": {
+                  "name": "entity.name.namespace.alias.vertex"
+                },
+                "2": {
+                  "name": "punctuation.definition.string.begin.vertex"
+                },
+                "3": {
+                  "name": "string.quoted.double.import-path.vertex"
+                },
+                "4": {
+                  "name": "punctuation.definition.string.end.vertex"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "\\b(import)\\s+(?=(?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)\\s+)?\")",
+          "end": "(?<=\")|$",
+          "name": "meta.import.vertex",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.control.import.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "match": "(?:\\b((?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*))\\s+)?(\")([^\"]*)(\")",
+              "captures": {
+                "1": {
+                  "name": "entity.name.namespace.alias.vertex"
+                },
+                "2": {
+                  "name": "punctuation.definition.string.begin.vertex"
+                },
+                "3": {
+                  "name": "string.quoted.double.import-path.vertex"
+                },
+                "4": {
+                  "name": "punctuation.definition.string.end.vertex"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "match": "\\b(import)\\s+(?:(typealias|struct|class|enum|protocol|let|var|func)\\s+)?((?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)(?:\\.(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*))*)",
+          "name": "meta.import.vertex",
+          "captures": {
+            "1": {
+              "name": "keyword.control.import.vertex"
+            },
+            "2": {
+              "name": "storage.type.vertex"
+            },
+            "3": {
+              "name": "entity.name.namespace.vertex"
+            }
+          }
+        }
+      ]
+    },
+    "function-declaration": {
+      "begin": "\\b(func)\\b|(?<!\\.)\\b(init|subscript)\\b([?!])?(?=\\s*[<(])",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.type.function.vertex"
+        },
+        "2": {
+          "name": "storage.type.function.vertex"
+        },
+        "3": {
+          "name": "keyword.operator.optional.vertex"
+        }
+      },
+      "end": "(?<=\\})|$",
+      "name": "meta.definition.function.vertex",
+      "patterns": [
+        {
+          "include": "#comments"
+        },
+        {
+          "begin": "\\G\\s*(\\()(?=\\s*(?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`)\\s*:)",
+          "end": "\\)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.section.receiver.begin.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.receiver.end.vertex"
+            }
+          },
+          "name": "meta.receiver.vertex",
+          "patterns": [
+            {
+              "match": "\\G\\s*((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))\\s*(:)",
+              "captures": {
+                "1": {
+                  "name": "variable.parameter.receiver.vertex"
+                },
+                "2": {
+                  "name": "punctuation.separator.vertex"
+                }
+              }
+            },
+            {
+              "match": "\\b(?:borrowing|consuming|inout|__shared|__owned)\\b",
+              "name": "storage.modifier.ownership.vertex"
+            },
+            {
+              "include": "#types"
+            },
+            {
+              "include": "#paren-group"
+            },
+            {
+              "include": "#punctuation"
+            },
+            {
+              "include": "#operators"
+            }
+          ]
+        },
+        {
+          "match": "(?<=\\))\\s*(?!(?:throws|rethrows|async|kernel|graph|where)\\b)((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))(?=\\s*[<(])",
+          "captures": {
+            "1": {
+              "name": "entity.name.function.vertex"
+            }
+          }
+        },
+        {
+          "match": "\\G\\s+((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`)|[/=\\-+!*%<>&|^~?\\p{Sm}]+|\\.[/=\\-+!*%<>&|^~?\\p{Sm}]*)",
+          "captures": {
+            "1": {
+              "name": "entity.name.function.vertex"
+            }
+          }
+        },
+        {
+          "include": "#generic-clause"
+        },
+        {
+          "include": "#parameter-clause"
+        },
+        {
+          "match": "->",
+          "name": "keyword.operator.arrow.vertex"
+        },
+        {
+          "include": "#execution-modifier"
+        },
+        {
+          "match": "\\b(?:async|throws|rethrows|reasync)\\b",
+          "name": "storage.modifier.effect.vertex"
+        },
+        {
+          "match": "\\bwhere\\b",
+          "name": "keyword.other.where.vertex"
+        },
+        {
+          "begin": "\\{",
+          "end": "\\}",
+          "name": "meta.body.function.vertex",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.section.function.begin.vertex"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.function.end.vertex"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#code"
+            }
+          ]
+        },
+        {
+          "include": "#code"
+        }
+      ]
+    },
+    "generic-clause": {
+      "begin": "<",
+      "end": ">",
+      "name": "meta.generic-clause.vertex",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.generic.begin.vertex"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.generic.end.vertex"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#comments"
+        },
+        {
+          "match": "\\beach\\b",
+          "name": "storage.modifier.pack.vertex"
+        },
+        {
+          "match": "\\bwhere\\b",
+          "name": "keyword.other.where.vertex"
+        },
+        {
+          "include": "#generic-clause"
+        },
+        {
+          "include": "#types"
+        },
+        {
+          "match": "(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)",
+          "name": "entity.name.type.parameter.vertex"
+        },
+        {
+          "include": "#punctuation"
+        },
+        {
+          "include": "#operators"
+        }
+      ]
+    },
+    "parameter-clause": {
+      "begin": "\\(",
+      "end": "\\)",
+      "name": "meta.parameter-clause.vertex",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.parameters.begin.vertex"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.parameters.end.vertex"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#comments"
+        },
+        {
+          "match": "(?:^|(?<=[(,]))\\s*((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))\\s+((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))\\s*(?=:)",
+          "captures": {
+            "1": {
+              "name": "entity.name.function.label.vertex"
+            },
+            "2": {
+              "name": "variable.parameter.function.vertex"
+            }
+          }
+        },
+        {
+          "match": "(?:^|(?<=[(,]))\\s*((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))\\s*(?=:)",
+          "captures": {
+            "1": {
+              "name": "variable.parameter.function.vertex"
+            }
+          }
+        },
+        {
+          "match": ":",
+          "name": "punctuation.separator.parameter.vertex"
+        },
+        {
+          "match": "\\b(?:inout|borrowing|consuming|__shared|__owned|sending|isolated|_const)\\b",
+          "name": "storage.modifier.ownership.vertex"
+        },
+        {
+          "match": "\\.\\.\\.",
+          "name": "keyword.operator.variadic.vertex"
+        },
+        {
+          "begin": "=",
+          "end": "(?=[,)])",
+          "beginCaptures": {
+            "0": {
+              "name": "keyword.operator.assignment.vertex"
+            }
+          },
+          "name": "meta.default-value.vertex",
+          "patterns": [
+            {
+              "include": "#code"
+            }
+          ]
+        },
+        {
+          "include": "#code"
+        }
+      ]
+    },
+    "type-declaration": {
+      "patterns": [
+        {
+          "match": "\\b(struct|class|enum|protocol|actor|extension)\\s+((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`)(?:\\.(?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))*)",
+          "captures": {
+            "1": {
+              "name": "storage.type.$1.vertex"
+            },
+            "2": {
+              "name": "entity.name.type.vertex"
+            }
+          }
+        },
+        {
+          "match": "\\b(typealias|associatedtype)\\s+((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))",
+          "captures": {
+            "1": {
+              "name": "storage.type.$1.vertex"
+            },
+            "2": {
+              "name": "entity.name.type.vertex"
+            }
+          }
+        },
+        {
+          "match": "\\b(precedencegroup)\\s+((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))",
+          "captures": {
+            "1": {
+              "name": "storage.type.precedencegroup.vertex"
+            },
+            "2": {
+              "name": "entity.name.type.precedencegroup.vertex"
+            }
+          }
+        },
+        {
+          "match": "\\b(prefix|infix|postfix)?\\s*\\b(operator)\\s+([/=\\-+!*%<>&|^~?\\p{Sm}]+|\\.[/=\\-+!*%<>&|^~?\\p{Sm}]*)",
+          "captures": {
+            "1": {
+              "name": "storage.modifier.vertex"
+            },
+            "2": {
+              "name": "storage.type.operator.vertex"
+            },
+            "3": {
+              "name": "entity.name.function.operator.vertex"
+            }
+          }
+        },
+        {
+          "match": "\\b(macro)\\s+((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))(?=\\s*[<(])",
+          "captures": {
+            "1": {
+              "name": "storage.type.macro.vertex"
+            },
+            "2": {
+              "name": "entity.name.function.macro.vertex"
+            }
+          }
+        },
+        {
+          "match": "\\b(higherThan|lowerThan|associativity|assignment)\\s*(:)",
+          "captures": {
+            "1": {
+              "name": "keyword.other.precedencegroup.vertex"
+            },
+            "2": {
+              "name": "punctuation.separator.vertex"
+            }
+          }
+        }
+      ]
+    },
+    "variable-declaration": {
+      "patterns": [
+        {
+          "match": "\\b(let)\\s+((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))",
+          "captures": {
+            "1": {
+              "name": "storage.type.let.vertex"
+            },
+            "2": {
+              "name": "variable.other.constant.vertex"
+            }
+          }
+        },
+        {
+          "match": "\\b(var)\\s+((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))",
+          "captures": {
+            "1": {
+              "name": "storage.type.var.vertex"
+            },
+            "2": {
+              "name": "variable.other.readwrite.vertex"
+            }
+          }
+        }
+      ]
+    },
+    "enum-case": {
+      "match": "^\\s*(?:(indirect)\\s+)?(case)\\s+(?!(?:let|var|is)\\b)((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))(?=\\s*(?:[(,=]|$|//))",
+      "captures": {
+        "1": {
+          "name": "storage.modifier.vertex"
+        },
+        "2": {
+          "name": "keyword.other.case.vertex"
+        },
+        "3": {
+          "name": "variable.other.enummember.vertex"
+        }
+      }
+    },
+    "accessors": {
+      "match": "(?:^|(?<=[{;])|(?<=\\bget\\s)|(?<=\\bset\\s)|(?<=\\bmutating\\s)|(?<=\\bnonmutating\\s))\\s*\\b(get|set|willSet|didSet|_read|_modify|unsafeAddress|unsafeMutableAddress)\\b(?=\\s*(?:[{(};]|$|\\b(?:get|set|async|throws|mutating|nonmutating)\\b))",
+      "captures": {
+        "1": {
+          "name": "keyword.other.accessor.vertex"
+        }
+      }
+    },
+    "execution-modifier": {
+      "match": "(?:(?<=\\))|(?<=\\bthrows)|(?<=\\basync)|(?<=\\brethrows))\\s*\\b(kernel|graph)\\b(?=\\s*(?:->|\\{|\\bwhere\\b|$))",
+      "captures": {
+        "1": {
+          "name": "storage.modifier.execution.vertex"
+        }
+      }
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "match": "\\b(try|await)(?:([?!])|\\b)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.$1.vertex"
+            },
+            "2": {
+              "name": "keyword.operator.$1.vertex"
+            }
+          }
+        },
+        {
+          "match": "\\b(as)([?!])",
+          "captures": {
+            "1": {
+              "name": "keyword.operator.type.cast.vertex"
+            },
+            "2": {
+              "name": "keyword.operator.type.cast.vertex"
+            }
+          }
+        },
+        {
+          "match": "\\b(?:as|is)\\b",
+          "name": "keyword.operator.type.vertex"
+        },
+        {
+          "match": "\\b(?:if|else|guard|switch|case|default|for|in|while|repeat|do|break|continue|fallthrough|return|throw|defer|catch)\\b",
+          "name": "keyword.control.vertex"
+        },
+        {
+          "match": "\\b(?:func|var|let|struct|class|enum|protocol|extension|typealias|associatedtype|init|deinit|subscript|operator|precedencegroup|import)\\b",
+          "name": "storage.type.vertex"
+        },
+        {
+          "match": "\\b(?:public|private|fileprivate|internal)\\b",
+          "name": "storage.modifier.access.vertex"
+        },
+        {
+          "match": "\\b(static)\\b",
+          "name": "storage.modifier.static.vertex"
+        },
+        {
+          "match": "\\b(package|open)\\b(?=\\s*\\((?:set)\\)|\\s+(?:open|package|mutating|nonmutating|lazy|weak|unowned|convenience|required|dynamic|final|override|indirect|optional|nonisolated|distributed|infix|prefix|postfix|borrowing|consuming|__consuming|_const|_local|public|private|fileprivate|internal|static\\s+)*(?:func|var|let|class|struct|enum|init|subscript|actor|protocol|extension|case|typealias|deinit|operator|macro|precedencegroup|import|associatedtype)\\b)",
+          "name": "storage.modifier.access.vertex"
+        },
+        {
+          "match": "\\b(open|package|mutating|nonmutating|lazy|weak|unowned|convenience|required|dynamic|final|override|indirect|optional|nonisolated|distributed|infix|prefix|postfix|borrowing|consuming|__consuming|_const|_local)\\b(?=\\s*(?:\\((?:safe|unsafe|set)\\))?\\s+(?:(?:open|package|mutating|nonmutating|lazy|weak|unowned|convenience|required|dynamic|final|override|indirect|optional|nonisolated|distributed|infix|prefix|postfix|borrowing|consuming|__consuming|_const|_local|public|private|fileprivate|internal|static)\\s+)*(?:func|var|let|class|struct|enum|init|subscript|actor|protocol|extension|case|typealias|deinit|operator|macro|precedencegroup|import|associatedtype)\\b)",
+          "name": "storage.modifier.vertex"
+        },
+        {
+          "match": "\\b(async)\\b(?=\\s+(?:let|var)\\b)",
+          "name": "storage.modifier.effect.vertex"
+        },
+        {
+          "match": "\\b(?:async|throws|rethrows)\\b(?=\\s*(?:->|\\{|throws|kernel|graph|$|\\())",
+          "name": "storage.modifier.effect.vertex"
+        },
+        {
+          "match": "\\b(some|any)\\b(?=\\s+[A-Za-z_(\\[])",
+          "name": "keyword.other.type.vertex"
+        },
+        {
+          "match": "\\b(?:true|false)\\b",
+          "name": "constant.language.boolean.vertex"
+        },
+        {
+          "match": "\\bnil\\b",
+          "name": "constant.language.nil.vertex"
+        },
+        {
+          "match": "\\b(?:self|super)\\b",
+          "name": "variable.language.$0.vertex"
+        },
+        {
+          "match": "\\bSelf\\b",
+          "name": "variable.language.self.type.vertex"
+        },
+        {
+          "match": "\\b(?:consume|copy|discard|yield)\\b(?=\\s+[A-Za-z_(`$])",
+          "name": "keyword.operator.ownership.vertex"
+        },
+        {
+          "match": "\\bwhere\\b",
+          "name": "keyword.other.where.vertex"
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "match": "\\bAny\\b",
+          "name": "support.type.any.vertex"
+        },
+        {
+          "match": "(?<![.\\w])(bool|char|string|void|never|int|int8|int16|int32|int64|uint|uint8|uint16|uint32|uint64|float|float32|double|float64|any)\\b(?!\\s*:(?!:))",
+          "name": "support.type.primitive.vertex"
+        },
+        {
+          "match": "\\b(Int|Int8|Int16|Int32|Int64|UInt|UInt8|UInt16|UInt32|UInt64|Float|Float32|Float64|Double|Bool|String|Character|Substring|Array|Dictionary|Set|Optional|Result|Never|Void|Error|Sendable|Equatable|Hashable|Comparable|Codable|Encodable|Decodable|Identifiable|Sequence|Collection|BidirectionalCollection|RandomAccessCollection|MutableCollection|RangeReplaceableCollection|IteratorProtocol|Range|ClosedRange|StaticString|UnsafePointer|UnsafeMutablePointer|UnsafeRawPointer|UnsafeMutableRawPointer|UnsafeBufferPointer|UnsafeMutableBufferPointer|UnsafeRawBufferPointer|UnsafeMutableRawBufferPointer|OpaquePointer|AnyObject|AnyHashable|Task|CustomStringConvertible|Numeric|BinaryInteger|FixedWidthInteger|SignedInteger|UnsignedInteger|FloatingPoint|BinaryFloatingPoint|ExpressibleByIntegerLiteral|ExpressibleByStringLiteral|ExpressibleByArrayLiteral|Copyable|Escapable)\\b",
+          "name": "support.type.vertex"
+        },
+        {
+          "match": "(?<=\\.)(Type|Protocol)\\b",
+          "name": "keyword.other.metatype.vertex"
+        },
+        {
+          "match": "(?<=\\bself\\.)[A-Z][A-Za-z0-9_]*\\b",
+          "name": "variable.other.property.vertex"
+        },
+        {
+          "match": "\\b_?[A-Z][A-Za-z0-9_]*\\b",
+          "name": "entity.name.type.vertex"
+        }
+      ]
+    },
+    "backtick-identifier": {
+      "match": "(`)[^`]+(`)",
+      "name": "variable.other.escaped.vertex",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.identifier.vertex"
+        },
+        "2": {
+          "name": "punctuation.definition.identifier.vertex"
+        }
+      }
+    },
+    "special-identifiers": {
+      "patterns": [
+        {
+          "match": "\\$[0-9]+",
+          "name": "variable.language.closure-argument.vertex"
+        },
+        {
+          "match": "\\$(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)",
+          "name": "variable.other.projection.vertex"
+        },
+        {
+          "match": "(?<![\\w$])_(?![\\w$])",
+          "name": "variable.language.wildcard.vertex"
+        }
+      ]
+    },
+    "argument-label": {
+      "match": "(?<=[(,])\\s*((?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`))\\s*(:)(?!:)",
+      "captures": {
+        "1": {
+          "name": "variable.parameter.argument-label.vertex"
+        },
+        "2": {
+          "name": "punctuation.separator.argument-label.vertex"
+        }
+      }
+    },
+    "function-call": {
+      "match": "(?!(?:if|else|guard|switch|case|default|for|in|while|repeat|do|break|continue|fallthrough|return|throw|defer|catch|func|var|let|struct|class|enum|protocol|extension|typealias|associatedtype|init|deinit|subscript|operator|precedencegroup|import|public|private|fileprivate|internal|as|is|try|await|some|any|self|super|Self|nil|true|false|where|static)\\b)\\b((?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*))(?=\\s*\\()",
+      "captures": {
+        "1": {
+          "name": "entity.name.function.call.vertex"
+        }
+      }
+    },
+    "member-access": {
+      "match": "(\\.)(?=\\s*(?:(?:(?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*)|`[^`]+`)|[0-9]))",
+      "captures": {
+        "1": {
+          "name": "punctuation.accessor.vertex"
+        }
+      }
+    },
+    "operators": {
+      "patterns": [
+        {
+          "match": "->",
+          "name": "keyword.operator.arrow.vertex"
+        },
+        {
+          "match": "\\.\\.\\.|\\.\\.<",
+          "name": "keyword.operator.range.vertex"
+        },
+        {
+          "match": "\\\\(?=[.A-Za-z_(])",
+          "name": "keyword.operator.key-path.vertex"
+        },
+        {
+          "match": "\\?\\?",
+          "name": "keyword.operator.nil-coalescing.vertex"
+        },
+        {
+          "match": "&&|\\|\\||(?<![\\w)\\]?!])!(?!=)",
+          "name": "keyword.operator.logical.vertex"
+        },
+        {
+          "match": "===|!==|==|!=|<=|>=|~=",
+          "name": "keyword.operator.comparison.vertex"
+        },
+        {
+          "match": "(?:[-+*/%&|^]|<<|>>|&[-+*])=",
+          "name": "keyword.operator.assignment.compound.vertex"
+        },
+        {
+          "match": "=(?!=)",
+          "name": "keyword.operator.assignment.vertex"
+        },
+        {
+          "match": "&[-+*]|&<<|&>>",
+          "name": "keyword.operator.arithmetic.overflow.vertex"
+        },
+        {
+          "match": "<<|>>|[&|^~]",
+          "name": "keyword.operator.bitwise.vertex"
+        },
+        {
+          "match": "[-+*/%]",
+          "name": "keyword.operator.arithmetic.vertex"
+        },
+        {
+          "match": "[<>]",
+          "name": "keyword.operator.comparison.vertex"
+        },
+        {
+          "match": "(?<=[\\w)\\]>])[?!](?!=)",
+          "name": "keyword.operator.optional.vertex"
+        },
+        {
+          "match": "\\?",
+          "name": "keyword.operator.ternary.vertex"
+        },
+        {
+          "match": "[/=\\-+!*%<>&|^~?\\p{Sm}]+",
+          "name": "keyword.operator.custom.vertex"
+        }
+      ]
+    },
+    "brace-block": {
+      "begin": "\\{",
+      "end": "\\}",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.block.begin.vertex"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.block.end.vertex"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#code"
+        }
+      ]
+    },
+    "paren-group": {
+      "begin": "\\(",
+      "end": "\\)",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.parens.begin.vertex"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.parens.end.vertex"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#code"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "match": ",",
+          "name": "punctuation.separator.comma.vertex"
+        },
+        {
+          "match": ";",
+          "name": "punctuation.terminator.statement.vertex"
+        },
+        {
+          "match": ":",
+          "name": "punctuation.separator.colon.vertex"
+        },
+        {
+          "match": "[\\[\\]]",
+          "name": "punctuation.section.brackets.vertex"
+        },
+        {
+          "match": "\\.",
+          "name": "punctuation.accessor.vertex"
+        }
+      ]
+    },
+    "markup": {
+      "begin": "(?:^|(?<=[\\s(\\[{,;:]))(<)(?:(?:((?:[A-Z][\\w$]*(?:\\.[\\w$]+)*|[\\w$]+(?:\\.[\\w$]+)+))|([a-z_$][\\w$]*(?:[:-][\\w$-]+)*))(?=[\\s/>{]|$)|(?=>))",
+      "end": "(/>)|(</)(?:((?:[A-Z][\\w$]*(?:\\.[\\w$]+)*|[\\w$]+(?:\\.[\\w$]+)+))|([a-z_$][\\w$]*(?:[:-][\\w$-]+)*))?\\s*(>)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.vsx"
+        },
+        "2": {
+          "name": "support.class.component.vsx"
+        },
+        "3": {
+          "name": "entity.name.tag.vsx"
+        }
+      },
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.vsx"
+        },
+        "2": {
+          "name": "punctuation.definition.tag.begin.vsx"
+        },
+        "3": {
+          "name": "support.class.component.vsx"
+        },
+        "4": {
+          "name": "entity.name.tag.vsx"
+        },
+        "5": {
+          "name": "punctuation.definition.tag.end.vsx"
+        }
+      },
+      "name": "meta.tag.vsx",
+      "patterns": [
+        {
+          "include": "#markup-attributes"
+        },
+        {
+          "include": "#markup-children"
+        }
+      ]
+    },
+    "markup-inner": {
+      "begin": "(<)(?:(?:((?:[A-Z][\\w$]*(?:\\.[\\w$]+)*|[\\w$]+(?:\\.[\\w$]+)+))|([a-z_$][\\w$]*(?:[:-][\\w$-]+)*))(?=[\\s/>{]|$)|(?=>))",
+      "end": "(/>)|(</)(?:((?:[A-Z][\\w$]*(?:\\.[\\w$]+)*|[\\w$]+(?:\\.[\\w$]+)+))|([a-z_$][\\w$]*(?:[:-][\\w$-]+)*))?\\s*(>)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.vsx"
+        },
+        "2": {
+          "name": "support.class.component.vsx"
+        },
+        "3": {
+          "name": "entity.name.tag.vsx"
+        }
+      },
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.vsx"
+        },
+        "2": {
+          "name": "punctuation.definition.tag.begin.vsx"
+        },
+        "3": {
+          "name": "support.class.component.vsx"
+        },
+        "4": {
+          "name": "entity.name.tag.vsx"
+        },
+        "5": {
+          "name": "punctuation.definition.tag.end.vsx"
+        }
+      },
+      "name": "meta.tag.vsx",
+      "patterns": [
+        {
+          "include": "#markup-attributes"
+        },
+        {
+          "include": "#markup-children"
+        }
+      ]
+    },
+    "markup-attributes": {
+      "begin": "\\G",
+      "end": "(?=/>)|(>)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.vsx"
+        }
+      },
+      "name": "meta.tag.attributes.vsx",
+      "patterns": [
+        {
+          "include": "#comments"
+        },
+        {
+          "begin": "(\\{)\\s*(\\.\\.\\.)",
+          "end": "\\}",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.section.embedded.begin.vsx"
+            },
+            "2": {
+              "name": "keyword.operator.spread.vsx"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.embedded.end.vsx"
+            }
+          },
+          "name": "meta.embedded.expression.vsx",
+          "patterns": [
+            {
+              "include": "#code"
+            }
+          ]
+        },
+        {
+          "match": "(?<![\\w$-])(on[A-Z][\\w$]*)(?=\\s*=)",
+          "name": "entity.other.attribute-name.event.vsx"
+        },
+        {
+          "match": "(?<![\\w$-])(class|style)(:)([\\w$-]+)",
+          "captures": {
+            "1": {
+              "name": "entity.other.attribute-name.namespace.vsx"
+            },
+            "2": {
+              "name": "punctuation.separator.namespace.vsx"
+            },
+            "3": {
+              "name": "entity.other.attribute-name.vsx"
+            }
+          }
+        },
+        {
+          "match": "(?<![\\w$-])[A-Za-z_$][\\w$]*(?:[:.-][\\w$-]+)*",
+          "name": "entity.other.attribute-name.vsx"
+        },
+        {
+          "match": "=",
+          "name": "keyword.operator.assignment.vsx"
+        },
+        {
+          "begin": "\"",
+          "end": "\"",
+          "name": "string.quoted.double.vsx",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.vsx"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.vsx"
+            }
+          }
+        },
+        {
+          "begin": "'",
+          "end": "'",
+          "name": "string.quoted.single.vsx",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.vsx"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.vsx"
+            }
+          }
+        },
+        {
+          "include": "#markup-code"
+        }
+      ]
+    },
+    "markup-children": {
+      "patterns": [
+        {
+          "include": "#markup-code"
+        },
+        {
+          "include": "#markup-inner"
+        },
+        {
+          "match": "&(?:[A-Za-z][A-Za-z0-9]*|#[0-9]+|#x[0-9A-Fa-f]+);",
+          "name": "constant.character.entity.vsx"
+        },
+        {
+          "match": "[^<{&]+",
+          "name": "meta.jsx.children.vsx"
+        }
+      ]
+    },
+    "markup-code": {
+      "begin": "\\{",
+      "end": "\\}",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.begin.vsx"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.end.vsx"
+        }
+      },
+      "name": "meta.embedded.expression.vsx",
+      "patterns": [
+        {
+          "include": "#code"
+        }
+      ]
+    }
+  }
+}

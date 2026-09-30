@@ -1,0 +1,139 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Vertex Styles",
+  "scopeName": "source.vss",
+  "fileTypes": [
+    "vss"
+  ],
+  "patterns": [
+    {
+      "include": "#package"
+    },
+    {
+      "include": "#import"
+    },
+    {
+      "begin": "^\\s*(//)",
+      "end": "$",
+      "name": "comment.line.double-slash.vss",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.comment.vss"
+        }
+      }
+    },
+    {
+      "include": "source.css"
+    }
+  ],
+  "repository": {
+    "header-comment": {
+      "patterns": [
+        {
+          "begin": "/\\*",
+          "end": "\\*/",
+          "name": "comment.block.vss",
+          "captures": {
+            "0": {
+              "name": "punctuation.definition.comment.vss"
+            }
+          }
+        },
+        {
+          "begin": "//",
+          "end": "$",
+          "name": "comment.line.double-slash.vss",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.vss"
+            }
+          }
+        }
+      ]
+    },
+    "package": {
+      "match": "^\\s*(package)\\s+((?:[A-Za-z_][A-Za-z0-9_]*))\\s*(?=$|//|/\\*)",
+      "captures": {
+        "1": {
+          "name": "keyword.other.package.vss"
+        },
+        "2": {
+          "name": "entity.name.namespace.vss"
+        }
+      }
+    },
+    "import": {
+      "patterns": [
+        {
+          "begin": "^\\s*(import)\\s*(\\()",
+          "end": "\\)",
+          "name": "meta.import.vss",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.control.import.vss"
+            },
+            "2": {
+              "name": "punctuation.section.imports.begin.vss"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.imports.end.vss"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#header-comment"
+            },
+            {
+              "match": "(?:\\b((?:[A-Za-z_][A-Za-z0-9_]*))\\s+)?(\")([^\"]*)(\")",
+              "captures": {
+                "1": {
+                  "name": "entity.name.namespace.alias.vss"
+                },
+                "2": {
+                  "name": "punctuation.definition.string.begin.vss"
+                },
+                "3": {
+                  "name": "string.quoted.double.import-path.vss"
+                },
+                "4": {
+                  "name": "punctuation.definition.string.end.vss"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(import)\\s+(?=(?:(?:[A-Za-z_][A-Za-z0-9_]*)\\s+)?\")",
+          "end": "(?<=\")|$",
+          "name": "meta.import.vss",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.control.import.vss"
+            }
+          },
+          "patterns": [
+            {
+              "match": "(?:\\b((?:[A-Za-z_][A-Za-z0-9_]*))\\s+)?(\")([^\"]*)(\")",
+              "captures": {
+                "1": {
+                  "name": "entity.name.namespace.alias.vss"
+                },
+                "2": {
+                  "name": "punctuation.definition.string.begin.vss"
+                },
+                "3": {
+                  "name": "string.quoted.double.import-path.vss"
+                },
+                "4": {
+                  "name": "punctuation.definition.string.end.vss"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -6,13 +6,15 @@ every file the Vertex toolchain reads and writes.
 | File | Language ID | Grammar scope | Read or written by |
 |------|-------------|---------------|--------------------|
 | `*.vs`, `*.vinterface` | `vertex` | `source.vtx` | [`vsc`](https://github.com/vertex-language/vsc); `vsc build --emit interface` writes `.vinterface` |
+| `*.vsx` | `vertex-vsx` | `source.vtx.vsx` | `vsc`: Vertex with markup |
+| `*.vss` | `vertex-vss` | `source.vss` | `vsc`: a package's styles |
 | `*.vir` | `vertex-ir` | `source.vtxir` | [`ir`](https://github.com/vertex-language/ir), `vsc build --emit vir` |
 | `vs.mod` | `vertex-mod` | `source.vtx.mod` | `vsc`: a module's path, toolchain, platforms and requirements |
 | `vs.work` | `vertex-work` | `source.vtx.work` | `vsc`: local modules used in place of fetched ones |
 | `vs.sum` | `vertex-sum` | `source.vtx.sum` | `vsc`: each required module version's tree hash |
 
 Fenced code blocks in Markdown are highlighted too, tagged `vertex`/`vs`,
-`vertex-ir`/`vir`, `vs.mod`, `vs.work` or `vs.sum`.
+`vsx`, `vss`, `vertex-ir`/`vir`, `vs.mod`, `vs.work` or `vs.sum`.
 
 ## What's highlighted
 
@@ -31,6 +33,20 @@ that, the Vertex additions:
 - receiver methods and their ownership (`func (v: inout Vec2) scale(by:)`)
 - the lowercase primitive types (`int32`, `uint8`, `float32`, `string`, `never`, …)
 - the `kernel` and `graph` execution modifiers, only where a signature puts them
+
+**`.vsx`.** Everything `.vs` has, and markup where the file may hold it: a
+`<` opens a tag only where `vsc` reads one -- where a prefix operator would
+stand, before a name or `>` -- so `a < b`, `Array<int>`, `sorted(by: <)` and a
+declaration's generic clause (`func |> <T, U>`) stay what they are. Element
+names (`div`) and components (`Counter`, `app.Window`) are scoped apart;
+attributes, event handlers (`onClick`), `class:` and `style:` bindings,
+spreads (`{...attrs}`), character entities and the text between tags each have
+their own scope. `{…}` in markup is Vertex again, so markup nests in code and
+code in markup.
+
+**`.vss`.** The header -- `package kit`, and `import "ui/theme"` lines, single
+or grouped -- and then VS Code's own CSS grammar, with nesting, `@layer`,
+`@scope`, `@property` and custom properties.
 
 **`.vir`.** The module header (`module`, `use`, `layout`), type, global, import,
 alias and function declarations, every `ns.verb` instruction (`i64.add`,
@@ -54,6 +70,8 @@ marked as the error `vsc` makes it.
 - **`.vs`**: brackets and auto-closing for `{}`, `[]`, `()`, `"` and `` ` ``;
   `/** */` and `///` doc-comment continuation; indentation for `case`,
   `default` and `#if`; folding on `// MARK:`, `//#region` and `#if` blocks.
+- **`.vsx`**: as `.vs`, and `'` auto-closing for attribute values.
+- **`.vss`**: CSS's `/* */` comments, pairs, indentation and word selection.
 - **`.vir`**: indentation after function bodies and block labels, and word
   selection that keeps `%reg`, `@symbol` and `i32.add` whole.
 - **`vs.mod`, `vs.work`**: `//` comments, and indenting and folding of

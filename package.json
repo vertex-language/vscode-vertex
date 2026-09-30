@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/package",
   "name": "vscode-vertex",
   "displayName": "Vertex Language Support",
-  "description": "Syntax highlighting for the Vertex toolchain: .vs source, .vinterface interfaces, .vir Vertex IR, and vs.mod, vs.work and vs.sum",
-  "version": "5.0.0",
+  "description": "Syntax highlighting for the Vertex toolchain: .vs source, .vsx markup, .vss styles, .vinterface interfaces, .vir Vertex IR, and vs.mod, vs.work and vs.sum",
+  "version": "5.1.0",
   "publisher": "vertex-language",
   "license": "MIT",
   "repository": {
@@ -13,9 +13,11 @@
   "engines": {
     "vscode": "^1.70.0"
   },
-  "categories": ["Programming Languages"],
+  "categories": [
+    "Programming Languages"
+  ],
   "scripts": {
-    "build": "python3 scripts/vertex.py syntaxes && python3 scripts/vertex_ir.py syntaxes && python3 scripts/vertex_mod.py syntaxes",
+    "build": "python3 scripts/vertex.py syntaxes && python3 scripts/vertex_vss.py syntaxes && python3 scripts/vertex_ir.py syntaxes && python3 scripts/vertex_mod.py syntaxes",
     "test": "node test/tokenize.js expect test/cases.json"
   },
   "devDependencies": {
@@ -26,32 +28,81 @@
     "languages": [
       {
         "id": "vertex",
-        "aliases": ["Vertex", "vertex"],
-        "extensions": [".vs", ".vinterface"],
+        "aliases": [
+          "Vertex",
+          "vertex"
+        ],
+        "extensions": [
+          ".vs",
+          ".vinterface"
+        ],
         "configuration": "./language-configuration.json"
       },
       {
+        "id": "vertex-vsx",
+        "aliases": [
+          "Vertex Markup",
+          "vsx"
+        ],
+        "extensions": [
+          ".vsx"
+        ],
+        "configuration": "./language-configuration-vsx.json"
+      },
+      {
+        "id": "vertex-vss",
+        "aliases": [
+          "Vertex Styles",
+          "vss"
+        ],
+        "extensions": [
+          ".vss"
+        ],
+        "configuration": "./language-configuration-vss.json"
+      },
+      {
         "id": "vertex-ir",
-        "aliases": ["Vertex IR", "vertex-ir", "vir"],
-        "extensions": [".vir"],
+        "aliases": [
+          "Vertex IR",
+          "vertex-ir",
+          "vir"
+        ],
+        "extensions": [
+          ".vir"
+        ],
         "configuration": "./language-configuration-ir.json"
       },
       {
         "id": "vertex-mod",
-        "aliases": ["Vertex Module File", "vs.mod"],
-        "filenames": ["vs.mod"],
+        "aliases": [
+          "Vertex Module File",
+          "vs.mod"
+        ],
+        "filenames": [
+          "vs.mod"
+        ],
         "configuration": "./language-configuration-mod.json"
       },
       {
         "id": "vertex-work",
-        "aliases": ["Vertex Workspace File", "vs.work"],
-        "filenames": ["vs.work"],
+        "aliases": [
+          "Vertex Workspace File",
+          "vs.work"
+        ],
+        "filenames": [
+          "vs.work"
+        ],
         "configuration": "./language-configuration-mod.json"
       },
       {
         "id": "vertex-sum",
-        "aliases": ["Vertex Checksum File", "vs.sum"],
-        "filenames": ["vs.sum"],
+        "aliases": [
+          "Vertex Checksum File",
+          "vs.sum"
+        ],
+        "filenames": [
+          "vs.sum"
+        ],
         "configuration": "./language-configuration-sum.json"
       }
     ],
@@ -60,6 +111,22 @@
         "language": "vertex",
         "scopeName": "source.vtx",
         "path": "./syntaxes/vertex.tmLanguage.json"
+      },
+      {
+        "language": "vertex-vsx",
+        "scopeName": "source.vtx.vsx",
+        "path": "./syntaxes/vertex-vsx.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.expression.vsx": "vertex-vsx"
+        }
+      },
+      {
+        "language": "vertex-vss",
+        "scopeName": "source.vss",
+        "path": "./syntaxes/vertex-vss.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.css": "css"
+        }
       },
       {
         "language": "vertex-ir",
@@ -84,13 +151,17 @@
       {
         "scopeName": "markdown.vertex.codeblock",
         "path": "./syntaxes/vertex-markdown-injection.tmLanguage.json",
-        "injectTo": ["text.html.markdown"],
+        "injectTo": [
+          "text.html.markdown"
+        ],
         "embeddedLanguages": {
           "meta.embedded.block.vertex": "vertex",
           "meta.embedded.block.vertex-ir": "vertex-ir",
           "meta.embedded.block.vertex-mod": "vertex-mod",
           "meta.embedded.block.vertex-work": "vertex-work",
-          "meta.embedded.block.vertex-sum": "vertex-sum"
+          "meta.embedded.block.vertex-sum": "vertex-sum",
+          "meta.embedded.block.vertex-vsx": "vertex-vsx",
+          "meta.embedded.block.vertex-vss": "vertex-vss"
         }
       }
     ]

@@ -1,5 +1,6 @@
 # Generates syntaxes/vertex.tmLanguage.json: the grammar for Vertex source
-# (.vs) and printed interfaces (.vinterface). The word lists follow
+# (.vs) and printed interfaces (.vinterface); and vertex-vsx.tmLanguage.json,
+# the same with markup, for .vsx. The word lists follow
 # vsc/token/kind.go (reserved words, # words, contextual words) and
 # vsc/docs/vertex_spec.md (what Vertex adds to the core dialect).
 import json, os, sys
@@ -436,4 +437,97 @@ grammar = {
 out = os.path.join(sys.argv[1], 'vertex.tmLanguage.json')
 with open(out, 'w') as f:
     json.dump(grammar, f, indent=2, ensure_ascii=False)
+    f.write('\n')
+
+# ---- .vsx: Vertex with markup (proposed_vsx.md §6, §9.1) ----
+# The same grammar, with markup where the file may hold it. A `<` opens a
+# tag where Vertex would read a prefix operator -- not bound on the left
+# (line start, whitespace, or one of ( [ { , ; :), and followed by a name
+# or `>` -- so `a < b`, `a<b`, `Array<int>` and `sorted(by: <)` stay what
+# they are. A declaration's generic clause is matched by its own rule
+# first. Inside markup, `{…}` is Vertex again, which may hold markup.
+import copy
+X = copy.deepcopy(R)
+
+# A capitalized or dotted name is a component; a lowercase one an HTML
+# element. Two groups, so each gets its scope.
+COMPONENT = r'(?:[A-Z][\w$]*(?:\.[\w$]+)*|[\w$]+(?:\.[\w$]+)+)'
+ELEMENT = r'[a-z_$][\w$]*(?:[:-][\w$-]+)*'
+TAG = r'(?:(' + COMPONENT + r')|(' + ELEMENT + r'))'
+
+def element(begin_prefix):
+    return {
+        # `<` then a name, or `<>`: a `<` before a space or a digit is
+        # the operator.
+        'begin': begin_prefix + r'(<)(?:' + TAG + r'(?=[\s/>{]|$)|(?=>))',
+        'end': r'(/>)|(</)' + TAG + r'?\s*(>)',
+        'beginCaptures': {'1': {'name': 'punctuation.definition.tag.begin.vsx'},
+                          '2': {'name': 'support.class.component.vsx'},
+                          '3': {'name': 'entity.name.tag.vsx'}},
+        'endCaptures': {'1': {'name': 'punctuation.definition.tag.end.vsx'},
+                        '2': {'name': 'punctuation.definition.tag.begin.vsx'},
+                        '3': {'name': 'support.class.component.vsx'},
+                        '4': {'name': 'entity.name.tag.vsx'},
+                        '5': {'name': 'punctuation.definition.tag.end.vsx'}},
+        'name': 'meta.tag.vsx',
+        'patterns': [{'include': '#markup-attributes'}, {'include': '#markup-children'}]}
+
+# At an expression's start: the prefix position.
+X['markup'] = element(r'(?:^|(?<=[\s(\[{,;:]))')
+# Among an element's children: any `<name` or `<>`.
+X['markup-inner'] = element(r'')
+X['markup-attributes'] = {
+    'begin': r'\G', 'end': r'(?=/>)|(>)',
+    'endCaptures': {'1': {'name': 'punctuation.definition.tag.end.vsx'}},
+    'name': 'meta.tag.attributes.vsx',
+    'patterns': [
+        {'include': '#comments'},
+        # `{...attrs}`
+        {'begin': r'(\{)\s*(\.\.\.)', 'end': r'\}',
+         'beginCaptures': {'1': {'name': 'punctuation.section.embedded.begin.vsx'},
+                           '2': {'name': 'keyword.operator.spread.vsx'}},
+         'endCaptures': {'0': {'name': 'punctuation.section.embedded.end.vsx'}},
+         'name': 'meta.embedded.expression.vsx', 'patterns': [{'include': '#code'}]},
+        # class:done, style:--kit-accent, data-p, onClick
+        {'match': r'(?<![\w$-])(on[A-Z][\w$]*)(?=\s*=)', 'name': 'entity.other.attribute-name.event.vsx'},
+        {'match': r'(?<![\w$-])(class|style)(:)([\w$-]+)',
+         'captures': {'1': {'name': 'entity.other.attribute-name.namespace.vsx'},
+                      '2': {'name': 'punctuation.separator.namespace.vsx'},
+                      '3': {'name': 'entity.other.attribute-name.vsx'}}},
+        {'match': r'(?<![\w$-])[A-Za-z_$][\w$]*(?:[:.-][\w$-]+)*', 'name': 'entity.other.attribute-name.vsx'},
+        {'match': r'=', 'name': 'keyword.operator.assignment.vsx'},
+        {'begin': r'"', 'end': r'"', 'name': 'string.quoted.double.vsx',
+         'beginCaptures': {'0': {'name': 'punctuation.definition.string.begin.vsx'}},
+         'endCaptures': {'0': {'name': 'punctuation.definition.string.end.vsx'}}},
+        {'begin': r"'", 'end': r"'", 'name': 'string.quoted.single.vsx',
+         'beginCaptures': {'0': {'name': 'punctuation.definition.string.begin.vsx'}},
+         'endCaptures': {'0': {'name': 'punctuation.definition.string.end.vsx'}}},
+        {'include': '#markup-code'},
+    ]}
+X['markup-children'] = {'patterns': [
+    {'include': '#markup-code'},
+    {'include': '#markup-inner'},
+    {'match': r'&(?:[A-Za-z][A-Za-z0-9]*|#[0-9]+|#x[0-9A-Fa-f]+);', 'name': 'constant.character.entity.vsx'},
+    {'match': r'[^<{&]+', 'name': 'meta.jsx.children.vsx'},
+]}
+# `{…}`: Vertex, markup included. Empty braces and `{/* … */}` are nothing.
+X['markup-code'] = {'begin': r'\{', 'end': r'\}',
+    'beginCaptures': {'0': {'name': 'punctuation.section.embedded.begin.vsx'}},
+    'endCaptures': {'0': {'name': 'punctuation.section.embedded.end.vsx'}},
+    'name': 'meta.embedded.expression.vsx',
+    'patterns': [{'include': '#code'}]}
+# Markup is tried before the operators, after comments and strings.
+code = X['code']['patterns']
+code.insert(2, {'include': '#markup'})
+
+vsx = {
+    '$schema': 'https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json',
+    'name': 'Vertex Markup',
+    'scopeName': 'source.vtx.vsx',
+    'fileTypes': ['vsx'],
+    'patterns': [{'include': '#shebang'}, {'include': '#code'}],
+    'repository': X,
+}
+with open(os.path.join(sys.argv[1], 'vertex-vsx.tmLanguage.json'), 'w') as f:
+    json.dump(vsx, f, indent=2, ensure_ascii=False)
     f.write('\n')

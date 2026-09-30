@@ -5,6 +5,12 @@
   "fileTypes": [],
   "patterns": [
     {
+      "include": "#vertex-vss-fenced-code-block"
+    },
+    {
+      "include": "#vertex-vsx-fenced-code-block"
+    },
+    {
       "include": "#vertex-fenced-code-block"
     },
     {
@@ -181,6 +187,72 @@
           "patterns": [
             {
               "include": "source.vtx.sum"
+            }
+          ]
+        }
+      ]
+    },
+    "vertex-vsx-fenced-code-block": {
+      "begin": "(^|\\G)(\\s*)(`{3,}|~{3,})\\s*(?i:(vsx)(\\s+[^`~]*)?$)",
+      "name": "markup.fenced_code.block.markdown",
+      "end": "(^|\\G)(\\2|\\s{0,3})(\\3)\\s*$",
+      "beginCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        },
+        "4": {
+          "name": "fenced_code.block.language.markdown"
+        },
+        "5": {
+          "name": "fenced_code.block.language.attributes.markdown"
+        }
+      },
+      "endCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        }
+      },
+      "patterns": [
+        {
+          "begin": "(^|\\G)(\\s*)(.*)",
+          "while": "(^|\\G)(?!\\s*([`~]{3,})\\s*$)",
+          "contentName": "meta.embedded.block.vertex-vsx",
+          "patterns": [
+            {
+              "include": "source.vtx.vsx"
+            }
+          ]
+        }
+      ]
+    },
+    "vertex-vss-fenced-code-block": {
+      "begin": "(^|\\G)(\\s*)(`{3,}|~{3,})\\s*(?i:(vss)(\\s+[^`~]*)?$)",
+      "name": "markup.fenced_code.block.markdown",
+      "end": "(^|\\G)(\\2|\\s{0,3})(\\3)\\s*$",
+      "beginCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        },
+        "4": {
+          "name": "fenced_code.block.language.markdown"
+        },
+        "5": {
+          "name": "fenced_code.block.language.attributes.markdown"
+        }
+      },
+      "endCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        }
+      },
+      "patterns": [
+        {
+          "begin": "(^|\\G)(\\s*)(.*)",
+          "while": "(^|\\G)(?!\\s*([`~]{3,})\\s*$)",
+          "contentName": "meta.embedded.block.vertex-vss",
+          "patterns": [
+            {
+              "include": "source.vss"
             }
           ]
         }

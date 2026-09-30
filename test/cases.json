@@ -1,132 +1,998 @@
 [
-  ["source.vtx", "package http", "package", "keyword.other.package"],
-  ["source.vtx", "package http", "http", "entity.name.namespace"],
-  ["source.vtx", "package func f() {}", "package", "storage.modifier.access"],
-  ["source.vtx", "import \"net/tcp\"", "net/tcp", "string.quoted.double.import-path"],
-  ["source.vtx", "import geom \"./geometry\"", "geom", "entity.name.namespace.alias"],
-  ["source.vtx", "import (\n    \"crypto/tls\"\n    q \"net/quic\"\n)", "crypto/tls", "import-path"],
-  ["source.vtx", "import (\n    \"crypto/tls\"\n    q \"net/quic\"\n)", "q", "entity.name.namespace.alias"],
-  ["source.vtx", "import Foundation", "Foundation", "entity.name.namespace"],
-  ["source.vtx", "@testable import struct Foo.Bar", "struct", "storage.type"],
-  ["source.vtx", "func (v: inout Vec2) scale(by factor: float32) {}", "v", "variable.parameter.receiver"],
-  ["source.vtx", "func (v: inout Vec2) scale(by factor: float32) {}", "inout", "storage.modifier.ownership"],
-  ["source.vtx", "func (v: inout Vec2) scale(by factor: float32) {}", "Vec2", "entity.name.type"],
-  ["source.vtx", "func (v: inout Vec2) scale(by factor: float32) {}", "scale", "entity.name.function"],
-  ["source.vtx", "func (v: inout Vec2) scale(by factor: float32) {}", "by", "entity.name.function.label"],
-  ["source.vtx", "func (v: inout Vec2) scale(by factor: float32) {}", "factor", "variable.parameter.function"],
-  ["source.vtx", "func (v: inout Vec2) scale(by factor: float32) {}", "float32", "support.type.primitive"],
-  ["source.vtx", "func (c: borrowing Conn) close() throws {}", "close", "entity.name.function"],
-  ["source.vtx", "func (c: borrowing Conn) close() throws {}", "throws", "storage.modifier.effect"],
-  ["source.vtx", "func draw(_ out: gpu.MutableSpan<uint32>) kernel {", "kernel", "storage.modifier.execution"],
-  ["source.vtx", "func f(data: [float32]) async throws kernel -> [float32] {", "kernel", "storage.modifier.execution"],
-  ["source.vtx", "func node(input: Stream) graph -> Stream {", "graph", "storage.modifier.execution"],
-  ["source.vtx", "let kernel = 1", "kernel", "variable.other.constant"],
-  ["source.vtx", "return kernel", " kernel", "!storage.modifier.execution"],
-  ["source.vtx", "func draw(_ out: gpu.MutableSpan<uint32>) kernel {", "MutableSpan", "entity.name.type"],
-  ["source.vtx", "func draw(_ out: gpu.MutableSpan<uint32>) kernel {", "_", "entity.name.function.label"],
-  ["source.vtx", "var x: int64 = 0", "int64", "support.type.primitive"],
-  ["source.vtx", "let s: string", "string", "support.type.primitive"],
-  ["source.vtx", "let n: Int", "Int", "support.type"],
-  ["source.vtx", "f(int: 3)", "int", "variable.parameter.argument-label"],
-  ["source.vtx", "let a: any Error", "any", "keyword.other.type"],
-  ["source.vtx", "let a: some Collection", "some", "keyword.other.type"],
-  ["source.vtx", "public struct Point<T: Numeric> {", "Point", "entity.name.type"],
-  ["source.vtx", "public struct Point<T: Numeric> {", "public", "storage.modifier.access"],
-  ["source.vtx", "extension Array where Element == Int {", "Array", "entity.name.type"],
-  ["source.vtx", "enum Tag {\n    case alpha(x: Int)\n}", "alpha", "variable.other.enummember"],
-  ["source.vtx", "switch x {\ncase .alpha: break\n}", "case", "keyword.control"],
-  ["source.vtx", "    mutating func grow() {}", "mutating", "storage.modifier"],
-  ["source.vtx", "let mutating = 1", "mutating", "!storage.modifier"],
-  ["source.vtx", "weak var delegate: D?", "weak", "storage.modifier"],
-  ["source.vtx", "var x: Int { get set }", "get", "keyword.other.accessor"],
-  ["source.vtx", "var x: Int { get set }", "set", "keyword.other.accessor"],
-  ["source.vtx", "let v = try? f()", "try", "keyword.control"],
-  ["source.vtx", "let v = await g()", "await", "keyword.control"],
-  ["source.vtx", "if x != nil { return self }", "nil", "constant.language.nil"],
-  ["source.vtx", "if x != nil { return self }", "self", "variable.language.self"],
-  ["source.vtx", "init(x: Int) {}", "init", "storage.type.function"],
-  ["source.vtx", "self.init(x: 1)", "init", "!storage.type.function"],
-  ["source.vtx", "@inlinable public func f() {}", "inlinable", "storage.modifier.attribute"],
-  ["source.vtx", "@_silgen_name(\"swift_retain\") func r()", "swift_retain", "string.quoted.double"],
-  ["source.vtx", "let y = x!.count", "!", "keyword.operator.optional"],
-  ["source.vtx", "if !done {}", "!", "keyword.operator.logical"],
-  ["source.vtx", "let r = 0..<n", "..<", "keyword.operator.range"],
-  ["source.vtx", "let p = \\Point.x", "\\", "keyword.operator.key-path"],
-  ["source.vtx", "let a = 0x1F_FF", "0x1F_FF", "constant.numeric.integer.hexadecimal"],
-  ["source.vtx", "let a = 0x1.8p3", "0x1.8p3", "constant.numeric.float.hexadecimal"],
-  ["source.vtx", "let a = 1_000.5e-3", "1_000.5e-3", "constant.numeric.float"],
-  ["source.vtx", "let a = 0b1012", "0b1012", "invalid.illegal.numeric"],
-  ["source.vtx", "let m = 1.max", "1", "constant.numeric.integer"],
-  ["source.vtx", "let t = pair.0.count", "0", "constant.numeric.integer"],
-  ["source.vtx", "let s = \"a\\(b + 1)c\"", "b ", "meta.embedded.line"],
-  ["source.vtx", "let s = \"tab\\tend\"", "\\t", "constant.character.escape"],
-  ["source.vtx", "let s = #\"raw \\n \\#(x)\"#", "x", "meta.embedded.line"],
-  ["source.vtx", "let s = #\"raw \\n here\"#", "raw \\n here", "string.quoted.double.raw"],
-  ["source.vtx", "let s = \"\"\"\nline \\(v)\n\"\"\"", "v", "meta.embedded.line"],
-  ["source.vtx", "let r = #/[a-z]+/#", "+", "keyword.operator.quantifier.regexp"],
-  ["source.vtx", "let r = a / b / c", "/", "keyword.operator.arithmetic"],
-  ["source.vtx", "let r = /[0-9]+/", "/", "string.regexp"],
-  ["source.vtx", "/* a /* nested */ still comment */ x", " still comment ", "comment.block"],
-  ["source.vtx", "/// - Parameter x: the value", "Parameter", "keyword.other.documentation"],
-  ["source.vtx", "// MARK: - Section", "MARK", "keyword.other.comment-tag"],
-  ["source.vtx", "#if os(macOS) && arch(arm64)\n#endif", "os", "support.function.condition"],
-  ["source.vtx", "#if DEBUG\n#else\n#endif", "else", "keyword.control.directive"],
-  ["source.vtx", "if #available(macOS 13, *) {}", "macOS", "support.constant.platform"],
-  ["source.vtx", "print(#file, #line)", "line", "support.variable.literal"],
-  ["source.vtx", "let v = #stringify(1 + 2)", "stringify", "entity.name.function.macro"],
-  ["source.vtx", "#!/usr/bin/env vsc run\nlet x = 1", "#!/usr/bin/env vsc run", "comment.line.shebang"],
-  ["source.vtx", "foo.bar(baz: 1)", "bar", "entity.name.function.call"],
-  ["source.vtx", "foo.bar(baz: 1)", "baz", "variable.parameter.argument-label"],
-  ["source.vtx", "let c = xs.map { $0 * 2 }", "$0", "variable.language.closure-argument"],
-  ["source.vtxir", "module http", "http", "entity.name.namespace"],
-  ["source.vtxir", "use \"aarch64/macos\"", "aarch64/macos", "string.quoted.double"],
-  ["source.vtxir", "layout {\n  abi aapcs,\n  halffloat f16, bf16,\n}", "abi", "variable.other.property.layout"],
-  ["source.vtxir", "layout {\n  abi aapcs,\n  halffloat f16, bf16,\n}", "bf16", "storage.type"],
-  ["source.vtxir", "type @T struct {\n  w0 i64,\n  w1 ptr\n}", "@T", "entity.name.type"],
-  ["source.vtxir", "type @T struct {\n  w0 i64,\n  w1 ptr\n}", "w1", "variable.other.property"],
-  ["source.vtxir", "export func @_$s4http1fyyF(%a0 ptr sret @S, %a1 i64) {", "@_$s4http1fyyF", "entity.name.function"],
-  ["source.vtxir", "export func @_$s4http1fyyF(%a0 ptr sret @S, %a1 i64) {", "@S", "entity.name.type"],
-  ["source.vtxir", "export func @_$s4http1fyyF(%a0 ptr sret @S, %a1 i64) {", "sret", "storage.modifier.attribute"],
-  ["source.vtxir", "export func @f() {", "export", "storage.modifier.linkage"],
-  ["source.vtxir", "@entry:", "@entry", "entity.name.label"],
-  ["source.vtxir", "@bb1(%bb1.0 i64):", "%bb1.0", "variable.other.register"],
-  ["source.vtxir", "  %3 = i64.const 0", "const", "support.function.instruction"],
-  ["source.vtxir", "  %3 = i64.const 0", "i64", "storage.type.namespace"],
-  ["source.vtxir", "  %9 = v128.i32x4_add %1, %2", "i32x4_add", "support.function.instruction"],
-  ["source.vtxir", "  call @_vertex_string_retain(%19)", "@_vertex_string_retain", "entity.name.function.call"],
-  ["source.vtxir", "  brif %c, @a(%x), @b", "@b", "entity.name.label"],
-  ["source.vtxir", "  br_table %i, [ @a, @b ], @d", "@a", "entity.name.label"],
-  ["source.vtxir", "  invoke @get(%a) to @ok(%t) unwind @pad", "@pad", "entity.name.label"],
-  ["source.vtxir", "@pad pad (%exn ptr, %sel i32) cleanup:", "cleanup", "keyword.other"],
-  ["source.vtxir", "  return %r", "return", "keyword.control.terminator"],
-  ["source.vtxir", "global ro @_$sVSCstr4 [9]i8 align 1 = \"https://\"", "@_$sVSCstr4", "entity.name.variable.global"],
-  ["source.vtxir", "global ro @_$sVSCstr4 [9]i8 align 1 = \"https://\"", "https://", "string.quoted.double"],
-  ["source.vtxir", "global ro @g @M align 8 = { vwt = @W, kind = 769 }", "kind", "variable.other.property"],
-  ["source.vtxir", "global ro @g @M align 8 = { vwt = @W, kind = 769 }", "@W", "variable.other.symbol"],
-  ["source.vtxir", "  %1 = i32.atomic_rmwadd %p, %v seq_cst workgroup", "seq_cst", "constant.language.ordering"],
-  ["source.vtxir", "  %5 = f64.const -inf", "-inf", "constant.numeric.float"],
-  ["source.vtxir", "  %5 = f32.const 0x1.8p3", "0x1.8p3", "constant.numeric.float.hexadecimal"],
-  ["source.vtxir", "  %2 = i32.workitem_id x", "x", "constant.language.axis"],
-  ["source.vtxir", "  %r = callind %f : @FnTy (%a)", "@FnTy", "entity.name.type"],
-  ["source.vtxir", "  %1 = i64.add %a, %b // sum", " sum", "comment.line"],
-  ["source.vtxir", "!dbg = { 1, \"x\" }", "!dbg", "entity.name.tag.metadata"],
-  ["source.vtx.mod", "module github.com/vertex-language/net", "github.com/vertex-language/net", "entity.name.namespace.module"],
-  ["source.vtx.mod", "vertex 0.9", "0.9", "constant.numeric.version"],
-  ["source.vtx.mod", "platform macos 13", "macos", "support.constant.platform"],
-  ["source.vtx.mod", "require github.com/you/thing v1.2.0", "github.com/you/thing", "string.unquoted.module-path"],
-  ["source.vtx.mod", "require github.com/you/thing v1.2.0", "v1.2.0", "constant.numeric.version"],
-  ["source.vtx.mod", "require (\n\tnet v0.3.0 // indirect\n)", "net", "string.unquoted.module-path"],
-  ["source.vtx.mod", "require (\n\tnet v0.3.0 // indirect\n)", " indirect", "comment.line"],
-  ["source.vtx.mod", "replace net => ../net", "../net", "string.unquoted.path"],
-  ["source.vtx.mod", "replace net v0.1.0 => github.com/fork/net v0.1.1", "github.com/fork/net", "string.unquoted.module-path"],
-  ["source.vtx.mod", "replace net v0.1.0 => github.com/fork/net v0.1.1", "=>", "keyword.operator.arrow"],
-  ["source.vtx.mod", "toolchain go1.22", "toolchain", "invalid.illegal.unknown-directive"],
-  ["source.vtx.work", "vertex 0.9\n\nuse (\n\t./archive\n\t./cli\n)", "./cli", "string.unquoted.path"],
-  ["source.vtx.work", "use ./net", "use", "keyword.other.directive"],
-  ["source.vtx.work", "require x v1", "require", "invalid.illegal"],
-  ["source.vtx.sum", "github.com/vertex-language/net v0.3.0 h1:abc+/DEF=", "h1", "keyword.other.hash-algorithm"],
-  ["source.vtx.sum", "github.com/vertex-language/net v0.3.0 h1:abc+/DEF=", "abc+/DEF=", "constant.other.hash"],
-  ["source.vtx.sum", "github.com/vertex-language/net v0.3.0 h1:abc+/DEF=", "v0.3.0", "constant.numeric.version"],
-  ["source.vtx.sum", "broken line", "broken line", "invalid.illegal"],
-  ["source.vtx", "qConfig.MaxIdle = self.Config.TimeoutMs", "Config", "variable.other.property"]
+ [
+  "source.vtx",
+  "package http",
+  "package",
+  "keyword.other.package"
+ ],
+ [
+  "source.vtx",
+  "package http",
+  "http",
+  "entity.name.namespace"
+ ],
+ [
+  "source.vtx",
+  "package func f() {}",
+  "package",
+  "storage.modifier.access"
+ ],
+ [
+  "source.vtx",
+  "import \"net/tcp\"",
+  "net/tcp",
+  "string.quoted.double.import-path"
+ ],
+ [
+  "source.vtx",
+  "import geom \"./geometry\"",
+  "geom",
+  "entity.name.namespace.alias"
+ ],
+ [
+  "source.vtx",
+  "import (\n    \"crypto/tls\"\n    q \"net/quic\"\n)",
+  "crypto/tls",
+  "import-path"
+ ],
+ [
+  "source.vtx",
+  "import (\n    \"crypto/tls\"\n    q \"net/quic\"\n)",
+  "q",
+  "entity.name.namespace.alias"
+ ],
+ [
+  "source.vtx",
+  "import Foundation",
+  "Foundation",
+  "entity.name.namespace"
+ ],
+ [
+  "source.vtx",
+  "@testable import struct Foo.Bar",
+  "struct",
+  "storage.type"
+ ],
+ [
+  "source.vtx",
+  "func (v: inout Vec2) scale(by factor: float32) {}",
+  "v",
+  "variable.parameter.receiver"
+ ],
+ [
+  "source.vtx",
+  "func (v: inout Vec2) scale(by factor: float32) {}",
+  "inout",
+  "storage.modifier.ownership"
+ ],
+ [
+  "source.vtx",
+  "func (v: inout Vec2) scale(by factor: float32) {}",
+  "Vec2",
+  "entity.name.type"
+ ],
+ [
+  "source.vtx",
+  "func (v: inout Vec2) scale(by factor: float32) {}",
+  "scale",
+  "entity.name.function"
+ ],
+ [
+  "source.vtx",
+  "func (v: inout Vec2) scale(by factor: float32) {}",
+  "by",
+  "entity.name.function.label"
+ ],
+ [
+  "source.vtx",
+  "func (v: inout Vec2) scale(by factor: float32) {}",
+  "factor",
+  "variable.parameter.function"
+ ],
+ [
+  "source.vtx",
+  "func (v: inout Vec2) scale(by factor: float32) {}",
+  "float32",
+  "support.type.primitive"
+ ],
+ [
+  "source.vtx",
+  "func (c: borrowing Conn) close() throws {}",
+  "close",
+  "entity.name.function"
+ ],
+ [
+  "source.vtx",
+  "func (c: borrowing Conn) close() throws {}",
+  "throws",
+  "storage.modifier.effect"
+ ],
+ [
+  "source.vtx",
+  "func draw(_ out: gpu.MutableSpan<uint32>) kernel {",
+  "kernel",
+  "storage.modifier.execution"
+ ],
+ [
+  "source.vtx",
+  "func f(data: [float32]) async throws kernel -> [float32] {",
+  "kernel",
+  "storage.modifier.execution"
+ ],
+ [
+  "source.vtx",
+  "func node(input: Stream) graph -> Stream {",
+  "graph",
+  "storage.modifier.execution"
+ ],
+ [
+  "source.vtx",
+  "let kernel = 1",
+  "kernel",
+  "variable.other.constant"
+ ],
+ [
+  "source.vtx",
+  "return kernel",
+  " kernel",
+  "!storage.modifier.execution"
+ ],
+ [
+  "source.vtx",
+  "func draw(_ out: gpu.MutableSpan<uint32>) kernel {",
+  "MutableSpan",
+  "entity.name.type"
+ ],
+ [
+  "source.vtx",
+  "func draw(_ out: gpu.MutableSpan<uint32>) kernel {",
+  "_",
+  "entity.name.function.label"
+ ],
+ [
+  "source.vtx",
+  "var x: int64 = 0",
+  "int64",
+  "support.type.primitive"
+ ],
+ [
+  "source.vtx",
+  "let s: string",
+  "string",
+  "support.type.primitive"
+ ],
+ [
+  "source.vtx",
+  "let n: Int",
+  "Int",
+  "support.type"
+ ],
+ [
+  "source.vtx",
+  "f(int: 3)",
+  "int",
+  "variable.parameter.argument-label"
+ ],
+ [
+  "source.vtx",
+  "let a: any Error",
+  "any",
+  "keyword.other.type"
+ ],
+ [
+  "source.vtx",
+  "let a: some Collection",
+  "some",
+  "keyword.other.type"
+ ],
+ [
+  "source.vtx",
+  "public struct Point<T: Numeric> {",
+  "Point",
+  "entity.name.type"
+ ],
+ [
+  "source.vtx",
+  "public struct Point<T: Numeric> {",
+  "public",
+  "storage.modifier.access"
+ ],
+ [
+  "source.vtx",
+  "extension Array where Element == Int {",
+  "Array",
+  "entity.name.type"
+ ],
+ [
+  "source.vtx",
+  "enum Tag {\n    case alpha(x: Int)\n}",
+  "alpha",
+  "variable.other.enummember"
+ ],
+ [
+  "source.vtx",
+  "switch x {\ncase .alpha: break\n}",
+  "case",
+  "keyword.control"
+ ],
+ [
+  "source.vtx",
+  "    mutating func grow() {}",
+  "mutating",
+  "storage.modifier"
+ ],
+ [
+  "source.vtx",
+  "let mutating = 1",
+  "mutating",
+  "!storage.modifier"
+ ],
+ [
+  "source.vtx",
+  "weak var delegate: D?",
+  "weak",
+  "storage.modifier"
+ ],
+ [
+  "source.vtx",
+  "var x: Int { get set }",
+  "get",
+  "keyword.other.accessor"
+ ],
+ [
+  "source.vtx",
+  "var x: Int { get set }",
+  "set",
+  "keyword.other.accessor"
+ ],
+ [
+  "source.vtx",
+  "let v = try? f()",
+  "try",
+  "keyword.control"
+ ],
+ [
+  "source.vtx",
+  "let v = await g()",
+  "await",
+  "keyword.control"
+ ],
+ [
+  "source.vtx",
+  "if x != nil { return self }",
+  "nil",
+  "constant.language.nil"
+ ],
+ [
+  "source.vtx",
+  "if x != nil { return self }",
+  "self",
+  "variable.language.self"
+ ],
+ [
+  "source.vtx",
+  "init(x: Int) {}",
+  "init",
+  "storage.type.function"
+ ],
+ [
+  "source.vtx",
+  "self.init(x: 1)",
+  "init",
+  "!storage.type.function"
+ ],
+ [
+  "source.vtx",
+  "@inlinable public func f() {}",
+  "inlinable",
+  "storage.modifier.attribute"
+ ],
+ [
+  "source.vtx",
+  "@_silgen_name(\"swift_retain\") func r()",
+  "swift_retain",
+  "string.quoted.double"
+ ],
+ [
+  "source.vtx",
+  "let y = x!.count",
+  "!",
+  "keyword.operator.optional"
+ ],
+ [
+  "source.vtx",
+  "if !done {}",
+  "!",
+  "keyword.operator.logical"
+ ],
+ [
+  "source.vtx",
+  "let r = 0..<n",
+  "..<",
+  "keyword.operator.range"
+ ],
+ [
+  "source.vtx",
+  "let p = \\Point.x",
+  "\\",
+  "keyword.operator.key-path"
+ ],
+ [
+  "source.vtx",
+  "let a = 0x1F_FF",
+  "0x1F_FF",
+  "constant.numeric.integer.hexadecimal"
+ ],
+ [
+  "source.vtx",
+  "let a = 0x1.8p3",
+  "0x1.8p3",
+  "constant.numeric.float.hexadecimal"
+ ],
+ [
+  "source.vtx",
+  "let a = 1_000.5e-3",
+  "1_000.5e-3",
+  "constant.numeric.float"
+ ],
+ [
+  "source.vtx",
+  "let a = 0b1012",
+  "0b1012",
+  "invalid.illegal.numeric"
+ ],
+ [
+  "source.vtx",
+  "let m = 1.max",
+  "1",
+  "constant.numeric.integer"
+ ],
+ [
+  "source.vtx",
+  "let t = pair.0.count",
+  "0",
+  "constant.numeric.integer"
+ ],
+ [
+  "source.vtx",
+  "let s = \"a\\(b + 1)c\"",
+  "b ",
+  "meta.embedded.line"
+ ],
+ [
+  "source.vtx",
+  "let s = \"tab\\tend\"",
+  "\\t",
+  "constant.character.escape"
+ ],
+ [
+  "source.vtx",
+  "let s = #\"raw \\n \\#(x)\"#",
+  "x",
+  "meta.embedded.line"
+ ],
+ [
+  "source.vtx",
+  "let s = #\"raw \\n here\"#",
+  "raw \\n here",
+  "string.quoted.double.raw"
+ ],
+ [
+  "source.vtx",
+  "let s = \"\"\"\nline \\(v)\n\"\"\"",
+  "v",
+  "meta.embedded.line"
+ ],
+ [
+  "source.vtx",
+  "let r = #/[a-z]+/#",
+  "+",
+  "keyword.operator.quantifier.regexp"
+ ],
+ [
+  "source.vtx",
+  "let r = a / b / c",
+  "/",
+  "keyword.operator.arithmetic"
+ ],
+ [
+  "source.vtx",
+  "let r = /[0-9]+/",
+  "/",
+  "string.regexp"
+ ],
+ [
+  "source.vtx",
+  "/* a /* nested */ still comment */ x",
+  " still comment ",
+  "comment.block"
+ ],
+ [
+  "source.vtx",
+  "/// - Parameter x: the value",
+  "Parameter",
+  "keyword.other.documentation"
+ ],
+ [
+  "source.vtx",
+  "// MARK: - Section",
+  "MARK",
+  "keyword.other.comment-tag"
+ ],
+ [
+  "source.vtx",
+  "#if os(macOS) && arch(arm64)\n#endif",
+  "os",
+  "support.function.condition"
+ ],
+ [
+  "source.vtx",
+  "#if DEBUG\n#else\n#endif",
+  "else",
+  "keyword.control.directive"
+ ],
+ [
+  "source.vtx",
+  "if #available(macOS 13, *) {}",
+  "macOS",
+  "support.constant.platform"
+ ],
+ [
+  "source.vtx",
+  "print(#file, #line)",
+  "line",
+  "support.variable.literal"
+ ],
+ [
+  "source.vtx",
+  "let v = #stringify(1 + 2)",
+  "stringify",
+  "entity.name.function.macro"
+ ],
+ [
+  "source.vtx",
+  "#!/usr/bin/env vsc run\nlet x = 1",
+  "#!/usr/bin/env vsc run",
+  "comment.line.shebang"
+ ],
+ [
+  "source.vtx",
+  "foo.bar(baz: 1)",
+  "bar",
+  "entity.name.function.call"
+ ],
+ [
+  "source.vtx",
+  "foo.bar(baz: 1)",
+  "baz",
+  "variable.parameter.argument-label"
+ ],
+ [
+  "source.vtx",
+  "let c = xs.map { $0 * 2 }",
+  "$0",
+  "variable.language.closure-argument"
+ ],
+ [
+  "source.vtxir",
+  "module http",
+  "http",
+  "entity.name.namespace"
+ ],
+ [
+  "source.vtxir",
+  "use \"aarch64/macos\"",
+  "aarch64/macos",
+  "string.quoted.double"
+ ],
+ [
+  "source.vtxir",
+  "layout {\n  abi aapcs,\n  halffloat f16, bf16,\n}",
+  "abi",
+  "variable.other.property.layout"
+ ],
+ [
+  "source.vtxir",
+  "layout {\n  abi aapcs,\n  halffloat f16, bf16,\n}",
+  "bf16",
+  "storage.type"
+ ],
+ [
+  "source.vtxir",
+  "type @T struct {\n  w0 i64,\n  w1 ptr\n}",
+  "@T",
+  "entity.name.type"
+ ],
+ [
+  "source.vtxir",
+  "type @T struct {\n  w0 i64,\n  w1 ptr\n}",
+  "w1",
+  "variable.other.property"
+ ],
+ [
+  "source.vtxir",
+  "export func @_$s4http1fyyF(%a0 ptr sret @S, %a1 i64) {",
+  "@_$s4http1fyyF",
+  "entity.name.function"
+ ],
+ [
+  "source.vtxir",
+  "export func @_$s4http1fyyF(%a0 ptr sret @S, %a1 i64) {",
+  "@S",
+  "entity.name.type"
+ ],
+ [
+  "source.vtxir",
+  "export func @_$s4http1fyyF(%a0 ptr sret @S, %a1 i64) {",
+  "sret",
+  "storage.modifier.attribute"
+ ],
+ [
+  "source.vtxir",
+  "export func @f() {",
+  "export",
+  "storage.modifier.linkage"
+ ],
+ [
+  "source.vtxir",
+  "@entry:",
+  "@entry",
+  "entity.name.label"
+ ],
+ [
+  "source.vtxir",
+  "@bb1(%bb1.0 i64):",
+  "%bb1.0",
+  "variable.other.register"
+ ],
+ [
+  "source.vtxir",
+  "  %3 = i64.const 0",
+  "const",
+  "support.function.instruction"
+ ],
+ [
+  "source.vtxir",
+  "  %3 = i64.const 0",
+  "i64",
+  "storage.type.namespace"
+ ],
+ [
+  "source.vtxir",
+  "  %9 = v128.i32x4_add %1, %2",
+  "i32x4_add",
+  "support.function.instruction"
+ ],
+ [
+  "source.vtxir",
+  "  call @_vertex_string_retain(%19)",
+  "@_vertex_string_retain",
+  "entity.name.function.call"
+ ],
+ [
+  "source.vtxir",
+  "  brif %c, @a(%x), @b",
+  "@b",
+  "entity.name.label"
+ ],
+ [
+  "source.vtxir",
+  "  br_table %i, [ @a, @b ], @d",
+  "@a",
+  "entity.name.label"
+ ],
+ [
+  "source.vtxir",
+  "  invoke @get(%a) to @ok(%t) unwind @pad",
+  "@pad",
+  "entity.name.label"
+ ],
+ [
+  "source.vtxir",
+  "@pad pad (%exn ptr, %sel i32) cleanup:",
+  "cleanup",
+  "keyword.other"
+ ],
+ [
+  "source.vtxir",
+  "  return %r",
+  "return",
+  "keyword.control.terminator"
+ ],
+ [
+  "source.vtxir",
+  "global ro @_$sVSCstr4 [9]i8 align 1 = \"https://\"",
+  "@_$sVSCstr4",
+  "entity.name.variable.global"
+ ],
+ [
+  "source.vtxir",
+  "global ro @_$sVSCstr4 [9]i8 align 1 = \"https://\"",
+  "https://",
+  "string.quoted.double"
+ ],
+ [
+  "source.vtxir",
+  "global ro @g @M align 8 = { vwt = @W, kind = 769 }",
+  "kind",
+  "variable.other.property"
+ ],
+ [
+  "source.vtxir",
+  "global ro @g @M align 8 = { vwt = @W, kind = 769 }",
+  "@W",
+  "variable.other.symbol"
+ ],
+ [
+  "source.vtxir",
+  "  %1 = i32.atomic_rmwadd %p, %v seq_cst workgroup",
+  "seq_cst",
+  "constant.language.ordering"
+ ],
+ [
+  "source.vtxir",
+  "  %5 = f64.const -inf",
+  "-inf",
+  "constant.numeric.float"
+ ],
+ [
+  "source.vtxir",
+  "  %5 = f32.const 0x1.8p3",
+  "0x1.8p3",
+  "constant.numeric.float.hexadecimal"
+ ],
+ [
+  "source.vtxir",
+  "  %2 = i32.workitem_id x",
+  "x",
+  "constant.language.axis"
+ ],
+ [
+  "source.vtxir",
+  "  %r = callind %f : @FnTy (%a)",
+  "@FnTy",
+  "entity.name.type"
+ ],
+ [
+  "source.vtxir",
+  "  %1 = i64.add %a, %b // sum",
+  " sum",
+  "comment.line"
+ ],
+ [
+  "source.vtxir",
+  "!dbg = { 1, \"x\" }",
+  "!dbg",
+  "entity.name.tag.metadata"
+ ],
+ [
+  "source.vtx.mod",
+  "module github.com/vertex-language/net",
+  "github.com/vertex-language/net",
+  "entity.name.namespace.module"
+ ],
+ [
+  "source.vtx.mod",
+  "vertex 0.9",
+  "0.9",
+  "constant.numeric.version"
+ ],
+ [
+  "source.vtx.mod",
+  "platform macos 13",
+  "macos",
+  "support.constant.platform"
+ ],
+ [
+  "source.vtx.mod",
+  "require github.com/you/thing v1.2.0",
+  "github.com/you/thing",
+  "string.unquoted.module-path"
+ ],
+ [
+  "source.vtx.mod",
+  "require github.com/you/thing v1.2.0",
+  "v1.2.0",
+  "constant.numeric.version"
+ ],
+ [
+  "source.vtx.mod",
+  "require (\n\tnet v0.3.0 // indirect\n)",
+  "net",
+  "string.unquoted.module-path"
+ ],
+ [
+  "source.vtx.mod",
+  "require (\n\tnet v0.3.0 // indirect\n)",
+  " indirect",
+  "comment.line"
+ ],
+ [
+  "source.vtx.mod",
+  "replace net => ../net",
+  "../net",
+  "string.unquoted.path"
+ ],
+ [
+  "source.vtx.mod",
+  "replace net v0.1.0 => github.com/fork/net v0.1.1",
+  "github.com/fork/net",
+  "string.unquoted.module-path"
+ ],
+ [
+  "source.vtx.mod",
+  "replace net v0.1.0 => github.com/fork/net v0.1.1",
+  "=>",
+  "keyword.operator.arrow"
+ ],
+ [
+  "source.vtx.mod",
+  "toolchain go1.22",
+  "toolchain",
+  "invalid.illegal.unknown-directive"
+ ],
+ [
+  "source.vtx.work",
+  "vertex 0.9\n\nuse (\n\t./archive\n\t./cli\n)",
+  "./cli",
+  "string.unquoted.path"
+ ],
+ [
+  "source.vtx.work",
+  "use ./net",
+  "use",
+  "keyword.other.directive"
+ ],
+ [
+  "source.vtx.work",
+  "require x v1",
+  "require",
+  "invalid.illegal"
+ ],
+ [
+  "source.vtx.sum",
+  "github.com/vertex-language/net v0.3.0 h1:abc+/DEF=",
+  "h1",
+  "keyword.other.hash-algorithm"
+ ],
+ [
+  "source.vtx.sum",
+  "github.com/vertex-language/net v0.3.0 h1:abc+/DEF=",
+  "abc+/DEF=",
+  "constant.other.hash"
+ ],
+ [
+  "source.vtx.sum",
+  "github.com/vertex-language/net v0.3.0 h1:abc+/DEF=",
+  "v0.3.0",
+  "constant.numeric.version"
+ ],
+ [
+  "source.vtx.sum",
+  "broken line",
+  "broken line",
+  "invalid.illegal"
+ ],
+ [
+  "source.vtx",
+  "qConfig.MaxIdle = self.Config.TimeoutMs",
+  "Config",
+  "variable.other.property"
+ ],
+ [
+  "source.vtx.vsx",
+  "return <button onClick={count += 1}>Clicked {count} times</button>",
+  "button",
+  "entity.name.tag.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "return <button onClick={count += 1}>Clicked {count} times</button>",
+  "onClick",
+  "entity.other.attribute-name.event.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "return <button onClick={count += 1}>Clicked {count} times</button>",
+  "count",
+  "meta.embedded.expression.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "return <button onClick={count += 1}>Clicked {count} times</button>",
+  "Clicked ",
+  "meta.jsx.children.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "let x = <app.Window title=\"T\"><Counter start={5} /></app.Window>",
+  "app.Window",
+  "support.class.component.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "let x = <app.Window title=\"T\"><Counter start={5} /></app.Window>",
+  "Counter",
+  "support.class.component.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "let x = <app.Window title=\"T\"><Counter start={5} /></app.Window>",
+  "T",
+  "string.quoted.double.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "let x = <app.Window title=\"T\"><Counter start={5} /></app.Window>",
+  "5",
+  "constant.numeric"
+ ],
+ [
+  "source.vtx.vsx",
+  "let x = <app.Window title=\"T\"><Counter start={5} /></app.Window>",
+  "/>",
+  "punctuation.definition.tag.end.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "<li class:done={t.Done} style:--kit-accent=\"red\" data-p=\"m\" />",
+  "class",
+  "entity.other.attribute-name.namespace.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "<li class:done={t.Done} style:--kit-accent=\"red\" data-p=\"m\" />",
+  "done",
+  "entity.other.attribute-name.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "<li class:done={t.Done} style:--kit-accent=\"red\" data-p=\"m\" />",
+  "--kit-accent",
+  "entity.other.attribute-name.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "<li class:done={t.Done} style:--kit-accent=\"red\" data-p=\"m\" />",
+  "data-p",
+  "entity.other.attribute-name.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "<p>{/* note */}a &lt; b</p>",
+  "/*",
+  "comment.block"
+ ],
+ [
+  "source.vtx.vsx",
+  "<p>{/* note */}a &lt; b</p>",
+  "&lt;",
+  "constant.character.entity.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "let f = <><i/>{a}</>",
+  "i",
+  "entity.name.tag.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "<div {...attrs} />",
+  "...",
+  "keyword.operator.spread.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "<ul>{xs.map { x in <li>{x}</li> }}</ul>",
+  "li",
+  "entity.name.tag.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "<ul>{xs.map { x in <li>{x}</li> }}</ul>",
+  "in",
+  "keyword.control.vertex"
+ ],
+ [
+  "source.vtx.vsx",
+  "{if a { <x/> } else { <y/> }}",
+  "y",
+  "entity.name.tag.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "let y = a < b",
+  "<",
+  "!meta.tag.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "let y = a<b",
+  "<",
+  "!meta.tag.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "let xs = Array<int>()",
+  "<",
+  "!meta.tag.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "xs.sorted(by: <)",
+  "<",
+  "!meta.tag.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "func |> <T, U>(v: T, f: (T) -> U) -> U { f(v) }",
+  "<",
+  "meta.generic-clause.vertex"
+ ],
+ [
+  "source.vtx.vsx",
+  "func f<T>(x: T) {}",
+  "<",
+  "meta.generic-clause.vertex"
+ ],
+ [
+  "source.vtx.vsx",
+  "let z = x < 3 ? a : b",
+  "<",
+  "!meta.tag.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "@reactive.State var count = 0",
+  "var",
+  "storage.type.var.vertex"
+ ],
+ [
+  "source.vtx.vsx",
+  "package main",
+  "main",
+  "entity.name.namespace"
+ ],
+ [
+  "source.vss",
+  "package kit",
+  "kit",
+  "entity.name.namespace.vss"
+ ],
+ [
+  "source.vss",
+  "package kit",
+  "package",
+  "keyword.other.package.vss"
+ ],
+ [
+  "source.vss",
+  "import \"ui/theme\"",
+  "ui/theme",
+  "string.quoted.double.import-path.vss"
+ ],
+ [
+  "source.vss",
+  "import \"ui/theme\"",
+  "import",
+  "keyword.control.import.vss"
+ ],
+ [
+  "source.vss",
+  "import (\n  \"a/b\"\n)",
+  "a/b",
+  "string.quoted.double.import-path.vss"
+ ],
+ [
+  "source.vss",
+  "// the header may use Vertex comments",
+  "//",
+  "comment.line.double-slash.vss"
+ ],
+ [
+  "source.vtx",
+  "return <b>x</b>",
+  "<",
+  "!meta.tag"
+ ]
 ]

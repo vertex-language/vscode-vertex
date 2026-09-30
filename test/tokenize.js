@@ -13,6 +13,8 @@ const oniguruma = require('vscode-oniguruma');
 const SYN = process.env.SYN || path.join(__dirname, '..', 'syntaxes');
 const files = {
   'source.vtx': 'vertex.tmLanguage.json',
+  'source.vtx.vsx': 'vertex-vsx.tmLanguage.json',
+  'source.vss': 'vertex-vss.tmLanguage.json',
   'source.vtxir': 'vertex-ir.tmLanguage.json',
   'source.vtx.mod': 'vertex-mod.tmLanguage.json',
   'source.vtx.work': 'vertex-work.tmLanguage.json',
@@ -27,6 +29,13 @@ const onigLib = oniguruma.loadWASM(wasm).then(() => ({
 const registry = new vsctm.Registry({
   onigLib,
   loadGrammar: async (scope) => {
+    // VS Code's own CSS grammar, which .vss delegates its body to, where
+    // VS Code is installed (CSS_GRAMMAR overrides where to find it).
+    if (scope === 'source.css') {
+      const css = process.env.CSS_GRAMMAR ||
+        '/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/css/syntaxes/css.tmLanguage.json';
+      return fs.existsSync(css) ? vsctm.parseRawGrammar(fs.readFileSync(css, 'utf8'), css) : null;
+    }
     const f = files[scope];
     if (!f) return null;
     const p = path.join(SYN, f);
