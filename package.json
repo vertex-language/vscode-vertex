@@ -3,7 +3,7 @@
   "name": "vscode-vertex",
   "displayName": "Vertex Language Support",
   "description": "Syntax highlighting for the Vertex toolchain: .vs source, .vsx markup, .vss styles, .vinterface interfaces, .vir Vertex IR, and vs.mod, vs.work and vs.sum",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "publisher": "vertex-language",
   "license": "MIT",
   "repository": {
@@ -17,7 +17,6 @@
     "Programming Languages"
   ],
   "scripts": {
-    "build": "python3 scripts/vertex.py syntaxes && python3 scripts/vertex_vss.py syntaxes && python3 scripts/vertex_ir.py syntaxes && python3 scripts/vertex_mod.py syntaxes",
     "test": "node test/tokenize.js expect test/cases.json"
   },
   "devDependencies": {
@@ -33,7 +32,17 @@
           "vertex"
         ],
         "extensions": [
-          ".vs",
+          ".vs"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "vertex-interface",
+        "aliases": [
+          "Vertex Interface",
+          "vinterface"
+        ],
+        "extensions": [
           ".vinterface"
         ],
         "configuration": "./language-configuration.json"
@@ -113,9 +122,33 @@
         "path": "./syntaxes/vertex.tmLanguage.json"
       },
       {
+        "language": "vertex-interface",
+        "scopeName": "source.vtx.interface",
+        "path": "./syntaxes/vertex-interface.tmLanguage.json"
+      },
+      {
+        "scopeName": "source.vtx.underscore-label",
+        "path": "./syntaxes/vertex-underscore-label.tmLanguage.json",
+        "injectTo": [
+          "source.vtx",
+          "source.vtx.vsx"
+        ]
+      },
+      {
         "language": "vertex-vsx",
         "scopeName": "source.vtx.vsx",
         "path": "./syntaxes/vertex-vsx.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.expression.vsx": "vertex-vsx"
+        }
+      },
+      {
+        "scopeName": "source.vtx.vsx.markup",
+        "path": "./syntaxes/vertex-vsx-markup.tmLanguage.json",
+        "injectTo": [
+          "source.vtx.vsx",
+          "text.html.markdown"
+        ],
         "embeddedLanguages": {
           "meta.embedded.expression.vsx": "vertex-vsx"
         }

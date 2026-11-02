@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Vertex underscore labels",
+  "scopeName": "source.vtx.underscore-label",
+  "comment": "`_ name: T` is an error in .vs and .vsx (vsc: expected parameter name, found '_'): Vertex passes any parameter by position. Injected into .vs and .vsx only; a .vinterface and a .swift keep `_`.",
+  "injectionSelector": "L:meta.parameter-clause.vertex - meta.default-value.vertex - comment - string",
+  "patterns": [
+    {
+      "match": "(?:^|(?<=[(,]))\\s*(_)\\s+((?:[A-Za-z_\\p{L}][A-Za-z0-9_\\p{L}\\p{N}]*|`[^`]+`))\\s*(?=:)",
+      "captures": {
+        "1": {
+          "name": "invalid.illegal.underscore-label.vertex"
+        },
+        "2": {
+          "name": "variable.parameter.function.vertex"
+        }
+      }
+    }
+  ]
+}

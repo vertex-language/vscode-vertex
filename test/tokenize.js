@@ -13,7 +13,10 @@ const oniguruma = require('vscode-oniguruma');
 const SYN = process.env.SYN || path.join(__dirname, '..', 'syntaxes');
 const files = {
   'source.vtx': 'vertex.tmLanguage.json',
+  'source.vtx.interface': 'vertex-interface.tmLanguage.json',
+  'source.vtx.underscore-label': 'vertex-underscore-label.tmLanguage.json',
   'source.vtx.vsx': 'vertex-vsx.tmLanguage.json',
+  'source.vtx.vsx.markup': 'vertex-vsx-markup.tmLanguage.json',
   'source.vss': 'vertex-vss.tmLanguage.json',
   'source.vtxir': 'vertex-ir.tmLanguage.json',
   'source.vtx.mod': 'vertex-mod.tmLanguage.json',
@@ -26,8 +29,14 @@ const onigLib = oniguruma.loadWASM(wasm).then(() => ({
   createOnigScanner: (p) => new oniguruma.OnigScanner(p),
   createOnigString: (s) => new oniguruma.OnigString(s),
 }));
+// The injections package.json declares, by the grammar they go into.
+const injections = {
+  'source.vtx': ['source.vtx.underscore-label'],
+  'source.vtx.vsx': ['source.vtx.vsx.markup', 'source.vtx.underscore-label'],
+};
 const registry = new vsctm.Registry({
   onigLib,
+  getInjections: (scope) => injections[scope],
   loadGrammar: async (scope) => {
     // VS Code's own CSS grammar, which .vss delegates its body to, where
     // VS Code is installed (CSS_GRAMMAR overrides where to find it).
@@ -73,6 +82,17 @@ function tokenize(grammar, text) {
       if (dt > 2000) console.log(`SLOW ${f}: ${dt} ms`);
     }
     console.log(`${n} invalid tokens in ${args.length - 1} files`);
+  } else if (cmd === 'bare') {
+    // Words the grammar gives no scope of their own, most common first:
+    // what a grammar has not caught up with.
+    const g = await registry.loadGrammar(args[0]);
+    const seen = new Map();
+    for (const f of args.slice(1))
+      for (const t of tokenize(g, fs.readFileSync(f, 'utf8'))) {
+        const w = t.text.trim();
+        if (/^[A-Za-z_][\w.]*$/.test(w) && t.scopes.length === 1) seen.set(w, (seen.get(w) || 0) + 1);
+      }
+    for (const [w, n] of [...seen].sort((a, b) => b[1] - a[1]).slice(0, 60)) console.log(`${n}\t${w}`);
   } else if (cmd === 'expect') {
     const cases = JSON.parse(fs.readFileSync(args[0], 'utf8'));
     let fail = 0;

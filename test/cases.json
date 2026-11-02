@@ -109,7 +109,7 @@
  ],
  [
   "source.vtx",
-  "func draw(_ out: gpu.MutableSpan<uint32>) kernel {",
+  "func draw(out: gpu.MutableSpan<uint32>) kernel {",
   "kernel",
   "storage.modifier.execution"
  ],
@@ -139,15 +139,9 @@
  ],
  [
   "source.vtx",
-  "func draw(_ out: gpu.MutableSpan<uint32>) kernel {",
+  "func draw(out: gpu.MutableSpan<uint32>) kernel {",
   "MutableSpan",
   "entity.name.type"
- ],
- [
-  "source.vtx",
-  "func draw(_ out: gpu.MutableSpan<uint32>) kernel {",
-  "_",
-  "entity.name.function.label"
  ],
  [
   "source.vtx",
@@ -994,5 +988,131 @@
   "return <b>x</b>",
   "<",
   "!meta.tag"
+ ],
+ [
+  "source.vtx",
+  "func SetText(_ node: html.Node, _ text: string) {}",
+  "_",
+  "invalid.illegal.underscore-label"
+ ],
+ [
+  "source.vtx",
+  "func SetText(_ node: html.Node, _ text: string) {}",
+  "node",
+  "variable.parameter.function"
+ ],
+ [
+  "source.vtx",
+  "func SetText(node: html.Node, text: string) {}",
+  "node",
+  "variable.parameter.function"
+ ],
+ [
+  "source.vtx",
+  "func SetText(node: html.Node, text: string) {}",
+  "node",
+  "!invalid"
+ ],
+ [
+  "source.vtx",
+  "func scale(by factor: float32) {}",
+  "by",
+  "entity.name.function.label"
+ ],
+ [
+  "source.vtx",
+  "func f(x: int = g(_ y: 1)) {}",
+  "_",
+  "!invalid"
+ ],
+ [
+  "source.vtx",
+  "let f = { (_ a: int) in a }",
+  "_",
+  "!invalid"
+ ],
+ [
+  "source.vtx.vsx",
+  "func Card(_ props: CardProps) -> Element {",
+  "_",
+  "invalid.illegal.underscore-label"
+ ],
+ [
+  "source.vtx.interface",
+  "  public subscript(_ i: int) -> int { get }",
+  "_",
+  "!invalid"
+ ],
+ [
+  "source.vtx.interface",
+  "  public func Add(o: P, by k: int = 1) -> P",
+  "Add",
+  "entity.name.function"
+ ],
+ [
+  "source.vtx",
+  "let y = borrow x",
+  "borrow",
+  "keyword.operator.ownership"
+ ],
+ [
+  "source.vtx",
+  "func f<each T>(_ v: repeat each T) {}",
+  "each",
+  "keyword.other.type.pack"
+ ],
+ [
+  "source.vtx",
+  "precedencegroup P { associativity: left }",
+  "left",
+  "constant.language.associativity"
+ ],
+ [
+  "source.vtx",
+  "nonisolated(nonsending) func f() async {}",
+  "nonisolated",
+  "storage.modifier"
+ ],
+ [
+  "source.vtx.vsx",
+  "func App() -> Element {\n    if ok {\n        return <div>hi</div>\n    }\n}",
+  "div",
+  "entity.name.tag.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "struct S { func f() -> Node { return <Counter /> } }",
+  "Counter",
+  "support.class.component.vsx"
+ ],
+ [
+  "source.vtx.vsx",
+  "if a < b { }",
+  "<",
+  "!entity.name.tag"
+ ],
+ [
+  "source.vtx.vsx",
+  "let xs: Array<int> = []",
+  "int",
+  "!entity.name.tag"
+ ],
+ [
+  "source.vtx",
+  "return <div>hi</div>",
+  "div",
+  "!entity.name.tag"
+ ],
+ [
+  "source.vtx.vsx",
+  "// <div>\nlet a = 1",
+  " <div>",
+  "comment.line"
+ ],
+ [
+  "source.vtx.vsx",
+  "let s = \"<div>\"",
+  "<div>",
+  "string.quoted.double"
  ]
 ]

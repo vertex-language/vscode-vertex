@@ -1,0 +1,231 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Vertex Markup",
+  "scopeName": "source.vtx.vsx.markup",
+  "comment": "Markup in .vsx, injected wherever .vsx code is -- at any depth, and in a vsx fence in Markdown -- so .vsx is the .vs grammar and this, not a copy of it. A < opens a tag only where vsc reads one: after a space, ( [ { , ; : or at a line's start, before a name or >.",
+  "injectionSelector": "L:(source.vtx.vsx | meta.embedded.block.vertex-vsx) - comment - string",
+  "patterns": [
+    {
+      "include": "#markup"
+    }
+  ],
+  "repository": {
+    "markup": {
+      "begin": "(?:^|(?<=[\\s(\\[{,;:]))(<)(?:(?:((?:[A-Z][\\w$]*(?:\\.[\\w$]+)*|[\\w$]+(?:\\.[\\w$]+)+))|([a-z_$][\\w$]*(?:[:-][\\w$-]+)*))(?=[\\s/>{]|$)|(?=>))",
+      "end": "(/>)|(</)(?:((?:[A-Z][\\w$]*(?:\\.[\\w$]+)*|[\\w$]+(?:\\.[\\w$]+)+))|([a-z_$][\\w$]*(?:[:-][\\w$-]+)*))?\\s*(>)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.vsx"
+        },
+        "2": {
+          "name": "support.class.component.vsx"
+        },
+        "3": {
+          "name": "entity.name.tag.vsx"
+        }
+      },
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.vsx"
+        },
+        "2": {
+          "name": "punctuation.definition.tag.begin.vsx"
+        },
+        "3": {
+          "name": "support.class.component.vsx"
+        },
+        "4": {
+          "name": "entity.name.tag.vsx"
+        },
+        "5": {
+          "name": "punctuation.definition.tag.end.vsx"
+        }
+      },
+      "name": "meta.tag.vsx",
+      "patterns": [
+        {
+          "include": "#markup-attributes"
+        },
+        {
+          "include": "#markup-children"
+        }
+      ]
+    },
+    "markup-inner": {
+      "begin": "(<)(?:(?:((?:[A-Z][\\w$]*(?:\\.[\\w$]+)*|[\\w$]+(?:\\.[\\w$]+)+))|([a-z_$][\\w$]*(?:[:-][\\w$-]+)*))(?=[\\s/>{]|$)|(?=>))",
+      "end": "(/>)|(</)(?:((?:[A-Z][\\w$]*(?:\\.[\\w$]+)*|[\\w$]+(?:\\.[\\w$]+)+))|([a-z_$][\\w$]*(?:[:-][\\w$-]+)*))?\\s*(>)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.vsx"
+        },
+        "2": {
+          "name": "support.class.component.vsx"
+        },
+        "3": {
+          "name": "entity.name.tag.vsx"
+        }
+      },
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.vsx"
+        },
+        "2": {
+          "name": "punctuation.definition.tag.begin.vsx"
+        },
+        "3": {
+          "name": "support.class.component.vsx"
+        },
+        "4": {
+          "name": "entity.name.tag.vsx"
+        },
+        "5": {
+          "name": "punctuation.definition.tag.end.vsx"
+        }
+      },
+      "name": "meta.tag.vsx",
+      "patterns": [
+        {
+          "include": "#markup-attributes"
+        },
+        {
+          "include": "#markup-children"
+        }
+      ]
+    },
+    "markup-attributes": {
+      "begin": "\\G",
+      "end": "(?=/>)|(>)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.vsx"
+        }
+      },
+      "name": "meta.tag.attributes.vsx",
+      "patterns": [
+        {
+          "include": "source.vtx#comments"
+        },
+        {
+          "begin": "(\\{)\\s*(\\.\\.\\.)",
+          "end": "\\}",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.section.embedded.begin.vsx"
+            },
+            "2": {
+              "name": "keyword.operator.spread.vsx"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.embedded.end.vsx"
+            }
+          },
+          "name": "meta.embedded.expression.vsx",
+          "patterns": [
+            {
+              "include": "source.vtx.vsx"
+            }
+          ]
+        },
+        {
+          "match": "(?<![\\w$-])(on[A-Z][\\w$]*)(?=\\s*=)",
+          "name": "entity.other.attribute-name.event.vsx"
+        },
+        {
+          "match": "(?<![\\w$-])(class|style)(:)([\\w$-]+)",
+          "captures": {
+            "1": {
+              "name": "entity.other.attribute-name.namespace.vsx"
+            },
+            "2": {
+              "name": "punctuation.separator.namespace.vsx"
+            },
+            "3": {
+              "name": "entity.other.attribute-name.vsx"
+            }
+          }
+        },
+        {
+          "match": "(?<![\\w$-])[A-Za-z_$][\\w$]*(?:[:.-][\\w$-]+)*",
+          "name": "entity.other.attribute-name.vsx"
+        },
+        {
+          "match": "=",
+          "name": "keyword.operator.assignment.vsx"
+        },
+        {
+          "begin": "\"",
+          "end": "\"",
+          "name": "string.quoted.double.vsx",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.vsx"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.vsx"
+            }
+          }
+        },
+        {
+          "begin": "'",
+          "end": "'",
+          "name": "string.quoted.single.vsx",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.vsx"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.vsx"
+            }
+          }
+        },
+        {
+          "include": "#markup-code"
+        }
+      ]
+    },
+    "markup-children": {
+      "patterns": [
+        {
+          "include": "#markup-code"
+        },
+        {
+          "include": "#markup-inner"
+        },
+        {
+          "match": "&(?:[A-Za-z][A-Za-z0-9]*|#[0-9]+|#x[0-9A-Fa-f]+);",
+          "name": "constant.character.entity.vsx"
+        },
+        {
+          "match": "[^<{&]+",
+          "name": "meta.jsx.children.vsx"
+        }
+      ]
+    },
+    "markup-code": {
+      "begin": "\\{",
+      "end": "\\}",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.begin.vsx"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.end.vsx"
+        }
+      },
+      "name": "meta.embedded.expression.vsx",
+      "patterns": [
+        {
+          "include": "source.vtx.vsx"
+        }
+      ]
+    }
+  }
+}

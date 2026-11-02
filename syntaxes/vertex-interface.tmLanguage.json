@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Vertex Interface",
+  "scopeName": "source.vtx.interface",
+  "comment": "A .vinterface, as vsc build --emit interface prints it: the .vs grammar, where a subscript's `_` label is what vsc writes, not an error.",
+  "fileTypes": [
+    "vinterface"
+  ],
+  "patterns": [
+    {
+      "include": "source.vtx"
+    }
+  ]
+}

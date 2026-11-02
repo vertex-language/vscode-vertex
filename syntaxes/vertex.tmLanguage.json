@@ -3,8 +3,7 @@
   "name": "Vertex",
   "scopeName": "source.vtx",
   "fileTypes": [
-    "vs",
-    "vinterface"
+    "vs"
   ],
   "patterns": [
     {
@@ -1107,6 +1106,20 @@
           }
         },
         {
+          "match": "\\b(associativity)\\s*(:)\\s*(left|right|none)\\b",
+          "captures": {
+            "1": {
+              "name": "keyword.other.precedencegroup.vertex"
+            },
+            "2": {
+              "name": "punctuation.separator.vertex"
+            },
+            "3": {
+              "name": "constant.language.associativity.vertex"
+            }
+          }
+        },
+        {
           "match": "\\b(higherThan|lowerThan|associativity|assignment)\\s*(:)",
           "captures": {
             "1": {
@@ -1224,7 +1237,7 @@
           "name": "storage.modifier.access.vertex"
         },
         {
-          "match": "\\b(open|package|mutating|nonmutating|lazy|weak|unowned|convenience|required|dynamic|final|override|indirect|optional|nonisolated|distributed|infix|prefix|postfix|borrowing|consuming|__consuming|_const|_local)\\b(?=\\s*(?:\\((?:safe|unsafe|set)\\))?\\s+(?:(?:open|package|mutating|nonmutating|lazy|weak|unowned|convenience|required|dynamic|final|override|indirect|optional|nonisolated|distributed|infix|prefix|postfix|borrowing|consuming|__consuming|_const|_local|public|private|fileprivate|internal|static)\\s+)*(?:func|var|let|class|struct|enum|init|subscript|actor|protocol|extension|case|typealias|deinit|operator|macro|precedencegroup|import|associatedtype)\\b)",
+          "match": "\\b(open|package|mutating|nonmutating|lazy|weak|unowned|convenience|required|dynamic|final|override|indirect|optional|nonisolated|distributed|infix|prefix|postfix|borrowing|consuming|__consuming|_const|_local)\\b(?=\\s*(?:\\((?:safe|unsafe|set|nonsending)\\))?\\s+(?:(?:open|package|mutating|nonmutating|lazy|weak|unowned|convenience|required|dynamic|final|override|indirect|optional|nonisolated|distributed|infix|prefix|postfix|borrowing|consuming|__consuming|_const|_local|public|private|fileprivate|internal|static)\\s+)*(?:func|var|let|class|struct|enum|init|subscript|actor|protocol|extension|case|typealias|deinit|operator|macro|precedencegroup|import|associatedtype)\\b)",
           "name": "storage.modifier.vertex"
         },
         {
@@ -1238,6 +1251,10 @@
         {
           "match": "\\b(some|any)\\b(?=\\s+[A-Za-z_(\\[])",
           "name": "keyword.other.type.vertex"
+        },
+        {
+          "match": "\\b(each)\\b(?=\\s+[A-Za-z_`])",
+          "name": "keyword.other.type.pack.vertex"
         },
         {
           "match": "\\b(?:true|false)\\b",
@@ -1256,7 +1273,7 @@
           "name": "variable.language.self.type.vertex"
         },
         {
-          "match": "\\b(?:consume|copy|discard|yield)\\b(?=\\s+[A-Za-z_(`$])",
+          "match": "\\b(?:borrow|consume|copy|discard|yield)\\b(?=\\s+[A-Za-z_(`$])",
           "name": "keyword.operator.ownership.vertex"
         },
         {

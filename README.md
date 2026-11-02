@@ -5,7 +5,8 @@ every file the Vertex toolchain reads and writes.
 
 | File | Language ID | Grammar scope | Read or written by |
 |------|-------------|---------------|--------------------|
-| `*.vs`, `*.vinterface` | `vertex` | `source.vtx` | [`vsc`](https://github.com/vertex-language/vsc); `vsc build --emit interface` writes `.vinterface` |
+| `*.vs` | `vertex` | `source.vtx` | [`vsc`](https://github.com/vertex-language/vsc): Vertex source |
+| `*.vinterface` | `vertex-interface` | `source.vtx.interface` | `vsc build --emit interface` |
 | `*.vsx` | `vertex-vsx` | `source.vtx.vsx` | `vsc`: Vertex with markup |
 | `*.vss` | `vertex-vss` | `source.vss` | `vsc`: a package's styles |
 | `*.vir` | `vertex-ir` | `source.vtxir` | [`ir`](https://github.com/vertex-language/ir), `vsc build --emit vir` |
@@ -18,7 +19,7 @@ Fenced code blocks in Markdown are highlighted too, tagged `vertex`/`vs`,
 
 ## What's highlighted
 
-**`.vs` and `.vinterface`.** Vertex shares its core dialect with Swift, so the
+**`.vs`.** Vertex shares its core dialect with Swift, so the
 grammar covers the Swift syntax `vsc` reads: every reserved word, the
 contextual keywords where they are keywords (`mutating func`, but not
 `let mutating`), attributes, `#if` conditions, `#available`, the `#` literals,
@@ -33,8 +34,18 @@ that, the Vertex additions:
 - receiver methods and their ownership (`func (v: inout Vec2) scale(by:)`)
 - the lowercase primitive types (`int32`, `uint8`, `float32`, `string`, `never`, …)
 - the `kernel` and `graph` execution modifiers, only where a signature puts them
+- no `_` label: any parameter is passed with its name or without it, so
+  `func SetText(_ node: html.Node)` is marked as the error `vsc` makes it,
+  `expected parameter name, found '_'`. Write `func SetText(node: html.Node)`.
+  (`_` stays valid in `.swift`, and in a `.vinterface`, where `vsc` writes a
+  subscript's parameters as Swift's `subscript(_ i: int)`.)
 
-**`.vsx`.** Everything `.vs` has, and markup where the file may hold it: a
+**`.vinterface`.** The `.vs` grammar, as `vsc build --emit interface` prints
+an interface, `_` labels and all.
+
+**`.vsx`.** Everything `.vs` has -- the `.vsx` grammar is the `.vs` grammar,
+with markup injected into it at any depth -- and markup where the file may
+hold it: a
 `<` opens a tag only where `vsc` reads one -- where a prefix operator would
 stand, before a name or `>` -- so `a < b`, `Array<int>`, `sorted(by: <)` and a
 declaration's generic clause (`func |> <T, U>`) stay what they are. Element
@@ -83,7 +94,7 @@ marked as the error `vsc` makes it.
 git clone https://github.com/vertex-language/vscode-vertex.git
 cd vscode-vertex
 npx @vscode/vsce package
-code --install-extension vscode-vertex-5.0.0.vsix
+code --install-extension vscode-vertex-6.0.0.vsix
 ```
 
 Or install the `.vsix` with **Extensions: Install from VSIX...** in the
@@ -91,12 +102,20 @@ Command Palette. The extension is not on the Marketplace yet.
 
 ## Working on the grammars
 
-The grammars in `syntaxes/` are generated. Edit the generators in `scripts/`
-and rebuild:
+The grammars in `syntaxes/` are written by hand; edit them directly. Each
+format has one grammar, and two are injections rather than copies:
 
-```bash
-npm run build
-```
+| Grammar | Is |
+|---------|----|
+| `vertex.tmLanguage.json` | `.vs`: the whole language |
+| `vertex-interface.tmLanguage.json` | `.vinterface`: includes `source.vtx` |
+| `vertex-underscore-label.tmLanguage.json` | the `_` label error, injected into `.vs` and `.vsx` only |
+| `vertex-vsx.tmLanguage.json` | `.vsx`: includes `source.vtx` |
+| `vertex-vsx-markup.tmLanguage.json` | markup, injected into `.vsx` and Markdown's `vsx` fences |
+| `vertex-vss.tmLanguage.json` | `.vss`: the header, then VS Code's CSS |
+| `vertex-ir.tmLanguage.json` | `.vir` |
+| `vertex-mod`, `-work`, `-sum` | `vs.mod`, `vs.work`, `vs.sum` |
+| `vertex-markdown-injection.tmLanguage.json` | the fenced code blocks |
 
 `npm test` tokenizes the cases in `test/cases.json` with VS Code's own TextMate
 engine and checks each token's scope. To see how a file tokenizes, or to find
@@ -108,6 +127,13 @@ node test/tokenize.js dump source.vtx path/to/file.vs
 
 ```bash
 node test/tokenize.js invalid source.vtx ../*/*.vs
+```
+
+and to find words a grammar gives no scope, most common first -- what it has
+not caught up with, run against `vsc build --emit vir` output or a package:
+
+```bash
+node test/tokenize.js bare source.vtxir out.vir
 ```
 
 The source of truth is the toolchain: the scanner and parser in

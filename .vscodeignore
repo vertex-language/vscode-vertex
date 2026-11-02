@@ -3,6 +3,5 @@
 *.vsix
 .DS_Store
 node_modules/
-scripts/
 test/
 package-lock.json
